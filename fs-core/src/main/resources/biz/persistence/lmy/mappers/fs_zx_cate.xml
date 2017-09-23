@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_zx_cate">
+<resultMap id="fs_zx_cate" type="com.lmy.core.model.FsZxCate">
+	<result column="id" property="id"/>
+	<result column="name" property="name"/>
+	<result column="description" property="description"/>
+	<result column="level" property="level"/>
+	<result column="parent_id" property="parentId"/>
+	<result column="parent_name" property="parentName"/>
+	<result column="suggest_amt" property="suggestAmt"/>
+	<result column="sort" property="sort"/>
+	<result column="usr_defined" property="usrDefined"/>
+	<result column="create_usr_id" property="createUsrId"/>
+	<result column="status" property="status"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_zx_cate">
+	select * 	from fs_zx_cate where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsZxCate"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_zx_cate(id ,name ,description ,level ,parent_id ,parent_name ,suggest_amt ,sort ,usr_defined ,create_usr_id ,status ,create_time ,update_time)
+   values(#{id,jdbcType=INTEGER} ,#{name,jdbcType=VARCHAR} ,#{description,jdbcType=VARCHAR} ,#{level,jdbcType=INTEGER} ,#{parentId,jdbcType=INTEGER} ,#{parentName,jdbcType=VARCHAR} ,#{suggestAmt,jdbcType=INTEGER} ,#{sort,jdbcType=INTEGER} ,#{usrDefined,jdbcType=VARCHAR} ,#{createUsrId,jdbcType=INTEGER} ,#{status,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_zx_cate(id ,name ,description ,level ,parent_id ,parent_name ,suggest_amt ,sort ,usr_defined ,create_usr_id ,status ,create_time ,update_time)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.name,jdbcType=VARCHAR} ,#{item.description,jdbcType=VARCHAR} ,#{item.level,jdbcType=INTEGER} ,#{item.parentId,jdbcType=INTEGER} ,#{item.parentName,jdbcType=VARCHAR} ,#{item.suggestAmt,jdbcType=INTEGER} ,#{item.sort,jdbcType=INTEGER} ,#{item.usrDefined,jdbcType=VARCHAR} ,#{item.createUsrId,jdbcType=INTEGER} ,#{item.status,jdbcType=VARCHAR} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.lmy.core.model.FsZxCate">
+	update fs_zx_cate
+<set>
+	<if test="name != null">name=#{name},</if>
+	<if test="description != null">description=#{description},</if>
+	<if test="level != null">level=#{level},</if>
+	<if test="parentId != null">parent_id=#{parentId},</if>
+	<if test="parentName != null">parent_name=#{parentName},</if>
+	<if test="suggestAmt != null">suggest_amt=#{suggestAmt},</if>
+	<if test="sort != null">sort=#{sort},</if>
+	<if test="usrDefined != null">usr_defined=#{usrDefined},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="updateTime != null">update_time=#{updateTime}</if>
+</set>
+	where id=#{id}
+</update>
+
+
+<select id="findZxCate1"		parameterType="hashmap"	resultMap="fs_zx_cate">
+	SELECT id, name, description, level, parent_id, parent_name, suggest_amt, usr_defined, create_usr_id, status
+	FROM fs_zx_cate
+	<where>
+	    	<if test="  id!=null"> id = #{id}</if>
+	    	<if test=" parentId!=null  ">and parent_id=#{parentId} </if>
+	    	<if test="  level!=null ">and level =#{level}</if>
+	    	<if test="  usrDefined!=null "> and usr_defined = #{usrDefined}</if>
+	    	<if test="  status!=null ">and status =#{status}</if>
+	</where>
+</select>
+
+<select id="findZxCate2"		parameterType="hashmap"	resultMap="fs_zx_cate">
+	SELECT id, name, description, level, parent_id, parent_name, suggest_amt, usr_defined, create_usr_id, status
+	FROM fs_zx_cate
+	<where>
+	    	<if test="  level!=null ">level =#{level}</if>
+	    	<if test="  usrDefined!=null "> and usr_defined = #{usrDefined}</if>
+	    	<if test="  status!=null ">and status =#{status}</if>
+	    	<if test="  customUsrId!=null ">or create_usr_id =#{customUsrId}</if>
+	</where>
+</select>
+
+<select id="findByIds"		parameterType="hashmap"	resultMap="fs_zx_cate">
+	SELECT id, name, description, level, parent_id, parent_name, suggest_amt, usr_defined, create_usr_id, status
+	FROM fs_zx_cate
+	<where>
+        <if test="  ids !=null ">
+             id  in
+        	  <foreach collection="ids"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>                 
+        </if>
+       </where>
+</select>
+
+
+</mapper>

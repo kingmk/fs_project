@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_order_settlement">
+<resultMap id="fs_order_settlement" type="com.lmy.core.model.FsOrderSettlement">
+	<result column="id" property="id"/>
+	<result column="settlement_cycle_unit" property="settlementCycleUnit"/>
+	<result column="settlement_cycle" property="settlementCycle"/>
+	<result column="settlement_cycle_begin_time" property="settlementCycleBeginTime"/>
+	<result column="settlement_cycle_end_time" property="settlementCycleEndTime"/>
+	<result column="seller_usr_id" property="sellerUsrId"/>
+	<result column="seller_open_id" property="sellerOpenId"/>
+	<result column="order_total_num" property="orderTotalNum"/>
+	<result column="order_total_pay_rmb_amt" property="orderTotalPayRmbAmt"/>
+	<result column="plat_commission_rmb_amt" property="platCommissionRmbAmt"/>
+	<result column="personal_income_tax_rmb_amt" property="personalIncomeTaxRmbAmt"/>
+	<result column="real_arrival_amt" property="realArrivalAmt"/>
+	<result column="status" property="status"/>
+	<result column="confrim_time" property="confrimTime"/>
+	<result column="wx_out_trade_no" property="wxOutTradeNo"/>
+	<result column="update_time" property="updateTime"/>
+	<result column="create_time" property="createTime"/>
+	<result column="remark" property="remark"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_order_settlement">
+	select * 	from fs_order_settlement where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsOrderSettlement"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_order_settlement(id ,settlement_cycle_unit ,settlement_cycle ,settlement_cycle_begin_time ,settlement_cycle_end_time ,seller_usr_id ,seller_open_id ,order_total_num ,order_total_pay_rmb_amt ,plat_commission_rmb_amt ,personal_income_tax_rmb_amt ,real_arrival_amt ,status ,confrim_time ,wx_out_trade_no ,update_time ,create_time ,remark)
+   values(#{id,jdbcType=INTEGER} ,#{settlementCycleUnit,jdbcType=VARCHAR} ,#{settlementCycle,jdbcType=VARCHAR} ,#{settlementCycleBeginTime,jdbcType=TIMESTAMP} ,#{settlementCycleEndTime,jdbcType=TIMESTAMP} ,#{sellerUsrId,jdbcType=INTEGER} ,#{sellerOpenId,jdbcType=VARCHAR} ,#{orderTotalNum,jdbcType=INTEGER} ,#{orderTotalPayRmbAmt,jdbcType=INTEGER} ,#{platCommissionRmbAmt,jdbcType=INTEGER} ,#{personalIncomeTaxRmbAmt,jdbcType=INTEGER} ,#{realArrivalAmt,jdbcType=INTEGER} ,#{status,jdbcType=VARCHAR} ,#{confrimTime,jdbcType=TIMESTAMP} ,#{wxOutTradeNo,jdbcType=VARCHAR} ,#{updateTime,jdbcType=TIMESTAMP} ,#{createTime,jdbcType=TIMESTAMP} ,#{remark,jdbcType=VARCHAR}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_order_settlement(id ,settlement_cycle_unit ,settlement_cycle ,settlement_cycle_begin_time ,settlement_cycle_end_time ,seller_usr_id ,seller_open_id ,order_total_num ,order_total_pay_rmb_amt ,plat_commission_rmb_amt ,personal_income_tax_rmb_amt ,real_arrival_amt ,status ,confrim_time ,wx_out_trade_no ,update_time ,create_time ,remark)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.settlementCycleUnit,jdbcType=VARCHAR} ,#{item.settlementCycle,jdbcType=VARCHAR} ,#{item.settlementCycleBeginTime,jdbcType=TIMESTAMP} ,#{item.settlementCycleEndTime,jdbcType=TIMESTAMP} ,#{item.sellerUsrId,jdbcType=INTEGER} ,#{item.sellerOpenId,jdbcType=VARCHAR} ,#{item.orderTotalNum,jdbcType=INTEGER} ,#{item.orderTotalPayRmbAmt,jdbcType=INTEGER} ,#{item.platCommissionRmbAmt,jdbcType=INTEGER} ,#{item.personalIncomeTaxRmbAmt,jdbcType=INTEGER} ,#{item.realArrivalAmt,jdbcType=INTEGER} ,#{item.status,jdbcType=VARCHAR} ,#{item.confrimTime,jdbcType=TIMESTAMP} ,#{item.wxOutTradeNo,jdbcType=VARCHAR} ,#{item.updateTime,jdbcType=TIMESTAMP} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.remark,jdbcType=VARCHAR})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.lmy.core.model.FsOrderSettlement">
+	update fs_order_settlement
+<set>
+	<if test="settlementCycleUnit != null">settlement_cycle_unit=#{settlementCycleUnit},</if>
+	<if test="settlementCycle != null">settlement_cycle=#{settlementCycle},</if>
+	<if test="settlementCycleBeginTime != null">settlement_cycle_begin_time=#{settlementCycleBeginTime},</if>
+	<if test="settlementCycleEndTime != null">settlement_cycle_end_time=#{settlementCycleEndTime},</if>
+	<if test="sellerOpenId != null">seller_open_id=#{sellerOpenId},</if>
+	<if test="orderTotalNum != null">order_total_num=#{orderTotalNum},</if>
+	<if test="orderTotalPayRmbAmt != null">order_total_pay_rmb_amt=#{orderTotalPayRmbAmt},</if>
+	<if test="platCommissionRmbAmt != null">plat_commission_rmb_amt=#{platCommissionRmbAmt},</if>
+	<if test="personalIncomeTaxRmbAmt != null">personal_income_tax_rmb_amt=#{personalIncomeTaxRmbAmt},</if>
+	<if test="realArrivalAmt != null">real_arrival_amt=#{realArrivalAmt},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="confrimTime != null">confrim_time=#{confrimTime},</if>
+	<if test="wxOutTradeNo != null">wx_out_trade_no=#{wxOutTradeNo},</if>
+	<if test="updateTime != null">update_time=#{updateTime},</if>
+	<if test="remark != null">remark=#{remark}</if>
+</set>
+	where id=#{id}
+</update>
+
+<select id="stat1" parameterType="hashmap" resultMap="fs_order_settlement">
+	SELECT 
+       sum(a.order_total_pay_rmb_amt) as order_total_pay_rmb_amt, 
+       sum(a.plat_commission_rmb_amt) as plat_commission_rmb_amt,
+       sum(a.personal_income_tax_rmb_amt) as personal_income_tax_rmb_amt,
+       sum(a.real_arrival_amt) as real_arrival_amt
+  FROM fs_order_settlement a
+  <where>
+  	<if test="sellerUsrId!=null">a.seller_usr_id = #{sellerUsrId}</if>
+	<if test="  statusList !=null " >
+          and a.status in 
+            <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>     
+    </if>
+  </where>
+</select>
+
+<select id="find1" parameterType="hashmap" resultMap="fs_order_settlement">
+	select a.* from fs_order_settlement a
+  <where>
+  	<if test="sellerUsrId!=null">a.seller_usr_id = #{sellerUsrId}</if>
+	<if test="  statusList !=null " >
+          and a.status in 
+            <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>     
+    </if>
+  </where>
+       limit #{limitBegin} , #{limitEnd}
+</select>
+
+</mapper>

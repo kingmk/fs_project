@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_chat_session">
+<resultMap id="fs_chat_session" type="com.lmy.core.model.FsChatSession">
+	<result column="id" property="id"/>
+	<result column="session_no" property="sessionNo"/>
+	<result column="usr_id" property="usrId"/>
+	<result column="create_time" property="createTime"/>
+	<result column="expiry_date" property="expiryDate"/>
+	<result column="status" property="status"/>
+	<result column="is_service_provider" property="isServiceProvider"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_chat_session">
+	select * 	from fs_chat_session where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsChatSession"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_chat_session(id ,session_no ,usr_id ,create_time ,expiry_date ,status ,is_service_provider)
+   values(#{id,jdbcType=INTEGER} ,#{sessionNo,jdbcType=VARCHAR} ,#{usrId,jdbcType=INTEGER} ,#{createTime,jdbcType=TIMESTAMP} ,#{expiryDate,jdbcType=TIMESTAMP} ,#{status,jdbcType=VARCHAR} ,#{isServiceProvider,jdbcType=VARCHAR}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_chat_session(id ,session_no ,usr_id ,create_time ,expiry_date ,status ,is_service_provider)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.sessionNo,jdbcType=VARCHAR} ,#{item.usrId,jdbcType=INTEGER} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.expiryDate,jdbcType=TIMESTAMP} ,#{item.status,jdbcType=VARCHAR} ,#{item.isServiceProvider,jdbcType=VARCHAR})
+	</foreach> 
+</insert>
+<select id="findByChatSessionNo" parameterType="hashmap" resultMap="fs_chat_session">
+    select * from fs_chat_session where session_no =#{chatSessionNo}
+</select>
+
+<update id="updateExpiryDateByChatSessionNo" parameterType="hashmap">
+    	update fs_chat_session
+		<set>
+			<if test="expiryDate != null">expiry_date=#{expiryDate},</if>
+		</set>
+		where session_no =   #{chatSessionNo}
+</update>
+
+</mapper>

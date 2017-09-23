@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="iscroll-probe.js"></script>
+	<link rel="stylesheet" href="test.css">
+
+
+    <script type="text/javascript">
+    var myScroll;
+    function load (startY) {
+        var
+            pullDown = $("#pullDown"),
+            pullUp = $("#pullUp"),
+            pullDownLabel = $(".pullDownLabel"),
+            pullUpLabel = $(".pullUpLabel"),
+            container = $('#list-box'),
+            loadingStep = 0;
+            pullDown.hide();
+            pullUp.hide();
+
+            myScroll = new IScroll("#wrapper", {
+                scrollbars: true,
+                mouseWheel: false,
+                interactiveScrollbars: true,
+                shrinkScrollbars: 'scale',
+                fadeScrollbars: true,
+                scrollY:true,
+                probeType: 2,
+                bindToWrapper:true,
+                startY: startY? startY: -221
+            });
+            myScroll.on("scroll",function(){
+                if(loadingStep == 0 && !pullDown.attr("class").match('refresh|loading') && !pullUp.attr("class").match('refresh')){
+                    if(this.y > 40){//下拉刷新操作
+                        $(".pulldown-tips").hide();
+                        pullDown.addClass("refresh").show();
+                        pullDownLabel.text("松手刷新数据");
+                        loadingStep = 1;
+                        myScroll.refresh();
+                    }else if(this.y < (this.maxScrollY - 14)){//上拉加载更多
+                        pullUp.addClass("refresh").show();
+                        pullUpLabel.text("正在载入");
+                        loadingStep = 1;
+                        pullUpAction();
+                    }
+                }
+            });
+            myScroll.on("scrollEnd",function(){
+                if(loadingStep == 1){
+                    if( pullDown.attr("class").match("refresh") ){//下拉刷新操作
+                        pullDown.removeClass("refresh").addClass("loading");
+                        pullDownLabel.text("正在刷新");
+                        loadingStep = 2;
+                        pullDownAction();
+                    }
+                }
+            });
+
+        function pullDownAction(){
+            setTimeout(function(){
+                var li, i;
+                for (i = 0,li = ""; i < 20; i++) {
+                    li += "<li>" + "new Add " + new Date().toLocaleString() + " ！" + "</li>";
+                }
+                li = $('<ul>'+li+'</ul>');
+                container.prepend(li);
+                myScroll.destroy();
+                myScroll = null;
+                load(-($(li).height()-45));
+                pullDown.attr('class','').hide();
+                // myScroll.refresh();
+                loadingStep = 0;
+                $(".pulldown-tips").show();
+            },1000);
+        }
+        function pullUpAction(){
+            setTimeout(function(){
+                var li, i;
+                for (i = 0,li = ""; i < 20; i++) {
+                    li += "<li>" + "new Add " + new Date().toLocaleString() + " ！" + "</li>";
+                }
+                var height = $("#list-box").height();
+                container.append(li);
+                myScroll.destroy();
+                myScroll = null;
+                load(-(height-65));
+                pullUp.attr('class','').hide();
+                myScroll.refresh();
+                loadingStep = 0;
+            },1000);
+        }
+        document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+        }
+
+
+</script>
+</head>
+
+<body  onload="load()">
+   <div id="header">iScroll</div>
+<div id="wrapper">
+    <div id="scroller">
+    <div id="pullDown" class=""><div class="pullDownLabel"></div></div>
+        <div class="pulldown-tips">下拉刷新</div>
+        <div id='list-box'>
+
+
+        <ul id="list" data-page = '1'>
+            <li>Pretty row 1</li>
+            <li>Pretty row 2</li>
+            <li>Pretty row 3</li>
+            <li>Pretty row 4</li>
+            <li>Pretty row 5</li>
+            <li>Pretty row 6</li>
+            <li>Pretty row 7</li>
+            <li>Pretty row 8</li>
+            <li>Pretty row 9</li>
+            <li>Pretty row 10</li>
+            <li>Pretty row 11</li>
+            <li>Pretty row 12</li>
+            <li>Pretty row 13</li>
+            <li>Pretty row 14</li>
+            <li>Pretty row 15</li>
+            <li>Pretty row 16</li>
+            <li>Pretty row 17</li>
+            <li>Pretty row 18</li>
+            <li>Pretty row 19</li>
+            <li>Pretty row 20</li>
+        </ul>
+         </div>
+        <div id="pullUp" class="">
+        <div class="pullUpLabel">加载更多</div>
+        </div>
+    </div>
+</div>
+
+<div id="footer"></div>
+
+</body>
+
+</html>

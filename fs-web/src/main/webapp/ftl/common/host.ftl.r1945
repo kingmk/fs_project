@@ -1,0 +1,6 @@
+<#assign base ="http://haozhao.xicp.net"> 
+<#assign css ="http://10.10.17.188:8091/static"> 
+<#assign js ="http://10.10.17.188:8091/static"> 
+<#assign img ="http://10.10.17.188:8091/static">
+<#--自己的写的js css 文件 都用一个版本号-->
+<#assign version ="20170530">

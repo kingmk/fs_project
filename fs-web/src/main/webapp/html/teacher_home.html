@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>老师主页</title>
+	<script src="js/rem.js"></script>
+	<script src="js/jquery-1.11.3.js"></script>
+	<link rel="stylesheet" href="css/teacher_home.css">
+	<script src="js/components.js"></script>
+</head>
+<body ms-controller='teacherHome'>
+<div class="header">
+	<div class="header-top">
+		<img class="header-top-img" src="images/wenwen_imgbtn.png">
+		<h3 class="header-top-h3">司徒靖文</h3>
+		<ul class="hreader-top-nav">
+			<li>实名认证</li>
+			<li>独家合作</li>
+			<li>交易担保</li>
+		</ul>
+	</div>
+	<div class="header-bottom">
+		<div class="header-bottom-item">
+			<div class="item-tip">总评分</div>
+			<div class="item-num">9.8</div>
+		</div>
+		<div class="header-bottom-item">
+			<div class="item-tip">解答数</div>
+			<div class="item-num">339</div>
+		</div>
+		<div class="header-bottom-item">
+			<div class="item-tip">粉丝数</div>
+			<div class="item-num">1226</div>
+		</div>
+	</div>
+</div>
+<div class="center">
+	<div class="center-nav">
+		<div class="nav-item actived">老师介绍</div>
+		<div class="nav-item">服务介绍</div>
+		<div class="nav-item">用户评价</div>
+	</div>
+	<!--老师介绍-->
+	<div class="teacher-briefs">
+		<div class="briefs-item">
+			<div class="briefs-item-tit"><span>所学门派</span></div>
+			<div class="briefs-item-text">江西赣派风水秘传人，中国素质教育研究院国学易学文化研究员中南政法财经大学硕士西安大学社会</div>
+		</div>
+	</div>
+	<!--服务项目-->
+	<div class="service-intros">
+		<div class="service-intros-tit">服务项目（6）</div>
+		<ul class="service-intros-list">
+			<li class="service-intros-item">
+				<div class="item-logo prediction">预测</div>
+				<div class="item-center">
+					<div class="item-center-top">
+						<span class="item-center-title">流年运势</span>
+						<span class="item-center-price">￥288.00</span>
+					</div>
+					<div class="item-center-bottom">已售<span>329</span>份</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<!--用户评价-->
+	<div class="user-comments">
+		<div class="user-comments-tit">用户评价（6）<i class="tit-arr"></i></div>
+		<div class="user-comments-content">
+			<div class="score-title">来自0位用户的评价</div>
+			<div class="score-box clearfix">
+				<div class="score-item">
+					<span class="score-item-tips">响应速度</span>
+					<div id="responseSpeed" style="display: inline-block"></div>
+				</div>
+				<div class="score-item">
+					<span class="score-item-tips">专业水平</span>
+					<div id="professionalLevel" style="display: inline-block"></div>
+				</div>
+				<div class="score-item">
+					<span class="score-item-tips">服务态度</span>
+					<div id="serviceSAttitude" style="display: inline-block"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="footer">
+	因风水老师擅长术数及风格各有特点，故所有观点仅作参考。
+</div>
+<div class="button fix">进入管理平台</div>
+<script>
+	$("#responseSpeed").star({type: 'show', tip: '4'})
+	$("#professionalLevel").star({type: 'show', tip: '4'})
+	$("#serviceSAttitude").star({type: 'show', tip: '4'})
+</script>
+</body>
+</html>

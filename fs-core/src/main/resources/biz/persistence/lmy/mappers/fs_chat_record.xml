@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_chat_record">
+<resultMap id="fs_chat_record" type="com.lmy.core.model.FsChatRecord">
+	<result column="id" property="id"/>
+	<result column="session_no" property="sessionNo"/>
+	<result column="client_unique_no" property="clientUniqueNo"/>
+	<result column="sent_usr_id" property="sentUsrId"/>
+	<result column="rece_usr_id" property="receUsrId"/>
+	<result column="sent_is_master" property="sentIsMaster"/>
+	<result column="order_id" property="orderId"/>
+	<result column="msg_type" property="msgType"/>
+	<result column="is_escape" property="isEscape"/>
+	<result column="content" property="content"/>
+	<result column="file_store_id" property="fileStoreId"/>
+	<result column="size" property="size"/>
+	<result column="suffix_name" property="suffixName"/>
+	<result column="height" property="height"/>
+	<result column="width" property="width"/>
+	<result column="is_read" property="isRead"/>
+	<result column="status" property="status"/>
+	<result column="sort" property="sort"/>
+	<result column="read_time" property="readTime"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_chat_record">
+	select * 	from fs_chat_record where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsChatRecord"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_chat_record(id ,session_no ,client_unique_no ,sent_usr_id ,rece_usr_id ,sent_is_master ,order_id ,msg_type ,is_escape ,content ,file_store_id ,size ,suffix_name ,height ,width ,is_read ,status ,sort ,read_time ,create_time ,update_time)
+   values(#{id,jdbcType=INTEGER} ,#{sessionNo,jdbcType=VARCHAR} ,#{clientUniqueNo,jdbcType=VARCHAR} ,#{sentUsrId,jdbcType=INTEGER} ,#{receUsrId,jdbcType=INTEGER} ,#{sentIsMaster,jdbcType=VARCHAR} ,#{orderId,jdbcType=INTEGER} ,#{msgType,jdbcType=VARCHAR} ,#{isEscape,jdbcType=VARCHAR} ,#{content,jdbcType=VARCHAR} ,#{fileStoreId,jdbcType=INTEGER} ,#{size,jdbcType=INTEGER} ,#{suffixName,jdbcType=VARCHAR} ,#{height,jdbcType=INTEGER} ,#{width,jdbcType=INTEGER} ,#{isRead,jdbcType=VARCHAR} ,#{status,jdbcType=VARCHAR} ,#{sort,jdbcType=INTEGER} ,#{readTime,jdbcType=TIMESTAMP} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_chat_record(id ,session_no ,client_unique_no ,sent_usr_id ,rece_usr_id ,sent_is_master ,order_id ,msg_type ,is_escape ,content ,file_store_id ,size ,suffix_name ,height ,width ,is_read ,status ,sort ,read_time ,create_time ,update_time)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.sessionNo,jdbcType=VARCHAR} ,#{item.clientUniqueNo,jdbcType=VARCHAR} ,#{item.sentUsrId,jdbcType=INTEGER} ,#{item.receUsrId,jdbcType=INTEGER} ,#{item.sentIsMaster,jdbcType=VARCHAR} ,#{item.orderId,jdbcType=INTEGER} ,#{item.msgType,jdbcType=VARCHAR} ,#{item.isEscape,jdbcType=VARCHAR} ,#{item.content,jdbcType=VARCHAR} ,#{item.fileStoreId,jdbcType=INTEGER} ,#{item.size,jdbcType=INTEGER} ,#{item.suffixName,jdbcType=VARCHAR} ,#{item.height,jdbcType=INTEGER} ,#{item.width,jdbcType=INTEGER} ,#{item.isRead,jdbcType=VARCHAR} ,#{item.status,jdbcType=VARCHAR} ,#{item.sort,jdbcType=INTEGER} ,#{item.readTime,jdbcType=TIMESTAMP} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.lmy.core.model.FsChatRecord">
+	update fs_chat_record
+<set>
+	<if test="clientUniqueNo != null">client_unique_no=#{clientUniqueNo},</if>
+	<if test="sentIsMaster != null">sent_is_master=#{sentIsMaster},</if>
+	<if test="msgType != null">msg_type=#{msgType},</if>
+	<if test="isEscape != null">is_escape=#{isEscape},</if>
+	<if test="content != null">content=#{content},</if>
+	<if test="fileStoreId != null">file_store_id=#{fileStoreId},</if>
+	<if test="size != null">size=#{size},</if>
+	<if test="suffixName != null">suffix_name=#{suffixName},</if>
+	<if test="height != null">height=#{height},</if>
+	<if test="width != null">width=#{width},</if>
+	<if test="isRead != null">is_read=#{isRead},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="sort != null">sort=#{sort},</if>
+	<if test="readTime != null">read_time=#{readTime},</if>
+	<if test="updateTime != null">update_time=#{updateTime}</if>
+</set>
+	where id=#{id}
+</update>
+
+<resultMap id="fs_chat_record_dto" type="com.lmy.core.model.dto.FsChatRecordDto">
+	<result column="id" property="id"/>
+	<result column="session_no" property="sessionNo"/>
+	<result column="client_unique_no" property="clientUniqueNo"/>
+	<result column="sent_usr_id" property="sentUsrId"/>
+	<result column="rece_usr_id" property="receUsrId"/>
+	<result column="is_master" property="isMaster"/>
+	<result column="order_id" property="orderId"/>
+	<result column="msg_type" property="msgType"/>
+	<result column="is_escape" property="isEscape"/>
+	<result column="content" property="content"/>
+	<result column="file_store_id" property="fileStoreId"/>
+	<result column="size" property="size"/>
+	<result column="suffix_name" property="suffixName"/>
+	<result column="height" property="height"/>
+	<result column="width" property="width"/>
+	<result column="is_read" property="isRead"/>
+	<result column="read_time" property="readTime"/>
+	<result column="create_time" property="createTime"/>
+</resultMap>
+
+<select id="findChatRecord" parameterType="hashmap" resultMap="fs_chat_record_dto">
+    select id, session_no, client_unique_no,sent_usr_id, rece_usr_id,sent_is_master, order_id, msg_type, is_escape, content, file_store_id, size, suffix_name, height, width,is_read,read_time,create_time
+    from fs_chat_record
+    <where>
+        <if test="   chatSessionNo !=null  "> session_no  =#{chatSessionNo}</if>
+        <if test="   gtChatId  !=null  ">and  id  &gt; #{gtChatId}</if>
+        <if test="   ltChatId  !=null  ">and  id  &lt; #{ltChatId}</if>
+        <if test="  excludeChatIds !=null ">
+            and id not in
+        	  <foreach collection="excludeChatIds"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>                 
+        </if>
+        <if test="   orderId !=null  ">and  order_id =  #{orderId}</if>
+        <if test="   status !=null  ">and  status =  #{status}</if>
+    </where>
+   order by id desc
+    limit #{limitBegin} , #{limitEnd}
+</select>
+
+<select id="statUnReadNum1" parameterType="hashmap"  resultType="long" >
+    select count(*)  from fs_chat_record a
+    <where>
+        <if test="  receUsrId!=null ">a.rece_usr_id = #{receUsrId}</if>
+        <if test="  chatSessionNo!=null ">and a.session_no = #{chatSessionNo}</if>
+        <if test='  isMaster =="Y" '>
+        	and a.sent_is_master ='N'
+        </if>
+        <if test='  isMaster =="N" '>
+        	and a.sent_is_master = 'Y'
+        </if>
+    </where>
+    and a.is_read='N' and a.status='effect'
+</select>
+
+<select id="statUnReadNum2" parameterType="hashmap"  resultType="hashmap" >
+    select count(session_no) as num , session_no  from fs_chat_record
+    <where>
+        <if test="  receUsrId!=null ">rece_usr_id = #{receUsrId}</if>
+        <if test="  chatSessionNoList!=null ">
+            and session_no in
+             <foreach collection="chatSessionNoList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>     
+        </if>
+    </where>
+    and is_read='N' and status='effect' 
+    group by session_no
+</select>
+
+<select id="findUsrReceLastReply" parameterType="hashmap"  resultMap="fs_chat_record_dto">
+    select id, session_no, client_unique_no,sent_usr_id, rece_usr_id,sent_is_master, order_id, msg_type, is_escape, content, file_store_id, size, suffix_name, height, width,is_read,read_time,create_time
+    from fs_chat_record
+    <where>
+ 	   <if test="   chatSessionNo !=null  "> session_no  =#{chatSessionNo}</if>
+ 	   <if test="   receUsrId !=null  "> and rece_usr_id  =#{receUsrId}</if>
+    </where>
+    order by id desc limit 1;
+</select>
+
+<select id="statReplyNum1" parameterType="hashmap" resultType="long">
+	     select count(*)  from fs_chat_record
+	     <where>
+	        <if test="   chatSessionNo !=null  "> session_no  =#{chatSessionNo}</if>
+	         <if test="   orderId !=null  ">and  order_id =  #{orderId}</if>
+	         <if test="  excludeChatIds !=null ">
+           	  and id not in
+        	  <foreach collection="excludeChatIds"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>        
+			 <if test="  sentUsrId!=null "> and  sent_usr_id = #{sentUsrId} </if>        
+        </if>
+	     </where>
+</select>
+
+</mapper>

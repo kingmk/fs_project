@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的收入</title>
+    <script src="js/rem.js"></script>
+    <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/jquery.tmpl.min.js"></script>
+    <script src="js/dropload.min.js"></script>
+    <link rel="stylesheet" href="css/dropload.css">
+    <link rel="stylesheet" href="css/my_income.css">
+</head>
+<body>
+<div class="header">
+    <div class="header-top">
+        <div class="title">累计总收入</div>
+        <div class="income">
+            <small>￥</small>
+            <span style="font-weight: bold;">12,536.00</span>
+        </div>
+    </div>
+    <div class="header-bottom">
+        <div class="bottom-item">
+            <div class="title">未到账</div>
+            <div class="text">
+                <small>￥</small>
+                12,536.00
+            </div>
+        </div>
+        <div class="bottom-item">
+            <div class="title">未到账</div>
+            <div class="text">
+                <small>￥</small>
+                12,536.00
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content">
+    <div class="list">
+        <div class="list-header">收入明细</div>
+        <div class="list-body">
+            <script id='incomelist' type="text/x-jquery-tmpl">
+            <div class="list-item list-two-col">
+                <div class="list-item-top">
+                    <div class="top-left">订单收入
+                    {{if incomestate=='no' }}
+                        <span class='icon no-income'>未到账</span>
+                    {{else incomestate=='reset'}}
+                        <span class='icon refunded'>退款申请中</span>
+                    {{else incomestate=='yes'}}
+                        <span class='icon has-income'>已到账</span>
+                    {{/if}}
+                    </div>
+                    <div class="top-right">￥${price}</div>
+                </div>
+                <div class="list-item-bottom">
+                    <div class="bottom-left">${name}|${leimu}</div>
+                    <div class="bottom-right">预计${deadline}到账</div>
+                </div>
+            </div>
+            </script>
+    </div>
+
+</div>
+<script>
+  var arr = [{
+    incomestate: 'no',
+    price:'280.00',
+    name:'周芷若',
+    leimu:'婚姻择日',
+    deadline:'6.12'
+  },{
+    incomestate: 'reset',
+    price:'280.00',
+    name:'周芷若',
+    leimu:'婚姻择日',
+    deadline:'6.12'
+  },{
+    incomestate: 'no',
+    price:'280.00',
+    name:'周芷若',
+    leimu:'婚姻择日',
+    deadline:'6.12'
+  },{
+    incomestate: 'yes',
+    price:'280.00',
+    name:'周芷若',
+    leimu:'婚姻择日',
+    deadline:'6.12'
+  }];
+  $("#incomelist").tmpl(arr).appendTo(".list-body");
+  $(function() {
+    var page = 0;
+    var size = 10;
+    $('.content').dropload({
+      scrollArea: window,
+      domDown: {
+        domClass: 'dropload-down',
+        domRefresh: '<div class="dropload-refresh">↑上拉加载更多-自定义内容</div>',
+        domLoad: '<div class="dropload-load"><span class="loading"></span>加载中-自定义内容...</div>',
+        domNoData: '<div class="dropload-noData">到底了</div>'
+      },
+      loadDownFn: function(me) {
+        $.ajax({
+          type: 'GET',
+          url: 'http://ons.me/tools/dropload/json.php?page=' + page + '&size=' + size,
+          dataType: 'json',
+          success: function(data) {
+            page = page + 1;
+            var arrLen = data.length;
+            console.log(page)
+            if ( arrLen > 0 || page <3) {
+              setTimeout(function() {
+                $("#incomelist").tmpl(arr).appendTo(".list-body");
+                // 每次数据插入，必须重置
+                me.resetload();
+              }, 3000)
+
+            } else {
+              // 锁定
+              me.lock();
+              // 无数据
+              me.noData();
+              me.resetload();
+            }
+          },
+          error: function(xhr, type) {
+            alert('Ajax error!');
+            // 即使加载出错，也得重置
+            me.resetload();
+          }
+        })
+      },
+      threshold: 50
+    })
+  })
+</script>
+</body>
+</html>

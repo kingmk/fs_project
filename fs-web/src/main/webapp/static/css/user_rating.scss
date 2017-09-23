@@ -1,0 +1,100 @@
+@import "style";
+
+.user-comments-content {
+  background: #fff;
+  text-align: center;
+  padding-bottom: px2rem(30);
+  .score-title {
+    padding: px2rem(50) 0 px2rem(30);
+    font-size: px2rem(26);
+    color: $text-color-secondary;
+  }
+  .score-box {
+    .score-item {
+      padding-bottom: px2rem(30);
+      font-size: 0;
+      display: flex;
+      display: -webkit-flex;
+      justify-content: center;
+      -webkit-justify-content: center;
+      align-items: center;
+      -webkit-align-items: center;
+      .score-item-tips {
+        font-size: px2rem(28) !important;
+        color: $text-color;
+        padding-right: px2rem(14);
+        display: inline-block;
+      }
+    }
+  }
+}
+
+.rating-content {
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  .rating-content-tit {
+    height: px2rem(100);;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 5rem;
+    font-size: 1.4rem;
+    color: #3f3f3f;
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      left:px2rem(30);
+      right: 0;
+      bottom: 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+  }
+  .rating-content-list{
+    padding: 0 px2rem(30);
+    .list-item{
+      padding: px2rem(40) 0;
+      position: relative;
+      &:after {
+        content: "";
+        display: block;
+        position: absolute;
+        left:0;
+        right: 0;
+        bottom: 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      &:nth-last-of-type(1):after{
+        left: - px2rem(30)!important;
+        right: - px2rem(30);
+      }
+      .img-box{
+        float: left;
+        width: px2rem(100);
+        margin-right: px2rem(20);
+        .img{
+          width: px2rem(100);
+          height: px2rem(100);
+          border-radius: 50%;
+          display: block;
+        }
+      }
+      .list-item-content{
+        margin-left: px2rem(120);
+        .name{
+          padding-bottom: px2rem(20);
+          font-size: px2rem(28);
+        }
+        .rating{
+          line-height: px2rem(40);
+          font-size: px2rem(24);
+          padding-bottom: px2rem(30);
+        }
+        .time{
+          font-size: px2rem(24);
+          color: $text-color-secondary;
+        }
+      }
+    }
+
+  }
+}

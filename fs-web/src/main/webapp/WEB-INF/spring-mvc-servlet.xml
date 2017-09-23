@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans  default-autowire="byName" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task" 
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		 http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+     	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+     	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+
+	<!-- 启动包扫描功能，以便注册带有@Controller、@Service、@repository、@Component等注解的类成为spring的bean -->
+	<context:component-scan base-package="com.lmy.web.controller">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	<task:executor id="executor" pool-size="1" />  
+    <task:scheduler id="scheduler" pool-size="10" />  
+    <task:annotation-driven executor="executor" scheduler="scheduler" />
+    <!-- spring mvc 只会扫 controller  -->
+    <bean id="lmySpringWebJob" class="com.lmy.web.job.LmySpringWebJob"></bean>
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean id="stringHttpMessageConverter"
+				class="org.springframework.http.converter.StringHttpMessageConverter">
+				<constructor-arg value="UTF-8" index="0"></constructor-arg>
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/plain;charset=UTF-8</value>
+						<value>text/html;charset=UTF-8</value>
+						<value>text/json;charset=UTF-8</value>
+						<value>application/json;charset=UTF-8</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>  
+	
+	
+	<!-- 启动注解驱动的Spring MVC功能，注册请求url和注解POJO类方法的映射 -->
+	
+	<!-- ===================================================== -->
+	<!-- ViewResolver For FreeMarker -->
+	<!-- ===================================================== -->
+	<bean id="freemarkerResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+		<property name="order" value="1" />
+		<property name="suffix" value=".ftl" />
+		<property name="contentType" value="text/html;charset=utf-8" />
+		<property name="viewClass">
+			<value>org.springframework.web.servlet.view.freemarker.FreeMarkerView</value>
+		</property>
+	</bean>
+	<!-- ===================================================== -->
+	<!-- ViewResolver For FreeMarkerConfigurer -->
+	<!-- ===================================================== -->
+	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath">
+			<value>/ftl/</value>
+		</property>
+		<property name="freemarkerSettings"><!-- 设置FreeMarker环境属性 -->
+			<props>
+				<prop key="template_update_delay">5</prop><!--刷新模板的周期，单位为秒 -->
+				<prop key="default_encoding">UTF-8</prop><!--模板的编码格式 -->
+				<prop key="locale">UTF-8</prop><!-- 本地化设置 -->
+				<prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+				<prop key="time_format">HH:mm:ss</prop>
+				<prop key="number_format">0.####</prop>
+				<prop key="boolean_format">true,false</prop>
+				<prop key="whitespace_stripping">true</prop>
+				<prop key="tag_syntax">auto_detect</prop>
+				<prop key="url_escaping_charset">UTF-8</prop>
+				<prop key="classic_compatible">true</prop>
+			</props>
+		</property>
+	</bean>
+	  <!-- 支持上传文件 -->  
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/> 
+  	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+	       	<bean id="openIdInterceptor" class=" com.lmy.web.common.OpenIdInterceptor   "/>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+	       	<bean id="preventDoubleClickInterceptor" class=" com.lmy.web.common.PreventDoubleClickInterceptor   "/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	<bean id="exceptionResolver" class="com.lmy.web.common.ExceptionHandler" />
+	<!-- 对静态资源的访问 /  配置对静态资源访问的  default servlet -->
+	<mvc:resources mapping="/static/**" location="/static/"/>
+	<mvc:resources mapping="/html/**" location="/html/"/>
+
+</beans>

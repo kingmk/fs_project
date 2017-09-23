@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_order">
+<resultMap id="fs_order" type="com.lmy.core.model.FsOrder">
+	<result column="id" property="id"/>
+	<result column="buy_usr_id" property="buyUsrId"/>
+	<result column="order_type" property="orderType"/>
+	<result column="chat_session_no" property="chatSessionNo"/>
+	<result column="goods_id" property="goodsId"/>
+	<result column="goods_name" property="goodsName"/>
+	<result column="trans_desc" property="transDesc"/>
+	<result column="seller_usr_id" property="sellerUsrId"/>
+	<result column="zx_cate_id" property="zxCateId"/>
+	<result column="pay_type" property="payType"/>
+	<result column="order_num" property="orderNum"/>
+	<result column="buy_num" property="buyNum"/>
+	<result column="pay_rmb_amt" property="payRmbAmt"/>
+	<result column="discount_rmb_amt" property="discountRmbAmt"/>
+	<result column="refund_rmb_amt" property="refundRmbAmt"/>
+	<result column="status" property="status"/>
+	<result column="order_extra_info" property="orderExtraInfo"/>
+	<result column="begin_chat_time" property="beginChatTime"/>
+	<result column="end_chat_time" property="endChatTime"/>
+	<result column="last_chat_time" property="lastChatTime"/>
+	<result column="seller_first_reply_time" property="sellerFirstReplyTime"/>
+	<result column="settlement_time" property="settlementTime"/>
+	<result column="settlement_plat_service_fee" property="settlementPlatServiceFee"/>
+	<result column="settlement_master_service_fee" property="settlementMasterServiceFee"/>
+	<result column="completed_time" property="completedTime"/>
+	<result column="evaluate_time" property="evaluateTime"/>
+	<result column="pay_confirm_time" property="payConfirmTime"/>
+	<result column="is_auto_refund" property="isAutoRefund"/>
+	<result column="refund_apply_time" property="refundApplyTime"/>
+	<result column="refund_reason" property="refundReason"/>
+	<result column="refund_confirm_time" property="refundConfirmTime"/>
+	<result column="refund_audit_word" property="refundAuditWord"/>
+	<result column="refund_audit_time" property="refundAuditTime"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+	<result column="remark" property="remark"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_order">
+	select * 	from fs_order where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsOrder"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_order(id ,buy_usr_id ,order_type ,chat_session_no ,goods_id ,goods_name ,trans_desc ,seller_usr_id ,zx_cate_id ,pay_type ,order_num ,buy_num ,pay_rmb_amt ,discount_rmb_amt ,refund_rmb_amt ,status ,order_extra_info ,begin_chat_time ,end_chat_time ,last_chat_time ,seller_first_reply_time ,settlement_time ,settlement_plat_service_fee ,settlement_master_service_fee ,completed_time ,evaluate_time ,pay_confirm_time ,is_auto_refund ,refund_apply_time ,refund_reason ,refund_confirm_time ,refund_audit_word ,refund_audit_time ,create_time ,update_time ,remark)
+   values(#{id,jdbcType=INTEGER} ,#{buyUsrId,jdbcType=INTEGER} ,#{orderType,jdbcType=VARCHAR} ,#{chatSessionNo,jdbcType=VARCHAR} ,#{goodsId,jdbcType=INTEGER} ,#{goodsName,jdbcType=VARCHAR} ,#{transDesc,jdbcType=VARCHAR} ,#{sellerUsrId,jdbcType=INTEGER} ,#{zxCateId,jdbcType=INTEGER} ,#{payType,jdbcType=VARCHAR} ,#{orderNum,jdbcType=VARCHAR} ,#{buyNum,jdbcType=INTEGER} ,#{payRmbAmt,jdbcType=INTEGER} ,#{discountRmbAmt,jdbcType=INTEGER} ,#{refundRmbAmt,jdbcType=INTEGER} ,#{status,jdbcType=VARCHAR} ,#{orderExtraInfo,jdbcType=VARCHAR} ,#{beginChatTime,jdbcType=TIMESTAMP} ,#{endChatTime,jdbcType=TIMESTAMP} ,#{lastChatTime,jdbcType=TIMESTAMP} ,#{sellerFirstReplyTime,jdbcType=TIMESTAMP} ,#{settlementTime,jdbcType=TIMESTAMP} ,#{settlementPlatServiceFee,jdbcType=INTEGER} ,#{settlementMasterServiceFee,jdbcType=INTEGER} ,#{completedTime,jdbcType=TIMESTAMP} ,#{evaluateTime,jdbcType=TIMESTAMP} ,#{payConfirmTime,jdbcType=TIMESTAMP} ,#{isAutoRefund,jdbcType=VARCHAR} ,#{refundApplyTime,jdbcType=TIMESTAMP} ,#{refundReason,jdbcType=VARCHAR} ,#{refundConfirmTime,jdbcType=TIMESTAMP} ,#{refundAuditWord,jdbcType=VARCHAR} ,#{refundAuditTime,jdbcType=TIMESTAMP} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP} ,#{remark,jdbcType=VARCHAR}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_order(id ,buy_usr_id ,order_type ,chat_session_no ,goods_id ,goods_name ,trans_desc ,seller_usr_id ,zx_cate_id ,pay_type ,order_num ,buy_num ,pay_rmb_amt ,discount_rmb_amt ,refund_rmb_amt ,status ,order_extra_info ,begin_chat_time ,end_chat_time ,last_chat_time ,seller_first_reply_time ,settlement_time ,settlement_plat_service_fee ,settlement_master_service_fee ,completed_time ,evaluate_time ,pay_confirm_time ,is_auto_refund ,refund_apply_time ,refund_reason ,refund_confirm_time ,refund_audit_word ,refund_audit_time ,create_time ,update_time ,remark)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.buyUsrId,jdbcType=INTEGER} ,#{item.orderType,jdbcType=VARCHAR} ,#{item.chatSessionNo,jdbcType=VARCHAR} ,#{item.goodsId,jdbcType=INTEGER} ,#{item.goodsName,jdbcType=VARCHAR} ,#{item.transDesc,jdbcType=VARCHAR} ,#{item.sellerUsrId,jdbcType=INTEGER} ,#{item.zxCateId,jdbcType=INTEGER} ,#{item.payType,jdbcType=VARCHAR} ,#{item.orderNum,jdbcType=VARCHAR} ,#{item.buyNum,jdbcType=INTEGER} ,#{item.payRmbAmt,jdbcType=INTEGER} ,#{item.discountRmbAmt,jdbcType=INTEGER} ,#{item.refundRmbAmt,jdbcType=INTEGER} ,#{item.status,jdbcType=VARCHAR} ,#{item.orderExtraInfo,jdbcType=VARCHAR} ,#{item.beginChatTime,jdbcType=TIMESTAMP} ,#{item.endChatTime,jdbcType=TIMESTAMP} ,#{item.lastChatTime,jdbcType=TIMESTAMP} ,#{item.sellerFirstReplyTime,jdbcType=TIMESTAMP} ,#{item.settlementTime,jdbcType=TIMESTAMP} ,#{item.settlementPlatServiceFee,jdbcType=INTEGER} ,#{item.settlementMasterServiceFee,jdbcType=INTEGER} ,#{item.completedTime,jdbcType=TIMESTAMP} ,#{item.evaluateTime,jdbcType=TIMESTAMP} ,#{item.payConfirmTime,jdbcType=TIMESTAMP} ,#{item.isAutoRefund,jdbcType=VARCHAR} ,#{item.refundApplyTime,jdbcType=TIMESTAMP} ,#{item.refundReason,jdbcType=VARCHAR} ,#{item.refundConfirmTime,jdbcType=TIMESTAMP} ,#{item.refundAuditWord,jdbcType=VARCHAR} ,#{item.refundAuditTime,jdbcType=TIMESTAMP} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP} ,#{item.remark,jdbcType=VARCHAR})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.lmy.core.model.FsOrder">
+	update fs_order
+<set>
+	<if test="orderType != null">order_type=#{orderType},</if>
+	<if test="chatSessionNo != null">chat_session_no=#{chatSessionNo},</if>
+	<if test="goodsId != null">goods_id=#{goodsId},</if>
+	<if test="goodsName != null">goods_name=#{goodsName},</if>
+	<if test="transDesc != null">trans_desc=#{transDesc},</if>
+	<if test="zxCateId != null">zx_cate_id=#{zxCateId},</if>
+	<if test="payType != null">pay_type=#{payType},</if>
+	<if test="buyNum != null">buy_num=#{buyNum},</if>
+	<if test="payRmbAmt != null">pay_rmb_amt=#{payRmbAmt},</if>
+	<if test="discountRmbAmt != null">discount_rmb_amt=#{discountRmbAmt},</if>
+	<if test="refundRmbAmt != null">refund_rmb_amt=#{refundRmbAmt},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="orderExtraInfo != null">order_extra_info=#{orderExtraInfo},</if>
+	<if test="beginChatTime != null">begin_chat_time=#{beginChatTime},</if>
+	<if test="endChatTime != null">end_chat_time=#{endChatTime},</if>
+	<if test="lastChatTime != null">last_chat_time=#{lastChatTime},</if>
+	<if test="sellerFirstReplyTime != null">seller_first_reply_time=#{sellerFirstReplyTime},</if>
+	<if test="settlementTime != null">settlement_time=#{settlementTime},</if>
+	<if test="settlementPlatServiceFee != null">settlement_plat_service_fee=#{settlementPlatServiceFee},</if>
+	<if test="settlementMasterServiceFee != null">settlement_master_service_fee=#{settlementMasterServiceFee},</if>
+	<if test="completedTime != null">completed_time=#{completedTime},</if>
+	<if test="evaluateTime != null">evaluate_time=#{evaluateTime},</if>
+	<if test="payConfirmTime != null">pay_confirm_time=#{payConfirmTime},</if>
+	<if test="isAutoRefund != null">is_auto_refund=#{isAutoRefund},</if>
+	<if test="refundApplyTime != null">refund_apply_time=#{refundApplyTime},</if>
+	<if test="refundReason != null">refund_reason=#{refundReason},</if>
+	<if test="refundConfirmTime != null">refund_confirm_time=#{refundConfirmTime},</if>
+	<if test="refundAuditWord != null">refund_audit_word=#{refundAuditWord},</if>
+	<if test="refundAuditTime != null">refund_audit_time=#{refundAuditTime},</if>
+	<if test="updateTime != null">update_time=#{updateTime},</if>
+	<if test="remark != null">remark=#{remark}</if>
+</set>
+	where id=#{id}
+</update>
+
+
+<update id="updateLastChatTime" parameterType="long">
+    update fs_order set last_chat_time = now() where id =#{id}
+</update>
+
+<update id="updateByIdWithStatus"	parameterType="hashmap">
+	update fs_order
+<set>
+	<if test="refundRmbAmt != null">refund_rmb_amt=#{refundRmbAmt},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="orderExtraInfo != null">order_extra_info=#{orderExtraInfo},</if>
+	<if test="beginChatTime != null">begin_chat_time=#{beginChatTime},</if>
+	<if test="endChatTime != null">end_chat_time=#{endChatTime},</if>
+	<if test="lastChatTime != null">last_chat_time=#{lastChatTime},</if>
+	<if test="settlementTime != null">settlement_time=#{settlementTime},</if>
+	<if test="settlementPlatServiceFee != null">settlement_plat_service_fee=#{settlementPlatServiceFee},</if>
+	<if test="settlementMasterServiceFee != null">settlement_master_service_fee=#{settlementMasterServiceFee},</if>
+	<if test="completedTime != null">completed_time=#{completedTime},</if>
+	<if test="evaluateTime != null">evaluate_time=#{evaluateTime},</if>
+	<if test="payConfirmTime != null">pay_confirm_time=#{payConfirmTime},</if>
+	<if test="isAutoRefund != null">is_auto_refund=#{isAutoRefund},</if>
+	<if test="refundApplyTime != null">refund_apply_time=#{refundApplyTime},</if>
+	<if test="refundReason != null">refund_reason=#{refundReason},</if>
+	<if test="refundConfirmTime != null">refund_confirm_time=#{refundConfirmTime},</if>
+	<if test="refundAuditWord != null">refund_audit_word=#{refundAuditWord},</if>
+	<if test="refundAuditTime != null">refund_audit_time=#{refundAuditTime},</if>
+	<if test="updateTime != null">update_time=#{updateTime},</if>
+	<if test="remark != null">remark=#{remark}</if>
+</set>
+ where id=#{id} and status &lt;&gt; #{status}
+</update>
+
+
+
+
+<select id="findOrder1" parameterType="hashmap" resultMap="fs_order">
+    select * from fs_order
+    <where>
+        <if test="   buyUsrId !=null  ">buy_usr_id  =#{buyUsrId}</if>
+        <if test="   gtId !=null  ">and id  &gt;#{gtId}</if>
+         <if test="   sellerUsrId !=null  ">and seller_usr_id  =#{sellerUsrId}</if>
+         <if test="  statusList !=null " >
+             and status in 
+               <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>     
+         </if>
+    </where>
+    <if test="  orderBy ==0">
+        order by last_chat_time desc
+    </if>
+     limit #{limitBegin} , #{limitEnd}
+</select>
+
+<select id="statSuccNumBySellerUsrIdWithGroupByCateIds" parameterType="hashmap" resultType="hashmap">
+    select zx_cate_id as cateId , count(zx_cate_id) as num from fs_order 
+    <where>
+        <if  test="  sellerUsrId!=null ">seller_usr_id = #{sellerUsrId}</if>
+        <if test="  cateIds!=null">
+             and zx_cate_id in 
+             <foreach collection="cateIds"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>    
+        </if>
+        and status in ('pay_succ','completed','refund_applied','refunding','refunded','refund_fail','settlementing','settlemented','settlement_fail')
+    </where>
+    group by zx_cate_id
+</select>
+
+<select id="statAmtBySellerIdAndLastTimeAndStatusListWithGroupByStatus" parameterType="hashmap" resultType="hashmap">
+    select sum(pay_rmb_amt) as totalFee , status 
+    from fs_order
+    <where>
+          <if test="  sellerUsrId!=null ">seller_usr_id = #{sellerUsrId}    </if>
+          <if test="  lastTime !=null ">and settlement_time  &gt; #{lastTime}   </if>
+           <if test="  statusList!=null">
+             and status in 
+             <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>    
+        </if>
+    </where> 
+    group by status
+</select>
+
+<select id="findMyInComeList" parameterType="hashmap"  resultType="hashmap">
+    select id , seller_usr_id,status , goods_id,goods_name,zx_cate_id,settlement_master_service_fee , order_extra_info,settlement_time,refund_apply_time,refund_confirm_time from fs_order
+    <where>
+        <if test="  sellerUsrId!=null ">seller_usr_id = #{sellerUsrId}    </if>
+        <if test="  statusList!=null">
+             and status in 
+             <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>    
+        </if>
+    </where>
+     order by last_chat_time desc
+     limit #{limitBegin} , #{limitEnd}
+</select>
+<select id="statOrderNum" parameterType="hashmap"  resultType="long">
+    select count(*) from fs_order 
+    <where>
+          <if test="   buyUsrId !=null  ">buy_usr_id  =#{buyUsrId}</if>
+         <if test="   sellerUsrId !=null  ">and seller_usr_id  =#{sellerUsrId}</if>
+         <if test="  statusList !=null " >
+             and status in 
+               <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>     
+         </if>
+    </where>
+</select>
+
+<select id="statAllSellerUsrOrderNum1" parameterType="hashmap" resultType="hashmap">
+	 select a.seller_usr_id ,count(a.seller_usr_id) as num from fs_order a 
+	 left join fs_master_service_cate b
+	 on a.goods_id = b.id
+	 where a.status IN('pay_succ','completed','refund_applied','refunding','refunded','refund_fail','settlementing','settlemented','settlement_fail')
+	<if test="  zxCateId!=null ">and b.fs_zx_cate_id=#{zxCateId}  </if>
+	 <if test="  isPlatRecomm!=null ">b.is_plat_recomm=#{isPlatRecomm}  </if>
+	 group by a.seller_usr_id
+</select>
+
+<select id="findByOrderIds" parameterType="hashmap" resultMap="fs_order">
+    select * from fs_order
+    where id in 
+  	 <if test="  orderIds!=null">
+        <foreach collection="orderIds"  item="item"  open="(" separator="," close=")" >
+		#{item}
+	</foreach>     
+    </if>
+</select>
+
+<select id="findOrderIdsForCompleted" parameterType="hashmap"  resultType="long">
+    select id from
+	fs_order a 
+	<where>
+		<if test="   gtId !=null  "> a.id  &gt;#{gtId}</if>
+		and a.status in ( 'pay_succ' ,'refund_fail') 
+		and a.seller_first_reply_time is not null 
+		and  TIMESTAMPDIFF(MINUTE ,a.seller_first_reply_time,now()) >60*24
+	</where> 
+	 limit #{limitBegin} , #{limitEnd}
+</select>
+
+<select id="findSellerUsrIdsByForSettlement"  parameterType="hashmap"	resultType="long">
+	select distinct seller_usr_id from fs_order where  status in ( 'pay_succ' ,'refund_fail','completed') and settlement_time &gt;=#{settlementCycleBeginTime} and settlement_time &lt;=#{settlementCycleEndTime}
+</select>
+<select id="findShortOrderInfoForSettlement"  parameterType="hashmap"	resultMap="fs_order">
+	select id,pay_rmb_amt from fs_order where seller_usr_id = #{sellerUsrId} and  status in ( 'pay_succ' ,'refund_fail','completed') and settlement_time &gt;=#{settlementCycleBeginTime} and settlement_time &lt;=#{settlementCycleEndTime}
+</select>
+
+<select id="findShortOrderInfoForSettlement1"   parameterType="hashmap"	resultMap="fs_order">
+	select id,pay_rmb_amt from fs_order 
+	<where>
+		<if test="sellerUsrId!=null">seller_usr_id = #{sellerUsrId} </if>
+		<if test=" statusList ">
+				and status in 
+				<foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+					#{item}
+				</foreach>     		
+		</if>
+	</where>
+</select>
+
+<select id="findShortOrderInfoForSettlement2"   parameterType="hashmap"	resultMap="fs_order">
+	select * from fs_order 
+	<where>
+		<if test="sellerUsrId!=null">seller_usr_id = #{sellerUsrId} </if>
+		and (
+			(
+				<if test=" waitStatusList!=null">
+					 status in 
+					<foreach collection="waitStatusList"  item="item"  open="(" separator="," close=")" >
+						#{item}
+					</foreach>     		
+				</if>			
+			)
+			or
+			(
+				<if test=" curPeriodsRefundStatusList!=null">
+					 status in 
+					<foreach collection="curPeriodsRefundStatusList"  item="item"  open="(" separator="," close=")" >
+						#{item}
+					</foreach>     		
+				</if>						
+				<if test="settlementCycleBeginTime!=null "> and settlement_time &gt;=#{settlementCycleBeginTime}</if>
+			)
+			
+		)
+
+	</where>
+	order by id desc
+	limit #{limitBegin} , #{limitEnd}
+</select>
+
+
+<update id="updateForSettlementBeforCallWeiXin" >
+	update fs_order
+	set status = 'settlementing'
+	where seller_usr_id = #{sellerUsrId}
+	and id in 
+	<foreach collection="orderIds"  item="item"  open="(" separator="," close=")" >
+		#{item}
+	</foreach>     
+</update>
+<update id="updateForSettlementAfterCallWeiXin">
+	update fs_order
+	set status = #{status}
+	where seller_usr_id = #{sellerUsrId}
+	and id in 
+	<foreach collection="orderIds"  item="item"  open="(" separator="," close=")" >
+		#{item}
+	</foreach>     
+</update>
+
+<select id="findOrderIds1" parameterType="hashmap" resultType="long">
+	select id  from fs_order
+	<where>
+		<if test="sellerUsrId!=null">seller_usr_id = #{sellerUsrId} </if>
+		<if test=" statusList ">
+				and status in 
+				<foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+					#{item}
+				</foreach>     		
+		</if>
+		<if test="settlementCycleBeginTime!=null">
+			and settlement_time &gt;=#{settlementCycleBeginTime} 
+		</if>
+		<if test="settlementCycleEndTime!=null">
+			and settlement_time &lt;=#{settlementCycleEndTime}
+		</if>
+	</where> 
+</select>
+
+</mapper>

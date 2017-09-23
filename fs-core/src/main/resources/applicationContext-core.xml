@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+						http://www.springframework.org/schema/aop 
+						http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context-3.1.xsd
+						http://www.springframework.org/schema/mvc 
+						http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+	<bean class="com.lmy.common.component.EncryptPropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				 <value>classpath:lmy-core.properties</value>
+			</list>
+		</property>
+	</bean>
+	<context:component-scan base-package="com.lmy.core" >
+		  <context:include-filter  type="annotation"  expression="org.springframework.stereotype.Service"   />  
+          <context:include-filter  type="annotation"  expression="org.springframework.stereotype.Repository"   />  
+          <context:include-filter  type="annotation"  expression="org.springframework.stereotype.Component"    />  
+           <context:include-filter  type="annotation"  expression="org.springframework.stereotype.Component"    />  
+          <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+          <context:exclude-filter type="annotation" expression="org.springframework.scheduling.annotation.Scheduled" />
+	</context:component-scan>
+	
+	<!-- 启动对@Aspectj的支持 true为cglib，false为jdk代理，为true的话，会导致拦截不了mybatis的mapper-->
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
+       	<bean id="fsDataSourceWriter" class="com.alibaba.druid.pool.DruidDataSource"  init-method="init" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="${encrypted.lmy.jdbc.url}" />
+		<property name="username" value="${encrypted.lmy.jdbc.username}" />
+		<property name="password"  value="${encrypted.lmy.jdbc.password}"></property> 
+		<!-- 配置过滤 -->
+		<property name="filters" value="stat" />
+		<!-- 配置初始化大小 -->
+		<property name="initialSize" value="${lmy.jdbc.initialSize}" />
+		<!-- 配置初始化最大 连接数 -->
+		<property name="maxActive" value="${lmy.jdbc.maxActive}" />
+		<!-- 配置初始化最小连接数 -->
+		<property name="minIdle" value="2" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<!-- 检测连接是否有效的SQL -->
+		<property name="validationQuery" value="SELECT 'x'  from dual" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<!-- MySQL不需要做PSCache,只有Oracle/DB2/SQL Server之类支持游标的数据库才需要配置成true -->
+		<property name="poolPreparedStatements" value="false" />
+		<!-- 如果是Oracle/DB2/SQL Server之类支持游标的数据库需要加上一下配置 -->
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="50"/>
+	</bean>
+
+	 <!-- 设置MyBatis的SessionFactory  读写分离 -->
+	<bean id="fsSqlSessionFactoryWrite" name="fsSqlSessionFactoryWrite" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="fsDataSourceWriter" />
+		<!-- 这里指定Mapper路径的配置信息 -->
+		<property name="mapperLocations" value="classpath*:biz/persistence/lmy/mappers/**/*.xml" />
+	</bean>
+	<bean id="fsSqlSessionWriter" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="fsSqlSessionFactoryWrite" />
+	</bean>
+	<!-- 支持 @Transactional 标记 (默认只回滚RuntimeException的异常，可以通过@Transactional(rollbackFor=Exception.class)来改变)--> 
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	    <property name="dataSource" ref="fsDataSourceWriter" />
+	    <property name="defaultTimeout" value="300" />
+	</bean>
+	<bean id="fsTransactionTemplate"  
+	        class="org.springframework.transaction.support.TransactionTemplate">  
+	        <property name="transactionManager">  
+	            <ref local="transactionManager" />  
+	        </property>  
+	        <property name="isolationLevelName" value="ISOLATION_DEFAULT"/>  
+	        <property name="propagationBehaviorName" value="PROPAGATION_REQUIRES_NEW"/>  
+	       	<property name="timeout" value="300"/>
+	</bean> 
+</beans> 

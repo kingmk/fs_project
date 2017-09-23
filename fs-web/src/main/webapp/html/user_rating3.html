@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="../static/js/rem.js"></script>
+    <script src="../static/js/jquery-1.11.3.js"></script>
+    <script src="../static/js/components.js"></script>
+    <link rel="stylesheet" href="../static/css/star.css">
+    <link rel="stylesheet" href="../static/css/user_rating_star.css">
+    <title>用户评价</title>
+</head>
+
+<body style='background: #fff;'>
+    <div class="user-comments-content">
+        <div class="header">
+            <img src="../static/images/wenwen_imgbtn.png" />
+            <div class="title">木村佗仔</div>
+            <div class="text">流年运势|￥288.00</div>
+        </div>
+        <div class="score-box clearfix">
+            <div class="score-item">
+                <span class="score-item-tips">响应速度</span>
+                <div id="responseSpeed" style="display: inline-block"></div>
+            </div>
+            <div class="score-item">
+                <span class="score-item-tips">专业水平</span>
+                <div id="professionalLevel" style="display: inline-block"></div>
+            </div>
+            <div class="score-item">
+                <span class="score-item-tips">服务态度</span>
+                <div id="serviceSAttitude" style="display: inline-block"></div>
+            </div>
+        </div>
+    </div>
+    <div class="rating-content">
+        <div class="quote"><img src="../static/images/quote.png"/></div>
+        <div class="text">用户点击提交信息后会根据是否有一些必填项未填写做出提示，提交信息后即开始进入订单详情页，也就是对话页。</div>
+    </div>
+    <div class="fix button">返回订单详情</div>
+    <script>
+    $("#responseSpeed").star({
+        type: 'show',
+        tip:'4'
+    })
+    $("#professionalLevel").star({
+        type: 'show',
+        tip:'4'
+    })
+    $("#serviceSAttitude").star({
+       type: 'show',
+        tip:'4'
+    })
+    </script>
+</body>
+
+</html>

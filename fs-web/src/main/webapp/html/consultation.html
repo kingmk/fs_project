@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>运势咨询</title>
+    <script src="../static/js/rem.js"></script>
+    <script src="../static/js/jquery-1.11.3.min.js"></script>
+    <script src="../static/js/common.js"></script>
+    <script src="../static/js/jquery.tmpl.min.js"></script>
+    <link rel="stylesheet" href="../static/css/consultation.css">
+    <script>
+    $(function() {
+        $.initUserFooter({
+            activedIndex: 0
+        })
+        var arr = [{
+        	imgName: '01',
+        	title:'流年运势',
+        	text:'真正的幸运在等待着有资格享受的人',
+        	link:''
+        },{
+        	imgName: '02',
+        	title:'婚恋感情',
+        	text:'因为你，我懂得了爱',
+        	link:''
+        },{
+        	imgName: '03',
+        	title:'健康事业财运',
+        	text:'梅花香自苦寒来，宝剑锋从磨砺出',
+        	link:''
+        },{
+        	imgName: '04',
+        	title:'八字详批',
+        	text:'苦海翻起爱恨，在世间难逃避命运',
+        	link:''
+        },{
+        	imgName: '05',
+        	title:'结婚吉日',
+        	text:'彼年豆蔻，谁许谁地老天荒',
+        	link:""
+        },{
+        	imgName: '06',
+        	title:'择日生产',
+        	text:'时刻准备着，迎接你的到来',
+        	link:''
+        },{
+        	imgName: '07',
+        	title:'开张开市',
+        	text:'让我们一起欢呼，迈向胜利',
+        	link:''
+        },{
+        	imgName: '08',
+        	title:'乔迁择日',
+        	text:'一个地方，一个人，一个故事',
+        	link:''
+        },{
+        	imgName: '09',
+        	title:'个人改名',
+        	text:'明天开始，一个新的我',
+        	link:''
+        },{
+        	imgName: '10',
+        	title:'个人起名',
+        	text:'爱的结晶，爱的名字',
+        	link:''
+        },{
+        	imgName: '11',
+        	title:'公司起名',
+        	text:'一个名字见证一段传奇',
+        	link:''
+        },{
+        	imgName: '12',
+        	title:'办公风水',
+        	text:'一段新的旅程即将开启',
+        	link:''
+        },{
+        	imgName: '12',
+        	title:'住宅风水',
+        	text:'有风有雨，这里有你的家',
+        	link:''
+        },{
+        	imgName: '12',
+        	title:'其他',
+        	text:'天有不测风云，人有旦夕祸福',
+        	link:''
+        }]
+        $("#cardlist").tmpl(arr).appendTo(".content");
+    })
+    </script>
+</head>
+
+<body id='consultation'>
+    <div class='content'>
+        <script id='cardlist' type="text/x-jquery-tmpl">
+            <a class='card' href='#'>
+                <img src="../static/images/indexImg/${imgName}.jpg">
+                <div class="title">${title}</div>
+                <div class='text'>${text}</div>
+            </a>
+        </script>
+    </div>
+</body>
+
+</html>

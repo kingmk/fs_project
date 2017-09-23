@@ -1,0 +1,5 @@
+<#assign base ="http://leimenyi.com.cn"> 
+<#assign css ="http://leimenyi.com.cn/static"> 
+<#assign js ="http://leimenyi.com.cn/static"> 
+<#assign img ="http://leimenyi.com.cn/static">
+<#assign version ="0605">

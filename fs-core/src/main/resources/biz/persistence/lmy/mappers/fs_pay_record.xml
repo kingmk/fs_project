@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_pay_record">
+<resultMap id="fs_pay_record" type="com.lmy.core.model.FsPayRecord">
+	<result column="id" property="id"/>
+	<result column="app_id" property="appId"/>
+	<result column="mch_id" property="mchId"/>
+	<result column="usr_id" property="usrId"/>
+	<result column="open_id" property="openId"/>
+	<result column="order_id" property="orderId"/>
+	<result column="pay_channel" property="payChannel"/>
+	<result column="trade_type" property="tradeType"/>
+	<result column="trade_status" property="tradeStatus"/>
+	<result column="out_trade_no" property="outTradeNo"/>
+	<result column="trade_desc" property="tradeDesc"/>
+	<result column="check_name" property="checkName"/>
+	<result column="re_user_name" property="reUserName"/>
+	<result column="fee_type" property="feeType"/>
+	<result column="total_fee" property="totalFee"/>
+	<result column="refund_fee" property="refundFee"/>
+	<result column="body" property="body"/>
+	<result column="detail" property="detail"/>
+	<result column="spbill_create_ip" property="spbillCreateIp"/>
+	<result column="create_time" property="createTime"/>
+	<result column="resp_trade_no" property="respTradeNo"/>
+	<result column="resp_code" property="respCode"/>
+	<result column="resp_msg" property="respMsg"/>
+	<result column="bank_type" property="bankType"/>
+	<result column="trade_confirm_time" property="tradeConfirmTime"/>
+	<result column="attach" property="attach"/>
+	<result column="goods_tag" property="goodsTag"/>
+	<result column="notify_url" property="notifyUrl"/>
+	<result column="update_time" property="updateTime"/>
+	<result column="remark" property="remark"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_pay_record">
+	select * 	from fs_pay_record where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsPayRecord"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_pay_record(id ,app_id ,mch_id ,usr_id ,open_id ,order_id ,pay_channel ,trade_type ,trade_status ,out_trade_no ,trade_desc ,check_name ,re_user_name ,fee_type ,total_fee ,refund_fee ,body ,detail ,spbill_create_ip ,create_time ,resp_trade_no ,resp_code ,resp_msg ,bank_type ,trade_confirm_time ,attach ,goods_tag ,notify_url ,update_time ,remark)
+   values(#{id,jdbcType=INTEGER} ,#{appId,jdbcType=VARCHAR} ,#{mchId,jdbcType=VARCHAR} ,#{usrId,jdbcType=INTEGER} ,#{openId,jdbcType=VARCHAR} ,#{orderId,jdbcType=INTEGER} ,#{payChannel,jdbcType=VARCHAR} ,#{tradeType,jdbcType=VARCHAR} ,#{tradeStatus,jdbcType=VARCHAR} ,#{outTradeNo,jdbcType=VARCHAR} ,#{tradeDesc,jdbcType=VARCHAR} ,#{checkName,jdbcType=VARCHAR} ,#{reUserName,jdbcType=VARCHAR} ,#{feeType,jdbcType=VARCHAR} ,#{totalFee,jdbcType=INTEGER} ,#{refundFee,jdbcType=INTEGER} ,#{body,jdbcType=VARCHAR} ,#{detail,jdbcType=VARCHAR} ,#{spbillCreateIp,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP} ,#{respTradeNo,jdbcType=VARCHAR} ,#{respCode,jdbcType=VARCHAR} ,#{respMsg,jdbcType=VARCHAR} ,#{bankType,jdbcType=VARCHAR} ,#{tradeConfirmTime,jdbcType=TIMESTAMP} ,#{attach,jdbcType=VARCHAR} ,#{goodsTag,jdbcType=VARCHAR} ,#{notifyUrl,jdbcType=VARCHAR} ,#{updateTime,jdbcType=TIMESTAMP} ,#{remark,jdbcType=VARCHAR}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_pay_record(id ,app_id ,mch_id ,usr_id ,open_id ,order_id ,pay_channel ,trade_type ,trade_status ,out_trade_no ,trade_desc ,check_name ,re_user_name ,fee_type ,total_fee ,refund_fee ,body ,detail ,spbill_create_ip ,create_time ,resp_trade_no ,resp_code ,resp_msg ,bank_type ,trade_confirm_time ,attach ,goods_tag ,notify_url ,update_time ,remark)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.appId,jdbcType=VARCHAR} ,#{item.mchId,jdbcType=VARCHAR} ,#{item.usrId,jdbcType=INTEGER} ,#{item.openId,jdbcType=VARCHAR} ,#{item.orderId,jdbcType=INTEGER} ,#{item.payChannel,jdbcType=VARCHAR} ,#{item.tradeType,jdbcType=VARCHAR} ,#{item.tradeStatus,jdbcType=VARCHAR} ,#{item.outTradeNo,jdbcType=VARCHAR} ,#{item.tradeDesc,jdbcType=VARCHAR} ,#{item.checkName,jdbcType=VARCHAR} ,#{item.reUserName,jdbcType=VARCHAR} ,#{item.feeType,jdbcType=VARCHAR} ,#{item.totalFee,jdbcType=INTEGER} ,#{item.refundFee,jdbcType=INTEGER} ,#{item.body,jdbcType=VARCHAR} ,#{item.detail,jdbcType=VARCHAR} ,#{item.spbillCreateIp,jdbcType=VARCHAR} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.respTradeNo,jdbcType=VARCHAR} ,#{item.respCode,jdbcType=VARCHAR} ,#{item.respMsg,jdbcType=VARCHAR} ,#{item.bankType,jdbcType=VARCHAR} ,#{item.tradeConfirmTime,jdbcType=TIMESTAMP} ,#{item.attach,jdbcType=VARCHAR} ,#{item.goodsTag,jdbcType=VARCHAR} ,#{item.notifyUrl,jdbcType=VARCHAR} ,#{item.updateTime,jdbcType=TIMESTAMP} ,#{item.remark,jdbcType=VARCHAR})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.lmy.core.model.FsPayRecord">
+	update fs_pay_record
+<set>
+	<if test="appId != null">app_id=#{appId},</if>
+	<if test="mchId != null">mch_id=#{mchId},</if>
+	<if test="openId != null">open_id=#{openId},</if>
+	<if test="payChannel != null">pay_channel=#{payChannel},</if>
+	<if test="tradeType != null">trade_type=#{tradeType},</if>
+	<if test="tradeStatus != null">trade_status=#{tradeStatus},</if>
+	<if test="tradeDesc != null">trade_desc=#{tradeDesc},</if>
+	<if test="checkName != null">check_name=#{checkName},</if>
+	<if test="reUserName != null">re_user_name=#{reUserName},</if>
+	<if test="feeType != null">fee_type=#{feeType},</if>
+	<if test="totalFee != null">total_fee=#{totalFee},</if>
+	<if test="refundFee != null">refund_fee=#{refundFee},</if>
+	<if test="body != null">body=#{body},</if>
+	<if test="detail != null">detail=#{detail},</if>
+	<if test="spbillCreateIp != null">spbill_create_ip=#{spbillCreateIp},</if>
+	<if test="respTradeNo != null">resp_trade_no=#{respTradeNo},</if>
+	<if test="respCode != null">resp_code=#{respCode},</if>
+	<if test="respMsg != null">resp_msg=#{respMsg},</if>
+	<if test="bankType != null">bank_type=#{bankType},</if>
+	<if test="tradeConfirmTime != null">trade_confirm_time=#{tradeConfirmTime},</if>
+	<if test="attach != null">attach=#{attach},</if>
+	<if test="goodsTag != null">goods_tag=#{goodsTag},</if>
+	<if test="notifyUrl != null">notify_url=#{notifyUrl},</if>
+	<if test="updateTime != null">update_time=#{updateTime},</if>
+	<if test="remark != null">remark=#{remark}</if>
+</set>
+	where id=#{id}
+</update>
+
+<!-- 根据支付结果 update order  -->
+<update id="updateForPayByResult" parameterType="hashmap" >
+    	update fs_pay_record
+	<set>
+	    	<if test="   tradeStatus != null">trade_status=#{tradeStatus},</if>
+	    	<if test="   bankType != null">bank_type=#{bankType},</if>
+	    	<if test="   respTradeNo != null">resp_trade_no=#{respTradeNo},</if>
+	    	<if test="  respCode !=null ">resp_code =#{respCode},</if>
+	    	<if test="  respMsg !=null ">resp_msg =#{respMsg},</if>
+	    	<if test="remark != null">remark=#{remark},</if>
+	    	<if test="	 updateTime != null">update_time=#{updateTime},</if>
+	    <if test="  tradeConfirmTime != null">trade_confirm_time=#{tradeConfirmTime}</if>
+	</set>
+	where id=#{id} and trade_status &lt;&gt; #{tradeStatus}
+</update>
+
+<select id="findByOutTradeNo" parameterType="hashmap" resultMap="fs_pay_record">
+    select * from fs_pay_record where out_trade_no = #{outTradeNo}
+</select>
+<select id="findByOrderIdAndTradeType" parameterType="hashmap" resultMap="fs_pay_record">
+    select * from fs_pay_record 
+    where order_id = #{orderId}
+    <if test="  tradeType!=null  ">and trade_type =#{tradeType}</if>
+</select>
+<select id="findForConfirm1" parameterType="hashmap" resultMap="fs_pay_record">
+	 select * from fs_pay_record 
+	 <where>
+	     <if test="  gtId!=null ">id &gt;#{gtId}</if>
+	     <if test="  tradetypeList!=null ">
+	          and trade_type in 
+               <foreach collection="tradetypeList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>     
+	     </if>
+	     <if test="  tradeStatusList!=null">
+	         and trade_status in 
+	         <foreach collection="tradeStatusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>     
+	     </if>
+	 </where>
+	      limit #{limitBegin} , #{limitEnd}
+</select>
+</mapper>

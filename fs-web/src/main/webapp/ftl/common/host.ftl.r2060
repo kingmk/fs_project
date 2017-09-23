@@ -1,0 +1,6 @@
+<#assign base ="http://leimenyi.com.cn">
+<#assign css ="http://leimenyi.com.cn/static">
+<#assign js ="http://leimenyi.com.cn/static">
+<#assign img ="http://leimenyi.com.cn/static">
+<#--自己的写的js css 文件 都用一个版本号-->
+<#assign version ="13">

@@ -1,0 +1,52 @@
+@import "mixin";
+.star_show {
+  background      : url(../images/star_none.png);
+  background-size : auto 100%;
+  width           : px2rem(330);
+  height          : px2rem(50);
+  position        : relative;
+  float           : left;
+}
+.star_show p {
+  background      : url(../images/star.png);
+  background-size : auto 100%;
+  left            : 0;
+  height          : px2rem(50);
+  width           : px2rem(330);
+}
+.star_score {
+  background      : url("../images/star_none.png");
+  background-size : auto 100%;
+  width           : px2rem(330);
+  height          : px2rem(50);
+  position        : relative;
+}
+.star_score span {
+  height   : px2rem(50);
+  display  : block;
+  position : absolute;
+}
+.star_score span:nth-of-type(1) {
+  width   : px2rem(66);
+  z-index : 5;
+}
+.star_score span:nth-of-type(2) {
+  width   : px2rem(132);
+  z-index : 4;
+}
+.star_score span:nth-of-type(3) {
+  width   : px2rem(198);
+  z-index : 3;
+}
+.star_score span:nth-of-type(4) {
+  width   : px2rem(264);
+  z-index : 2;
+}
+.star_score span:nth-of-type(5) {
+  width   : px2rem(330);
+  z-index : 1;
+}
+.star_score span.clibg {
+  background      : url("../images/star.png");
+  background-size : auto 100%;
+}

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_master_info">
+<resultMap id="fs_master_info" type="com.lmy.core.model.FsMasterInfo">
+	<result column="id" property="id"/>
+	<result column="usr_id" property="usrId"/>
+	<result column="wx_open_id" property="wxOpenId"/>
+	<result column="audit_status" property="auditStatus"/>
+	<result column="audit_time" property="auditTime"/>
+	<result column="audit_word" property="auditWord"/>
+	<result column="service_status" property="serviceStatus"/>
+	<result column="name" property="name"/>
+	<result column="nick_name" property="nickName"/>
+	<result column="english_name" property="englishName"/>
+	<result column="sex" property="sex"/>
+	<result column="cert_type" property="certType"/>
+	<result column="cert_no" property="certNo"/>
+	<result column="cert_img1_url" property="certImg1Url"/>
+	<result column="cert_img2_url" property="certImg2Url"/>
+	<result column="head_img_url" property="headImgUrl"/>
+	<result column="birth_year" property="birthYear"/>
+	<result column="birth_date" property="birthDate"/>
+	<result column="live_address" property="liveAddress"/>
+	<result column="contact_mobile" property="contactMobile"/>
+	<result column="contact_qq" property="contactQq"/>
+	<result column="contact_weixin" property="contactWeixin"/>
+	<result column="school" property="school"/>
+	<result column="experience" property="experience"/>
+	<result column="achievement" property="achievement"/>
+	<result column="good_at" property="goodAt"/>
+	<result column="profession" property="profession"/>
+	<result column="work_date" property="workDate"/>
+	<result column="is_full_time" property="isFullTime"/>
+	<result column="is_sign_other" property="isSignOther"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_master_info">
+	select * 	from fs_master_info where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsMasterInfo"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_master_info(id ,usr_id ,wx_open_id ,audit_status ,audit_time ,audit_word ,service_status ,name ,nick_name ,english_name ,sex ,cert_type ,cert_no ,cert_img1_url ,cert_img2_url ,head_img_url ,birth_year ,birth_date ,live_address ,contact_mobile ,contact_qq ,contact_weixin ,school ,experience ,achievement ,good_at ,profession ,work_date ,is_full_time ,is_sign_other ,create_time ,update_time)
+   values(#{id,jdbcType=INTEGER} ,#{usrId,jdbcType=INTEGER} ,#{wxOpenId,jdbcType=VARCHAR} ,#{auditStatus,jdbcType=VARCHAR} ,#{auditTime,jdbcType=TIMESTAMP} ,#{auditWord,jdbcType=VARCHAR} ,#{serviceStatus,jdbcType=VARCHAR} ,#{name,jdbcType=VARCHAR} ,#{nickName,jdbcType=VARCHAR} ,#{englishName,jdbcType=VARCHAR} ,#{sex,jdbcType=VARCHAR} ,#{certType,jdbcType=VARCHAR} ,#{certNo,jdbcType=VARCHAR} ,#{certImg1Url,jdbcType=VARCHAR} ,#{certImg2Url,jdbcType=VARCHAR} ,#{headImgUrl,jdbcType=VARCHAR} ,#{birthYear,jdbcType=INTEGER} ,#{birthDate,jdbcType=VARCHAR} ,#{liveAddress,jdbcType=VARCHAR} ,#{contactMobile,jdbcType=VARCHAR} ,#{contactQq,jdbcType=VARCHAR} ,#{contactWeixin,jdbcType=VARCHAR} ,#{school,jdbcType=VARCHAR} ,#{experience,jdbcType=VARCHAR} ,#{achievement,jdbcType=VARCHAR} ,#{goodAt,jdbcType=VARCHAR} ,#{profession,jdbcType=VARCHAR} ,#{workDate,jdbcType=TIMESTAMP} ,#{isFullTime,jdbcType=VARCHAR} ,#{isSignOther,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_master_info(id ,usr_id ,wx_open_id ,audit_status ,audit_time ,audit_word ,service_status ,name ,nick_name ,english_name ,sex ,cert_type ,cert_no ,cert_img1_url ,cert_img2_url ,head_img_url ,birth_year ,birth_date ,live_address ,contact_mobile ,contact_qq ,contact_weixin ,school ,experience ,achievement ,good_at ,profession ,work_date ,is_full_time ,is_sign_other ,create_time ,update_time)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.usrId,jdbcType=INTEGER} ,#{item.wxOpenId,jdbcType=VARCHAR} ,#{item.auditStatus,jdbcType=VARCHAR} ,#{item.auditTime,jdbcType=TIMESTAMP} ,#{item.auditWord,jdbcType=VARCHAR} ,#{item.serviceStatus,jdbcType=VARCHAR} ,#{item.name,jdbcType=VARCHAR} ,#{item.nickName,jdbcType=VARCHAR} ,#{item.englishName,jdbcType=VARCHAR} ,#{item.sex,jdbcType=VARCHAR} ,#{item.certType,jdbcType=VARCHAR} ,#{item.certNo,jdbcType=VARCHAR} ,#{item.certImg1Url,jdbcType=VARCHAR} ,#{item.certImg2Url,jdbcType=VARCHAR} ,#{item.headImgUrl,jdbcType=VARCHAR} ,#{item.birthYear,jdbcType=INTEGER} ,#{item.birthDate,jdbcType=VARCHAR} ,#{item.liveAddress,jdbcType=VARCHAR} ,#{item.contactMobile,jdbcType=VARCHAR} ,#{item.contactQq,jdbcType=VARCHAR} ,#{item.contactWeixin,jdbcType=VARCHAR} ,#{item.school,jdbcType=VARCHAR} ,#{item.experience,jdbcType=VARCHAR} ,#{item.achievement,jdbcType=VARCHAR} ,#{item.goodAt,jdbcType=VARCHAR} ,#{item.profession,jdbcType=VARCHAR} ,#{item.workDate,jdbcType=TIMESTAMP} ,#{item.isFullTime,jdbcType=VARCHAR} ,#{item.isSignOther,jdbcType=VARCHAR} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.lmy.core.model.FsMasterInfo">
+	update fs_master_info
+<set>
+	<if test="auditStatus != null">audit_status=#{auditStatus},</if>
+	<if test="auditTime != null">audit_time=#{auditTime},</if>
+	<if test="auditWord != null">audit_word=#{auditWord},</if>
+	<if test="serviceStatus != null">service_status=#{serviceStatus},</if>
+	<if test="name != null">name=#{name},</if>
+	<if test="nickName != null">nick_name=#{nickName},</if>
+	<if test="englishName != null">english_name=#{englishName},</if>
+	<if test="sex != null">sex=#{sex},</if>
+	<if test="certType != null">cert_type=#{certType},</if>
+	<if test="certNo != null">cert_no=#{certNo},</if>
+	<if test="certImg1Url != null">cert_img1_url=#{certImg1Url},</if>
+	<if test="certImg2Url != null">cert_img2_url=#{certImg2Url},</if>
+	<if test="headImgUrl != null">head_img_url=#{headImgUrl},</if>
+	<if test="birthYear != null">birth_year=#{birthYear},</if>
+	<if test="birthDate != null">birth_date=#{birthDate},</if>
+	<if test="liveAddress != null">live_address=#{liveAddress},</if>
+	<if test="contactMobile != null">contact_mobile=#{contactMobile},</if>
+	<if test="contactQq != null">contact_qq=#{contactQq},</if>
+	<if test="contactWeixin != null">contact_weixin=#{contactWeixin},</if>
+	<if test="school != null">school=#{school},</if>
+	<if test="experience != null">experience=#{experience},</if>
+	<if test="achievement != null">achievement=#{achievement},</if>
+	<if test="goodAt != null">good_at=#{goodAt},</if>
+	<if test="profession != null">profession=#{profession},</if>
+	<if test="workDate != null">work_date=#{workDate},</if>
+	<if test="isFullTime != null">is_full_time=#{isFullTime},</if>
+	<if test="isSignOther != null">is_sign_other=#{isSignOther},</if>
+	<if test="updateTime != null">update_time=#{updateTime}</if>
+</set>
+	where id=#{id}
+</update>
+
+<select id="findBtCondition1" parameterType="hashmap" resultMap="fs_master_info">
+	select * from fs_master_info
+	<where>
+	    <if test="  id!=null	">id=#{id}</if>
+	    <if test="  usrId!=null	">and usr_id=#{usrId}</if>
+	    <if test="  wxOpenId!=null	">and wx_open_id=#{wxOpenId}</if>
+	    <if test="  auditStatusList!=null	">
+	    	and audit_status in 
+	    	<foreach collection="auditStatusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>      
+	    </if>
+	  	<if test="  serviceStatusList!=null	">
+	    	and service_status in 
+	    	<foreach collection="serviceStatusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>      
+	    </if>
+	</where>    
+</select>
+
+<select id="statRecordNum1" parameterType="hashmap" resultType="long">
+    select count(*) from fs_master_info
+    	<where>
+	    <if test="  usrId!=null	"> usr_id=#{usrId}</if>
+	    <if test="  auditStatusList!=null	">
+	    	and audit_status in 
+	    	<foreach collection="auditStatusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>      
+	    </if>
+	  	<if test="  serviceStatusList!=null	">
+	    	and service_status in 
+	    	<foreach collection="serviceStatusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+			</foreach>      
+	    </if>
+	</where>   
+</select>
+
+<update id="configOderTaking" parameterType="hashmap">
+   update fs_master_info
+   <set>
+      service_status =  #{serviceStatus}
+   </set>
+    <where>
+        <if test="	 id!=null   "> id=#{id}</if>
+        <if test="	 usrId!=null   ">and usr_id=#{usrId}</if>
+        and service_status &lt;&gt; #{serviceStatus}
+    </where>
+</update>
+
+<select id="findByUsrIds2" parameterType="hashmap" resultMap="fs_master_info">
+	select * from fs_master_info
+	<where>
+	usr_id in 
+	<foreach collection="usrIdList"  item="item"  open="(" separator="," close=")" >
+		#{item}
+	</foreach>   
+	<if test=" auditStatus!=null  ">and audit_status = #{auditStatus}</if>
+	<if test=" serviceStatus!=null  ">and service_status = #{serviceStatus}</if>
+	</where> 
+</select>
+
+<resultMap id="masterShortDto1" type="com.lmy.core.model.dto.MasterShortDto1">
+	<result column="usr_id" property="usrId"/>
+	<result column="audit_status" property="auditStatus"/>
+	<result column="service_status" property="serviceStatus"/>
+</resultMap>
+
+<select id="findShortInfo1" parameterType="hashmap" resultMap="masterShortDto1">
+	 select distinct a.usr_id,a.service_status from fs_master_info a 
+	 left join fs_master_service_cate b
+	 on a.usr_id = b.usr_id
+	 <where>
+	 	<if test=" auditStatus!=null  ">and a.audit_status = #{auditStatus}</if>
+	 	 <if test="status!=null" >  and b.status = #{status}</if>
+	 	 <if test="  zxCateId!=null ">and b.fs_zx_cate_id=#{zxCateId}  </if>
+		<if test="  isPlatRecomm!=null ">b.is_plat_recomm=#{isPlatRecomm}  </if>	
+	 </where>
+</select>
+
+
+</mapper>

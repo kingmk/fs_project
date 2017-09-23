@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_master_fans">
+<resultMap id="fs_master_fans" type="com.lmy.core.model.FsMasterFans">
+	<result column="id" property="id"/>
+	<result column="follow_usr_id" property="followUsrId"/>
+	<result column="focus_usr_id" property="focusUsrId"/>
+	<result column="status" property="status"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_master_fans">
+	select * 	from fs_master_fans where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsMasterFans"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_master_fans(id ,follow_usr_id ,focus_usr_id ,status ,create_time ,update_time)
+   values(#{id,jdbcType=INTEGER} ,#{followUsrId,jdbcType=INTEGER} ,#{focusUsrId,jdbcType=INTEGER} ,#{status,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_master_fans(id ,follow_usr_id ,focus_usr_id ,status ,create_time ,update_time)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.followUsrId,jdbcType=INTEGER} ,#{item.focusUsrId,jdbcType=INTEGER} ,#{item.status,jdbcType=VARCHAR} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.lmy.core.model.FsMasterFans">
+	update fs_master_fans
+<set>
+	<if test="status != null">status=#{status},</if>
+	<if test="updateTime != null">update_time=#{updateTime}</if>
+</set>
+	where id=#{id}
+</update>
+
+<update id="unfollow"  parameterType="hashmap">
+    update fs_master_fans
+    set status = 'cancel'
+    ,update_time=#{updateTime}
+    where
+    follow_usr_id = #{followUsrId} and focus_usr_id = #{focusUsrId}  <if test= " id!=null "> and id = #{id}  </if>
+</update>
+
+<update id="followagain"  parameterType="hashmap">
+    update fs_master_fans
+    status = 'followed'
+    update_time=#{updateTime}
+    where
+    id = #{id}  and follow_usr_id = #{followUsrId} and focus_usr_id = #{focusUsrId}  
+</update>
+
+<select id="statEffectFansNum" parameterType="hashmap" resultType="long">
+     select count( distinct follow_usr_id ) from fs_master_fans
+     where focus_usr_id = #{focusUsrId} and status = 'followed'
+</select>
+<select id="isCurrFollowed" parameterType="hashmap" resultType="long">
+      select count(*) from fs_master_fans
+     where   follow_usr_id = #{followUsrId} and  focus_usr_id = #{focusUsrId} and status = 'followed'
+</select>
+<!-- 查询到关注的人id(masterUsrId) -->
+<select id="findCurFocusUsrIdsByFollowUsrId" parameterType="hashmap" resultType="long">
+    select distinct focus_usr_id  from fs_master_fans where follow_usr_id = #{followUsrId} and status='followed' order by id desc  limit #{limitBegin} , #{limitEnd} 
+</select>
+	
+</mapper>

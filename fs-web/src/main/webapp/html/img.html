@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="../static/js/rem.js"></script>
+	<script src="../static/js/jquery-1.11.3.min.js"></script>
+	<script src="../static/js/common.js"></script>
+	<meta name="viewport"/>
+	<link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+<script>
+	$(function(){
+		var imgUrl = decodeURIComponent(commonUtils.getUrlParam('url'));
+		var img = $('<img src="'+imgUrl+'"/>');
+		$("body").append(img);
+
+	})
+
+</script>
+</body>
+</html>

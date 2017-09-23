@@ -1,0 +1,128 @@
+@import "style";
+@import "list";
+@import "footer_nav";
+.header {
+  width: 100%;
+  padding: 0 px2rem(30);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: px2rem(440);
+  background: url("../images/account_bg.png") no-repeat;
+  background-size: 100% 100%;
+  .header-top {
+    padding-top: px2rem(50);
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    -webkit-align-items: center;
+    justify-content: space-between;
+    -webkit-justify-content: space-between;
+    padding-bottom: px2rem(100);
+    .header-top-left {
+      display: flex;
+      display: -webkit-flex;
+      align-items: center;
+      -webkit-align-items: center;
+      .name-box {
+        line-height: 1;
+        .name {
+          font-size: px2rem(36);
+          color: #fff;
+          padding-bottom: px2rem(20);
+        }
+        .status {
+          font-size: px2rem(28);
+          color: #999;
+        }
+      }
+      .img-logo {
+        margin-right: px2rem(30);
+      }
+    }
+    .header-button {
+      width: px2rem(210);
+      height: px2rem(80);
+      font-size: px2rem(32);
+      text-align: center;
+      line-height: px2rem(80);
+      span{
+        display: inline-block;
+        padding-left: px2rem(40);
+      }
+    }
+  }
+  .header-top.stop{
+	.header-button{
+	  background: $text-color;
+	  color: #fff;
+	  span{
+		background: url('../images/icon_account_stop.png') no-repeat left center;
+	  }
+	}
+
+  }
+  .header-top.start{
+	.img-logo img{
+	  background: rgba(0,0,0,0.7);
+	}
+	.header-button{
+	  background: #fff;
+	  color: $link-color;
+	  span{
+		background: url('../images/icon_account_start.png') no-repeat left center;
+	  }
+	}
+  }
+  .header-bottom{
+    display: flex;
+    display: -webkit-flex;
+    justify-content: space-between;
+    -webkit-justify-content: space-between;
+    .income{
+      line-height: 1;
+      text-align: center;
+      flex-grow: 1;
+      color: #fff;
+      position: relative;
+      &:nth-of-type(1):after{
+        content: '';
+        height: 100%;
+        border-right: 1px solid #fff;
+        position: absolute;
+        right: 0;
+        top:0;
+      }
+      .income-time{
+        font-size: px2rem(28);
+        padding-bottom: px2rem(24);
+      }
+      .income-num{
+        font-size: px2rem(36);
+      }
+    }
+  }
+
+}
+.content{
+  padding-bottom: px2rem(160);
+  .mt30{
+    margin-top: px2rem(30);
+  }
+  .list-icon {background:url("../images/icon_account_list.png");background-size: 100% auto}
+  .icon-income{
+	background-position: 0 0;
+  }
+  .icon-service{
+	background-position: 0 -400%;
+  }
+  .icon-data{
+	background-position: 0 -300%;
+  }
+  .icon-rating{
+	background-position: 0 -100%;
+  }
+  .icon-home{
+	background-position: 0 -200%;
+  }
+}

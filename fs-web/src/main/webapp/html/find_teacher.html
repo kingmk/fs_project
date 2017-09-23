@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <title>寻找大师</title>
+    <script src="../static/js/rem.js"></script>
+    <script src="../static/js/jquery-1.11.3.js"></script>
+    <script src="../static/js/jquery.tmpl.min.js"></script>
+    <script src="../static/js/common.js"></script>
+    <link rel="stylesheet" href="../static/css/find_teacher.css">
+    <link rel="stylesheet" href="../static/css/star.css">
+    <script src="../static/js/components.js"></script>
+</head>
+<body>
+	<div class="header">
+		<div class='header-list'>
+			<div class="header-item">推荐</div>
+			<div class="header-item">热度<span class='arr'></span></div>
+			<div class="header-item">价格<span class='arr top'></span></div>
+			<div class="header-item">评分<span class='arr bottom'></span></div>
+			<div class="header-item">筛选<span class='select on'></span></div>
+		</div>
+        <div class="select-mask">
+        <div class="select-mask-wrap">
+        <div class='select-mask-body'>
+        <script id='selectItemTmpl' type="text/x-jquery-tmpl">
+            <div class="mask-item">
+                <div class="main-class">${group}</div>
+                <ul class="sub-class">
+                {{each(i,item) subItem}}
+                    <li class='select-item-li' data-id='${item.id}'>${item.text}</li>
+                {{/each}}
+                </ul>
+            </div>
+         </script>
+        </div>
+         <div class="select-mask-footer">
+            <div class="footer-item">重置</div>
+            <div class="footer-item">确定</div>
+        </div>
+        </div>
+        </div>
+	</div>
+	<div class="content">
+        <div class="content-list">
+ 			<script id='listTmpl' type="text/x-jquery-tmpl">
+            <div class="content-item">
+                <div class="left">
+                    <img class="img" src="../static/images/wenwen_imgbtn.png">
+                    <div class="name">木村佗仔</div>
+                    <div class="star">
+                    	<div class="star_show"><p style="width: ${tips* 66 /2/20}rem"></p></div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="price"><span class='small'>￥</span>288.00</div>
+                    <ul class="incoming-box">
+                        <li class="red">实名认证</li>
+                        <li class="yellow">担保交易</li>
+                        <li class="blue">独家合作</li>
+                    </ul>
+                    <div class="info">
+                        早年有缘巧遇多位民间风水大师，并有幸随之研习 风水堪舆，得其传授风水易学。在地理风水学、星宿 学、占卜学、相学、姓名学等方面， 拷贝
+                    </div>
+                </div>
+            </div>
+            </script>
+        </div>
+    </div>
+
+
+ 	<script>
+    var arr = [
+    {group:'预测',subItem:[{id:1, text:'婚恋感情'},{id:2, text:'流年运势'},{id:3, text:'健康事业财运'},{id:4, text:'八字详批'}]},
+    {group:'择吉',subItem:[{id:5, text:'结婚吉日'},{id:6, text:'择日生产'},{id:7, text:'开张开市'},{id:8, text:'乔迁择日'}]},
+    {group:'起名',subItem:[{id:9, text:'个人改名'},{id:10, text:'个人起名'},{id:11, text:'公司起名'}]},
+    {group:'堪舆',subItem:[{id:12, text:'办公风水'},{id:13, text:'住宅风水'}]}]
+    $("#selectItemTmpl").tmpl(arr).appendTo(".select-mask-body");
+ 	$.initUserFooter({activedIndex:1})
+ 	var fontSize = $("html").css("font-size");
+ 	var arr = [{
+ 		tips: 4,
+ 		 fontSize :$("html").css("font-size")
+ 	}]
+ 	 $("#listTmpl").tmpl(arr).appendTo(".content-list");
+
+    $('.select-item-li').on('click', function(){
+        $(this).addClass('actived').siblings().removeClass('actived')
+    })
+    </script>
+</body>
+</html>

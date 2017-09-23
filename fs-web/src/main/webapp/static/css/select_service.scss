@@ -1,0 +1,138 @@
+@charset "UTF-8";
+@import "style";
+@import "button";
+#select-service {
+  .tips {
+    width: 100%;
+    padding: px2rem(40) px2rem(30) px2rem(20);
+    line-height: 1;
+    font-size: px2rem(26);
+    position: relative;
+    &:after {
+      @extend .border;
+      left: 0;
+      bottom: 0;
+    }
+  }
+  .select-list{background: #fff;}
+  .select-list-item {
+    height: px2rem(150);
+    padding: px2rem(35) px2rem(30);
+    position: relative;
+    display: flex;
+    display: -webkit-flex;
+    flex-grow: 1;
+    -webkit-flex-grow:1;
+    justify-content: space-between;
+    -webkit-justify-content: space-between;
+    align-items: center;
+    -webkit-align-items: center;
+    &:after {
+      @extend .border;
+      left: px2rem(30);
+      bottom: 0;
+    }
+    .select {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      border: 0.05rem solid #999999;
+      padding: 0.4rem;
+      position: relative;
+      input[type='checkbox'] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+      }
+      &.on:before {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: #c09318;
+        border-radius: 0.25rem;
+      }
+    }
+    .content {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      .content-img {
+        width: px2rem(80);
+        height: px2rem(80);
+        background: #efc25a;
+        border-radius: 50%;
+        color: #fff;
+        font-size: px2rem(24);
+        display: inline-block;
+        margin: 0 px2rem(20);
+        text-align: center;
+        line-height: px2rem(80);
+        &.prediction {
+          background: $prediction-color;
+        }
+        &.luckyday {
+          background: $luckyday-color;
+        }
+        &.naming {
+          background: $naming-color;
+        }
+        &.other {
+          background: $other-color;
+        }
+
+      }
+      .text-box {
+        display: inline-block;
+        .text-title {
+          font-size: px2rem(28);
+          color: $text-color;
+          font-weight: bold;
+          line-height: 1;
+          padding-bottom: px2rem(14);
+        }
+        .text-tips {
+          font-size: px2rem(24);
+          color: $text-color-secondary;
+        }
+      }
+    }
+    .input-box {
+      align-self: flex-end;
+      -webkit-align-self: flex-end;
+      width: px2rem(200);
+      height: px2rem(60);
+      border-bottom: px2rem(2) solid $text-color;
+      position: relative;
+      padding-left: px2rem(30);
+      flex-shrink:0;
+      -webkit-flex-shrink:0;
+      &:before {
+        content: '¥';
+        display: inline-block;
+        position: absolute;
+        left: 0;
+        font-size: px2rem(28);
+        line-height: px2rem(60);
+      }
+      .input {
+        width: 100%;
+        text-align: right;
+        outline: none;
+        background: transparent;
+        font-size: px2rem(32);
+        font-weight: bold;
+        border: none;
+        line-height: px2rem(60);
+      }
+    }
+  }
+  .footer{
+    padding: px2rem(40) 0 px2rem(100) px2rem(30);
+    font-size: px2rem(24);
+    margin-bottom: px2rem(40);
+  }
+}

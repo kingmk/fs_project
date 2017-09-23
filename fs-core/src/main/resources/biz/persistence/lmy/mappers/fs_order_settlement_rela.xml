@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_order_settlement_rela">
+<resultMap id="fs_order_settlement_rela" type="com.lmy.core.model.FsOrderSettlementRela">
+	<result column="id" property="id"/>
+	<result column="order_settlement_id" property="orderSettlementId"/>
+	<result column="seller_usr_id" property="sellerUsrId"/>
+	<result column="order_id" property="orderId"/>
+	<result column="create_time" property="createTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_order_settlement_rela">
+	select * 	from fs_order_settlement_rela where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsOrderSettlementRela"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_order_settlement_rela(id ,order_settlement_id ,seller_usr_id ,order_id ,create_time)
+   values(#{id,jdbcType=INTEGER} ,#{orderSettlementId,jdbcType=INTEGER} ,#{sellerUsrId,jdbcType=INTEGER} ,#{orderId,jdbcType=INTEGER} ,#{createTime,jdbcType=TIMESTAMP}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_order_settlement_rela(id ,order_settlement_id ,seller_usr_id ,order_id ,create_time)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.orderSettlementId,jdbcType=INTEGER} ,#{item.sellerUsrId,jdbcType=INTEGER} ,#{item.orderId,jdbcType=INTEGER} ,#{item.createTime,jdbcType=TIMESTAMP})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.lmy.core.model.FsOrderSettlementRela">
+	update fs_order_settlement_rela
+<set>
+	<if test="orderSettlementId != null">order_settlement_id=#{orderSettlementId},</if>
+	<if test="sellerUsrId != null">seller_usr_id=#{sellerUsrId},</if>
+	<if test="orderId != null">order_id=#{orderId}</if>
+</set>
+	where id=#{id}
+</update>
+<select id="findOrderIds1" parameterType="hashmap" resultType="long">
+    select order_id from fs_order_settlement_rela where order_settlement_id = #{orderSettlementId} and seller_usr_id = #{sellerUsrId}
+</select>
+</mapper>

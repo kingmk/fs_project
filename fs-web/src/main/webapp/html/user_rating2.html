@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="../static/js/rem.js"></script>
+    <script src="../static/js/jquery-1.11.3.js"></script>
+    <script src="../static/js/components.js"></script>
+    <link rel="stylesheet" href="../static/css/star.css">
+    <link rel="stylesheet" href="../static/css/user_rating_star.css">
+    <title>用户评价</title>
+</head>
+
+<body style='background: #fff;'>
+    <div class="user-comments-content">
+        <div class="header">
+            <img src="../static/images/wenwen_imgbtn.png" />
+            <div class="title">木村佗仔</div>
+        </div>
+        <div class="score-box clearfix">
+            <div class="score-item">
+                <span class="score-item-tips">响应速度</span>
+                <div id="responseSpeed" style="display: inline-block"></div>
+            </div>
+            <div class="score-item">
+                <span class="score-item-tips">专业水平</span>
+                <div id="professionalLevel" style="display: inline-block"></div>
+            </div>
+            <div class="score-item">
+                <span class="score-item-tips">服务态度</span>
+                <div id="serviceSAttitude" style="display: inline-block"></div>
+            </div>
+        </div>
+    </div>
+    <div class="edit-text-box">
+        <div class="edit-text">
+            <div id='edite' contentEditable='true'>
+            </div>
+            <span class='palcehold'>如果您喜欢大师，就表扬几句吧</span>
+            <span class="tips">还可填写200字</span>
+        </div>
+    </div>
+    <div class="button-box">
+    <div class="button" id='pingjia'>发表评价</div>
+
+    </div>
+    <script>
+    $("#responseSpeed").star({
+        type: 'score'
+    })
+    $("#professionalLevel").star({
+        type: 'score',
+    })
+    $("#serviceSAttitude").star({
+        type: 'score',
+    })
+    $('#pingjia').click(function(){
+          console.log($("#responseSpeed").attr('tip'))
+    })
+
+    $("#edite").on('focus', function() {
+        $(this).siblings('.palcehold').hide();
+    });
+    $("#edite").on('input propertychange', function() {
+        $(this).siblings('.tips').html('还可填写' + (200 - $(this).html().length) + '字');
+    })
+    </script>
+</body>
+
+</html>

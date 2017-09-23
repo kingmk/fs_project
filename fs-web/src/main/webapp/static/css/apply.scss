@@ -1,0 +1,112 @@
+@import "style";
+@import "button";
+
+.apply-card {
+	@extend .card-background-linear-gradient;
+	.apply-icon {
+		width   : px2rem(180);
+		height  : px2rem(180);
+		display : inline-block;
+	}
+	.apply-success {
+		background : url("../images/apply_success.png") no-repeat;
+		background-size: 100% 100%;
+	}
+	.apply-loading {
+		background : url("../images/apply_loading.png") no-repeat;
+		background-size: 100% 100%;
+	}
+	.apply-title {
+		padding    : px2rem(40) 0 px2rem(60);
+		text-align : center;
+		font-size  : px2rem(48);
+		color      : #fff;
+		position   : relative;
+		&:after {
+			display    : block;
+			content    : '';
+			width      : px2rem(410);
+			position   : absolute;
+			left       : 0;
+			right      : 0;
+			bottom     : 0;
+			margin     : auto;
+			height     : px2rem(2);
+			background : #ddd;
+		}
+	}
+	.apply-tips {
+		padding-top : px2rem(30);
+		font-size   : px2rem(28);
+		color       : #fff;
+		line-height : px2rem(36);
+	}
+}
+
+.apply-button {
+	padding : px2rem(100) px2rem(30) 0;
+}
+
+.apply-2line-title {
+	padding     : px2rem(40) 0 px2rem(10);
+	line-height : px2rem(72);
+	text-align  : center;
+	font-size   : px2rem(48);
+	color       : #fff;
+}
+
+.apply-content {
+	background : #fff;
+	width      : 100%;
+	z-index    : -1;
+	position   : absolute;
+	top        : px2rem(560);
+	bottom     : px2rem(160);
+	padding    : px2rem(80) px2rem(30) 0;
+}
+
+.fix-button {
+	position    : fixed;
+	bottom      : 0;
+	width       : 100%;
+	height      : px2rem(160);
+	line-height : px2rem(160);
+}
+
+.step-bar {
+	width           : 100%;
+	display         : flex;
+	display: -webkit-flex;
+	justify-content : space-between;
+	-webkit-justify-content : space-between;
+	position        : relative;
+	.step-bar-line {
+		position   : absolute;
+		left       : 16.66%;
+		width      : 66.66%;
+		top        : px2rem(30);
+		z-index    : -1;
+		height     : px2rem(4);
+		background : $link-color;
+	}
+	.step-bar-item {
+		width      : 33.33%;
+		text-align : center;
+		.step-bar-item-tips {
+			text-align : center;
+			color      : $text-color;
+			font-size  : px2rem(26);
+		}
+		.step-bar-item-num {
+			display       : inline-block;
+			width         : px2rem(60);
+			height        : px2rem(60);
+			background    : $link-color;
+			border-radius : 50%;
+			color         : #fff;
+			font-size     : px2rem(36);
+			line-height   : px2rem(60);
+			margin-bottom : px2rem(20);
+		}
+	}
+}

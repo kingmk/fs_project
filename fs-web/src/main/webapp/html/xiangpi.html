@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>支付结果</title>
+    <script src="../../static/js/rem.js"></script>
+    <script src="../../static/js/jquery-1.11.3.js"></script>
+    <script src="../../static/js/jquery.tmpl.min.js"></script>
+    <script src="../../static/js/mobiscroll.custom-3.0.0-beta2.min.js"></script>
+    <script src="../../static/js/common.js"></script>
+    <script src="../../static/js/cityDate.js"></script>
+    <link rel="stylesheet" href="../../static/css/mobiscroll.custom-3.0.0-beta2.min.css">
+    <link rel="stylesheet" href="../../static/css/pay_result.css">
+</head>
+
+<body>
+<script id='formItem' type="text/x-jquery-tmpl">
+    <div class="list-item">
+        <div class="list-label">${label}</div>
+        <div class="list-control">
+            <input placeholder="test" type="text" class='${className}' value="${value}" name='${name}'>
+        </div>
+        {{if hasArr}}
+        <div class="list-arrow">
+        {{/if}}
+        </div>
+    </div>
+</script>
+<div class="apply-card">
+    <div class="apply-icon apply-success"></div>
+    <div class="apply-title">支付成功</div>
+    <div class="apply-tips">与风水老师对话前，请提交您的相关信息
+        <br/> 并请确保所填信息的准确性，以免影响到您的测试结果
+    </div>
+</div>
+<div class="content">
+    <form id="">
+    <div class="list form">
+        <div class="list-header">咨询人信息</div>
+        <div class="list-body">
+            <div class="list-item">
+                <div class="list-label">是否本人</div>
+                <div class="list-control">
+                </div>
+                <div class="radio-box-parent open1">
+                    <div class="radio-box-child open2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+<script>
+    var arr = [{
+        type: 'input',
+        className: '',
+        name: '',
+        label: '中文姓名',
+        value: '松岛菜菜子',
+        hasArr: false
+    }, {
+        type: 'input',
+        className: '',
+        name: '',
+        label: '英文姓名',
+        value: 'Mary',
+        hasArr: false
+    }, {
+        type: 'select',//[input|select]
+        className: 'birth',//[birth,birthTime,birthCity,sex,marriage]
+        name: '',//input的name
+        label: '阳历生日',
+        value: '',//默认value
+        hasArr: true //是否有右部箭头
+    }];
+    $("#formItem").tmpl(arr).appendTo(".list-body");
+</script>
+
+<script src="../../static/js/form.js"></script>
+</body>
+
+</html>

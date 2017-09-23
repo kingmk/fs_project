@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<display-name>lszh-web</display-name>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath*:applicationContext-core.xml
+			</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>
+			org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+
+
+	<servlet>
+		<servlet-name>spring-mvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>5</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>spring-mvc</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+
+	
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>utf8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>400</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>401</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>405</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>407</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>408</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>414</error-code>
+		<location>/static/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>415</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/static/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>501</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>503</error-code>
+		<location>/html/404.html</location>
+	</error-page>
+</web-app>

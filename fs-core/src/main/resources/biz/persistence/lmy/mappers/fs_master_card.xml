@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_master_card">
+<resultMap id="fs_master_card" type="com.lmy.core.model.FsMasterCard">
+	<result column="id" property="id"/>
+	<result column="master_usr_id" property="masterUsrId"/>
+	<result column="holder_name" property="holderName"/>
+	<result column="bank_name" property="bankName"/>
+	<result column="bank_no" property="bankNo"/>
+	<result column="province" property="province"/>
+	<result column="city" property="city"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_master_card">
+	select * from fs_master_card where id=#{id}  
+</select>
+<select id="findByMasterId" parameterType="long"  resultMap="fs_master_card">
+	select * from fs_master_card where master_usr_id=#{masterUsrId}
+</select>
+<insert id="insert"  parameterType="com.lmy.core.model.FsMasterCard"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_master_card(id, master_usr_id, holder_name, bank_name, bank_no, province, city, create_time)
+	values(#{id,jdbcType=INTEGER}, #{masterUsrId,jdbcType=INTEGER}, #{holderName,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR}, #{bankNo,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}) 
+</insert>
+
+
+<update id="update"	parameterType="com.lmy.core.model.FsMasterCard">
+	update fs_master_card
+<set>
+	<if test="masterUsrId != null">master_usr_id=#{masterUsrId},</if>
+	<if test="holderName != null">holder_name=#{holderName},</if>
+	<if test="bankName != null">bank_name=#{bankName},</if>
+	<if test="bankNo != null">bank_no=#{bankNo},</if>
+	<if test="province != null">province=#{province},</if>
+	<if test="city != null">city=#{city},</if>
+	<if test="updateTime != null">update_time=#{updateTime}</if>
+</set>
+	where id=#{id}
+</update>
+
+	
+</mapper>

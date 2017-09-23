@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_weixin_msg_push_record">
+<resultMap id="fs_weixin_msg_push_record" type="com.lmy.core.model.FsWeixinMsgPushRecord">
+	<result column="id" property="id"/>
+	<result column="user_id" property="userId"/>
+	<result column="open_id" property="openId"/>
+	<result column="template_id" property="templateId"/>
+	<result column="title" property="title"/>
+	<result column="resp_msgid" property="respMsgid"/>
+	<result column="resp_code" property="respCode"/>
+	<result column="resp_msg" property="respMsg"/>
+	<result column="content" property="content"/>
+	<result column="order_id" property="orderId"/>
+	<result column="create_time" property="createTime"/>
+	<result column="remark" property="remark"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_weixin_msg_push_record">
+	select * 	from fs_weixin_msg_push_record where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsWeixinMsgPushRecord"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_weixin_msg_push_record(id ,user_id ,open_id ,template_id ,title ,resp_msgid ,resp_code ,resp_msg ,content ,order_id ,create_time ,remark)
+   values(#{id,jdbcType=INTEGER} ,#{userId,jdbcType=INTEGER} ,#{openId,jdbcType=VARCHAR} ,#{templateId,jdbcType=VARCHAR} ,#{title,jdbcType=VARCHAR} ,#{respMsgid,jdbcType=VARCHAR} ,#{respCode,jdbcType=VARCHAR} ,#{respMsg,jdbcType=VARCHAR} ,#{content,jdbcType=VARCHAR} ,#{orderId,jdbcType=INTEGER} ,#{createTime,jdbcType=TIMESTAMP} ,#{remark,jdbcType=VARCHAR}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_weixin_msg_push_record(id ,user_id ,open_id ,template_id ,title ,resp_msgid ,resp_code ,resp_msg ,content ,order_id ,create_time ,remark)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.userId,jdbcType=INTEGER} ,#{item.openId,jdbcType=VARCHAR} ,#{item.templateId,jdbcType=VARCHAR} ,#{item.title,jdbcType=VARCHAR} ,#{item.respMsgid,jdbcType=VARCHAR} ,#{item.respCode,jdbcType=VARCHAR} ,#{item.respMsg,jdbcType=VARCHAR} ,#{item.content,jdbcType=VARCHAR} ,#{item.orderId,jdbcType=INTEGER} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.remark,jdbcType=VARCHAR})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.lmy.core.model.FsWeixinMsgPushRecord">
+	update fs_weixin_msg_push_record
+<set>
+	<if test="openId != null">open_id=#{openId},</if>
+	<if test="templateId != null">template_id=#{templateId},</if>
+	<if test="title != null">title=#{title},</if>
+	<if test="respMsgid != null">resp_msgid=#{respMsgid},</if>
+	<if test="respCode != null">resp_code=#{respCode},</if>
+	<if test="respMsg != null">resp_msg=#{respMsg},</if>
+	<if test="content != null">content=#{content},</if>
+	<if test="orderId != null">order_id=#{orderId},</if>
+	<if test="remark != null">remark=#{remark}</if>
+</set>
+	where id=#{id}
+</update>
+</mapper>

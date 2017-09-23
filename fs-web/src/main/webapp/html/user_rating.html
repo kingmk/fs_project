@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/rem.js"></script>
+    <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/components.js"></script>
+    <link rel="stylesheet" href="css/star.css">
+    <link rel="stylesheet" href="css/user_rating.css">
+    <title>用户评价</title>
+</head>
+<body>
+<div class="header">
+    <div class="user-comments-content">
+        <div class="score-title">来自0位用户的评价</div>
+        <div class="score-box clearfix">
+            <div class="score-item">
+                <span class="score-item-tips">响应速度</span>
+                <div id="responseSpeed" style="display: inline-block"></div>
+            </div>
+            <div class="score-item">
+                <span class="score-item-tips">专业水平</span>
+                <div id="professionalLevel" style="display: inline-block"></div>
+            </div>
+            <div class="score-item">
+                <span class="score-item-tips">服务态度</span>
+                <div id="serviceSAttitude" style="display: inline-block"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="rating-content">
+    <div class="rating-content-tit">全部评价（6）<i class="tit-arr"></i></div>
+    <div class="rating-content-list">
+        <div class="list-item">
+            <div class="img-box">
+                <img src="images/wenwen_imgbtn.png" class="img">
+            </div>
+            <div class="list-item-content">
+                <div class="name">周芷若</div>
+                <div class="rating">老师很有耐心，告诉了我很多人生道路上的问题，很多东西 都很准，我现在心情已经很平静了，坦然看待一切！</div>
+                <div class="time">2017-02-05 21:15  婚姻感情 </div>
+            </div>
+        </div>
+        <div class="list-item">
+            <div class="img-box">
+                <img src="images/wenwen_imgbtn.png" class="img">
+            </div>
+            <div class="list-item-content">
+                <div class="name">周芷若</div>
+                <div class="rating">老师很有耐心，告诉了我很多人生道路上的问题，很多东西 都很准，我现在心情已经很平静了，坦然看待一切！</div>
+                <div class="time">2017-02-05 21:15  婚姻感情 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+  $("#responseSpeed").star({type: 'show', tip: '4'})
+  $("#professionalLevel").star({type: 'show', tip: '4'})
+  $("#serviceSAttitude").star({type: 'show', tip: '4'})
+</script>
+</body>
+</html>

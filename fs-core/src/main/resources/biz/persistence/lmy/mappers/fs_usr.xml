@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_usr">
+<resultMap id="fs_usr" type="com.lmy.core.model.FsUsr">
+	<result column="id" property="id"/>
+	<result column="wx_open_id" property="wxOpenId"/>
+	<result column="wx2_open_id" property="wx2OpenId"/>
+	<result column="wx2_relation_time" property="wx2RelationTime"/>
+	<result column="register_mobile" property="registerMobile"/>
+	<result column="register_time" property="registerTime"/>
+	<result column="real_name" property="realName"/>
+	<result column="nick_name" property="nickName"/>
+	<result column="english_name" property="englishName"/>
+	<result column="birth_time_type" property="birthTimeType"/>
+	<result column="birth_time" property="birthTime"/>
+	<result column="birth_date" property="birthDate"/>
+	<result column="birth_year" property="birthYear"/>
+	<result column="birth_address" property="birthAddress"/>
+	<result column="live_address" property="liveAddress"/>
+	<result column="sex" property="sex"/>
+	<result column="marriage_status" property="marriageStatus"/>
+	<result column="family_rank" property="familyRank"/>
+	<result column="usr_cate" property="usrCate"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+	<result column="usr_head_img_url" property="usrHeadImgUrl"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_usr">
+	select * 	from fs_usr where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.lmy.core.model.FsUsr"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_usr(id ,wx_open_id ,wx2_open_id ,wx2_relation_time ,register_mobile ,register_time ,real_name ,nick_name ,english_name ,birth_time_type ,birth_time ,birth_date ,birth_year ,birth_address ,live_address ,sex ,marriage_status ,family_rank ,usr_cate ,create_time ,update_time ,usr_head_img_url)
+   values(#{id,jdbcType=INTEGER} ,#{wxOpenId,jdbcType=VARCHAR} ,#{wx2OpenId,jdbcType=VARCHAR} ,#{wx2RelationTime,jdbcType=TIMESTAMP} ,#{registerMobile,jdbcType=VARCHAR} ,#{registerTime,jdbcType=TIMESTAMP} ,#{realName,jdbcType=VARCHAR} ,#{nickName,jdbcType=VARCHAR} ,#{englishName,jdbcType=VARCHAR} ,#{birthTimeType,jdbcType=VARCHAR} ,#{birthTime,jdbcType=VARCHAR} ,#{birthDate,jdbcType=VARCHAR} ,#{birthYear,jdbcType=INTEGER} ,#{birthAddress,jdbcType=VARCHAR} ,#{liveAddress,jdbcType=VARCHAR} ,#{sex,jdbcType=VARCHAR} ,#{marriageStatus,jdbcType=VARCHAR} ,#{familyRank,jdbcType=VARCHAR} ,#{usrCate,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP} ,#{usrHeadImgUrl,jdbcType=VARCHAR}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_usr(id ,wx_open_id ,wx2_open_id ,wx2_relation_time ,register_mobile ,register_time ,real_name ,nick_name ,english_name ,birth_time_type ,birth_time ,birth_date ,birth_year ,birth_address ,live_address ,sex ,marriage_status ,family_rank ,usr_cate ,create_time ,update_time ,usr_head_img_url)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.wxOpenId,jdbcType=VARCHAR} ,#{item.wx2OpenId,jdbcType=VARCHAR} ,#{item.wx2RelationTime,jdbcType=TIMESTAMP} ,#{item.registerMobile,jdbcType=VARCHAR} ,#{item.registerTime,jdbcType=TIMESTAMP} ,#{item.realName,jdbcType=VARCHAR} ,#{item.nickName,jdbcType=VARCHAR} ,#{item.englishName,jdbcType=VARCHAR} ,#{item.birthTimeType,jdbcType=VARCHAR} ,#{item.birthTime,jdbcType=VARCHAR} ,#{item.birthDate,jdbcType=VARCHAR} ,#{item.birthYear,jdbcType=INTEGER} ,#{item.birthAddress,jdbcType=VARCHAR} ,#{item.liveAddress,jdbcType=VARCHAR} ,#{item.sex,jdbcType=VARCHAR} ,#{item.marriageStatus,jdbcType=VARCHAR} ,#{item.familyRank,jdbcType=VARCHAR} ,#{item.usrCate,jdbcType=VARCHAR} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP} ,#{item.usrHeadImgUrl,jdbcType=VARCHAR})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.lmy.core.model.FsUsr">
+	update fs_usr
+<set>
+	<if test="wx2OpenId != null">wx2_open_id=#{wx2OpenId},</if>
+	<if test="wx2RelationTime != null">wx2_relation_time=#{wx2RelationTime},</if>
+	<if test="registerMobile != null">register_mobile=#{registerMobile},</if>
+	<if test="registerTime != null">register_time=#{registerTime},</if>
+	<if test="realName != null">real_name=#{realName},</if>
+	<if test="nickName != null">nick_name=#{nickName},</if>
+	<if test="englishName != null">english_name=#{englishName},</if>
+	<if test="birthTimeType != null">birth_time_type=#{birthTimeType},</if>
+	<if test="birthTime != null">birth_time=#{birthTime},</if>
+	<if test="birthDate != null">birth_date=#{birthDate},</if>
+	<if test="birthYear != null">birth_year=#{birthYear},</if>
+	<if test="birthAddress != null">birth_address=#{birthAddress},</if>
+	<if test="liveAddress != null">live_address=#{liveAddress},</if>
+	<if test="sex != null">sex=#{sex},</if>
+	<if test="marriageStatus != null">marriage_status=#{marriageStatus},</if>
+	<if test="familyRank != null">family_rank=#{familyRank},</if>
+	<if test="usrCate != null">usr_cate=#{usrCate},</if>
+	<if test="updateTime != null">update_time=#{updateTime},</if>
+	<if test="usrHeadImgUrl != null">usr_head_img_url=#{usrHeadImgUrl}</if>
+</set>
+	where id=#{id}
+</update>
+
+<select id="findByWxOpenIdOrId" parameterType="hashmap"  resultMap="fs_usr">
+	select * 	from fs_usr 
+	<where>
+		<if test=" id!=null ">id=#{id}  </if> 
+		<if test="	wxOpenId	!=null	">and	wx_open_id = #{wxOpenId}  </if>
+	</where>
+</select>  
+<select id="statNumByMobile" parameterType="hashmap"  resultType="long">
+    select count(*)	from fs_usr
+    where register_mobile = #{mobile} 
+</select>
+
+<select id="findHeadImgUrlByUsrIds" parameterType="hashmap"  resultType="hashmap">
+	select id,usr_head_img_url from fs_usr
+	where
+		id in 
+		<foreach collection="	idList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+	    </foreach>     
+</select>
+
+<select id="findShortInfo1ByUsrIds" parameterType="hashmap"  resultMap="fs_usr">
+	select id,wx_open_id,register_mobile,usr_head_img_url,real_name,nick_name,english_name,birth_time_type,birth_time from fs_usr
+	where
+		id in 
+		<foreach collection="	idList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+	    </foreach>     
+</select>
+
+<select id="findByUsrIds" parameterType="hashmap"  resultMap="fs_usr">
+	select * from fs_usr
+	where
+		id in 
+		<foreach collection="	idList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+	    </foreach>     
+</select>
+
+</mapper>

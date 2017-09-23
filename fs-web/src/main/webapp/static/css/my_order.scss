@@ -1,0 +1,139 @@
+@import "./style";
+@import './_footer_nav';
+.content {
+    width: 100%;
+    padding-bottom:px2rem(120);
+    .item {
+        width: 100%;
+        margin-top: px2rem(20);
+        border: 1px solid $border-color-base;
+        border-width: 1px 0;
+        height: px2rem(270);
+        background: #fff;
+        padding: 0 px2rem(30);
+        box-sizing: border-box;
+        display: block;
+        color: $text-color!important;
+        .top {
+            display: flex;
+            display: -webkit-flex;
+            justify-content: space-between;
+            -webkit-justify-content: space-between;
+            align-items: center;
+            -webkit-align-items: center;
+            height: px2rem(190);
+            line-height: 1;
+            border-bottom: 1px solid $border-color-base;
+            .left {
+                float: left;
+                img {
+                    width: px2rem(120);
+                    height: px2rem(120);
+                    border-radius: 50%;
+                }
+            }
+            .center {
+                margin-left: px2rem(140);
+                .title {
+                    font-size: px2rem(30);
+                    font-weight: bold;
+                    padding-bottom: px2rem(14);
+                }
+                .price {
+                    font-size: px2rem(24);
+                    color: $text-color-secondary;
+                    padding-bottom: px2rem(22);
+                }
+                .text {
+                    font-size: px2rem(30);
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 1;
+                    overflow: hidden;
+                    line-height: 1.5;
+                    word-break: break-all;
+                }
+            }
+            .right {
+                min-width: px2rem(130);
+                align-items: center;
+                .top-time {
+                    text-align: right;
+                    font-size: px2rem(24);
+                    padding-bottom: px2rem(60);
+                    color: $text-color-secondary;
+                }
+                .bubbel {
+                    color: #fff;
+                    text-align: center;
+                    font-size: px2rem(20);
+                    &.num{
+                    	width:px2rem(36);
+                    	height:px2rem(36);
+                    	background: #f42d47;
+                    	border-radius: 50%;
+                    	line-height: px2rem(36);
+                    	 float: right;
+                    }
+
+
+                    &.completed,&.settlementing, &.settlemented, &.settlement_fail,&.pay_succ{
+                        height: px2rem(30);
+                        width: px2rem(100);
+                        background: #13c75f;
+                        float: right;
+                        line-height: px2rem(30);
+                        border-radius: px2rem(4);
+                    }
+                    &.pay_succ.waitY{
+                        height: px2rem(30);
+                        width: px2rem(100);
+                        background: #d88c3a;
+                        float: right;
+                        line-height: px2rem(30);
+                        border-radius: px2rem(4);
+                    }
+                    &.refunded,&.refund_fail,&.refund_applied, &.refunding, &.refund_fail{
+                    	height: px2rem(30);
+                        width: px2rem(120);
+                        background: $link-color;
+                        float: right;
+                        line-height: px2rem(30);
+                        border-radius: px2rem(4);
+                    }
+                }
+            }
+        }
+    }
+    .bottom{
+    	line-height: px2rem(80);
+    	display: flex;
+        display: -webkit-flex;
+    	justify-content: space-between;
+        -webkit-justify-content: space-between;
+            align-items: center;
+        -webkit-align-items: center;
+    	.bottom-time{
+    		font-size: px2rem(20);
+    		color:$text-color-secondary;
+    	}
+    	.bottom-button{
+			width: px2rem(130);
+			height: px2rem(50);
+			text-align: center;
+			line-height: px2rem(50);
+			font-size: px2rem(24);
+            &.go-evaluate{
+               color:$text-color;
+               background: #fff;
+               border: px2rem(1) solid #ccc;
+            }
+            &.see-evaluate{
+               color:#fff;
+               background: #000;
+            }
+    	}
+
+
+    }
+}

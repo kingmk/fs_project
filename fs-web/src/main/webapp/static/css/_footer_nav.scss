@@ -1,0 +1,81 @@
+.footer {
+  position        : fixed;
+  bottom          : 0;
+  width           : 100%;
+  height          : px2rem(100);
+  background      : #fff;
+  display         : flex;
+  display:  -webkit-flex;
+  justify-content : space-between;
+  -webkit-justify-content : space-between;
+  border-top      : 1px solid $border-color-base;
+  z-index: 100;
+  .footer-nav {
+	flex-grow   : 1;
+	-webkit-flex-grow   : 1;
+	text-align  : center;
+	padding-top : px2rem(10);
+	position    : relative;
+	text-decoration: none;
+	&.actived .title {
+	  color : $text-color !important;
+	}
+	.icon {
+	  margin : auto;
+	  width  : px2rem(44);
+	  height : px2rem(44);
+	}
+	.bubble {
+	  position      : absolute;
+	  background    : #f42d47;
+	  padding       : px2rem(3);
+	  border-radius : px2rem(30);
+	  font-size     : px2rem(20);
+	  color         : #fff;
+	  top           : px2rem(10);
+	  left          : 50%;
+	  margin-left   : px2rem(18);
+	  line-height: 1;
+	  box-sizing: border-box;
+	  min-width: px2rem(95);
+	  text-align: center;
+	}
+	.title {
+	  margin-top : px2rem(8);
+	  font-size  : px2rem(22);
+	  color      : #ccc;
+	}
+  }
+}
+.icon {
+  &.account {
+	background      : url("../images/footer_icon.png") 0 -200%;
+	background-size : 100% auto;
+  }
+  &.order {
+	background      : url("../images/footer_icon.png") 0 -300%;
+	background-size : 100% auto;
+  }
+  &.consultation{
+  	background      : url("../images/footer_icon.png") 0 -700%;
+	background-size : 100% auto;
+  }
+  &.teacher{
+  	background      : url("../images/footer_icon.png") 0 -600%;
+	background-size : 100% auto;
+  }
+}
+.actived {
+	.icon.consultation{
+  	background-position : 0 -500%;
+  }
+  .icon.teacher{
+  	background-position : 0 -400%;
+  }
+  .icon.account{
+  	background-position : 0 0%;
+  }
+   .icon.order {
+	background-position : 0 -100%;
+  }
+}
