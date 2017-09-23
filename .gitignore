@@ -1,2 +1,10 @@
 
 .project
+
+.settings/*
+logs/*
+*/.settings/*
+*/bin/*
+*/target/*
+*/.classpath
+*/.project
