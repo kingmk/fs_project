@@ -8,3 +8,4 @@ logs/*
 */target/*
 */.classpath
 */.project
+fs-web/src/main/webapp/static/css/npm-debug.log
