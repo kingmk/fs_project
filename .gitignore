@@ -9,3 +9,9 @@ logs/*
 */.classpath
 */.project
 fs-web/src/main/webapp/static/css/npm-debug.log
+
+fs-web/src/main/webapp/static/node_modules/.bin/gulp
+
+fs-web/src/main/webapp/static/node_modules/gulp
+
+*.js
