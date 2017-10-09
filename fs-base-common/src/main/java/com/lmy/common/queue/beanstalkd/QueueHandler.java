@@ -33,6 +33,6 @@ public abstract class QueueHandler{
 	 * @return
 	 * @throws Exception
 	 */
-	public abstract Object hander(JSONObject data) throws Exception;
+	public abstract Object handle(JSONObject data) throws Exception;
 	
 }

@@ -119,7 +119,7 @@ public class OrderChatController {
 	 */
 	@RequestMapping(value="/order/chat_unread_num_query" , method={RequestMethod.POST})
 	@ResponseBody
-	public String chat_submit(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+	public String chat_unread_num(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 									,@RequestParam(value = "chatSessionNo" , required = false) String chatSessionNo
 									,@RequestParam(value = "isMaster" , required = false) String isMaster                   //当前用户是否为master 角色登录 Y|N, default is N
 			) {

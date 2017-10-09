@@ -32,36 +32,29 @@ public class WxNoticeManagerImpl {
 	 * @param sellerUsrOpenId
 	 * @param buyUsrName  取用户 微信昵称 如果取不到 则显示 匿名
 	 */
-	public void masterNewOrderMsg(final  FsOrder order , final String sellerUsrOpenId ,  String buyUsrName){
+	public void masterNewOrderWxMsg(final FsOrder order , final String sellerUsrOpenId, String buyUsrName){
 		String template_id = "cfFWR-Z8WHTFTQSa4j4nKKNAbdBTDglLbhnfhkda918"; 
 		String clickUrl = fsServiceBaseHost+"/order/chat_index?chatSessionNo="+order.getChatSessionNo()+"&orderId="+order.getId();
 		String title = "您有新订单";
 		String remarkValue = buyUsrName+"于"+CommonUtils.dateToString(new Date(), "HH:mm", "")+"咨询问题";
 		JSONObject pushToWxdata =  buildWxJsonData2(title, buyUsrName, order.getGoodsName(), remarkValue);
+		logger.info("========to send new order wx msg to master========");
 		asynHand(order.getId(), order.getSellerUsrId(), null, sellerUsrOpenId, template_id, title,  clickUrl, pushToWxdata);
 	}
 	
-	private JSONObject buildWxJsonData2(String firstValue , String keyword1Value , String keyword2Value ,String remarkValue){
-		JSONObject data = new JSONObject();
-		JSONObject first = new JSONObject();
-		first.put("value", firstValue);
-		JSONObject keyword1 = new JSONObject();
-		keyword1.put("value", keyword1Value);		
-		JSONObject keyword2 = new JSONObject();
-		keyword2.put("value", keyword2Value);		
-		JSONObject remark = new JSONObject();
-		remark.put("value", remarkValue);		
-		data.put("first", first);
-		data.put("keyword1", keyword1);
-		data.put("keyword2", keyword2);
-		data.put("remark", remark);
-		return data;
+	public void masterWaitFirstReplyWxMsg(final FsOrder order , final String sellerUsrOpenId, String buyUsrName) {
+		String template_id = "cfFWR-Z8WHTFTQSa4j4nKKNAbdBTDglLbhnfhkda918"; 
+		String clickUrl = fsServiceBaseHost+"/order/chat_index?chatSessionNo="+order.getChatSessionNo()+"&orderId="+order.getId();
+		String title = "请尽快接单";
+		String remarkValue = buyUsrName+"于"+CommonUtils.dateToString(order.getPayConfirmTime(), "HH:mm", "")+"咨询问题，您还未接单，请尽快回复客户";
+		JSONObject pushToWxdata =  buildWxJsonData2(title, buyUsrName, order.getGoodsName(), remarkValue);
+		asynHand(order.getId(), order.getSellerUsrId(), null, sellerUsrOpenId, template_id, title,  clickUrl, pushToWxdata);
 	}
-	
+
 	/**
 	 * @param buyUsrName  取用户 微信昵称 如果取不到 则显示 匿名
 	 */
-	public void masterNewMsgUnRead10min(final FsOrder order,  final FsChatRecord unReadChatRecord, String sellerUsrOpenId, String buyUsrName){
+	public void userReplyMasterWxMsg(final FsOrder order,  final FsChatRecord unReadChatRecord, String sellerUsrOpenId, String buyUsrName){
 		String template_id = "Rn7HJBcL2yUh4xGIb311Vwa8lVDSPzkminEXYI6MALU"; 
 		String clickUrl = fsServiceBaseHost+"/order/chat_index?chatSessionNo="+order.getChatSessionNo()+"&orderId="+order.getId();
 		String title = "您的订单有新消息";
@@ -79,8 +72,34 @@ public class WxNoticeManagerImpl {
 		asynHand(order.getId(), order.getSellerUsrId(), unReadChatRecord.getId(), sellerUsrOpenId, template_id, title, clickUrl, pushToWxdata);
 	}
 	
+	
+	/**
+	 * 超过10分钟未读提醒老师赶紧回复
+	 * @param order
+	 * @param unReadChatRecord
+	 * @param sellerUsrOpenId
+	 * @param buyUsrName
+	 */
+	public void userReplyMasterUnreadWxMsg(final FsOrder order,  final FsChatRecord unReadChatRecord, String sellerUsrOpenId, String buyUsrName){
+		String template_id = "Rn7HJBcL2yUh4xGIb311Vwa8lVDSPzkminEXYI6MALU"; 
+		String clickUrl = fsServiceBaseHost+"/order/chat_index?chatSessionNo="+order.getChatSessionNo()+"&orderId="+order.getId();
+		String title = "尽快回复用户";
+		String keyword2Value = null;
+		if("img".equals(unReadChatRecord.getMsgType())){
+			keyword2Value="[图片]";
+		}else{
+			keyword2Value = unReadChatRecord.getContent().length()>20 ? unReadChatRecord.getContent().substring(0, 20)+"..."  : unReadChatRecord.getContent();
+		}
+		if(StringUtils.isEmpty(buyUsrName)){
+			buyUsrName = "匿名";
+		}
+		String remarkValue = buyUsrName+"于"+CommonUtils.dateToString(unReadChatRecord.getCreateTime(), "HH:mm", "")+"发的消息，您还没有回复哦，请尽快回复用户，以免被投诉";
+		JSONObject pushToWxdata =  buildWxJsonData2(title, order.getGoodsName(), keyword2Value, remarkValue);
+		asynHand(order.getId(), order.getSellerUsrId(), unReadChatRecord.getId(), sellerUsrOpenId, template_id, title, clickUrl, pushToWxdata);
+	}
+	
 	/** 订单被评价 给master  推送消息   **/
-	public void orderEvaluateToMaster(String masterOpenId, final long masterUsrId, final long orderId,String chatSessionNo,   final String goodsName , String buyUsrName , long respSpeedScore , long majorLevelScore , long serviceAttitudeScore , double totalScore){
+	public void orderEvaluateMasterWxMsg(String masterOpenId, final long masterUsrId, final long orderId,String chatSessionNo,   final String goodsName , String buyUsrName , long respSpeedScore , long majorLevelScore , long serviceAttitudeScore , double totalScore){
 		String template_id = "1PmvHfjSe9hYCd7HOwHF5VHE2Nowhf0O5kbtaZd7blk"; 
 		String clickUrl =   fsServiceBaseHost+"/order/chat_index?chatSessionNo="+chatSessionNo+"&orderId="+orderId;
 		String title = "您的订单已被评价";
@@ -93,7 +112,7 @@ public class WxNoticeManagerImpl {
 	}
 	
 	/** 订单被退款 给master  推送消息 **/
-	public void orderRefundedMsgToMaster(long orderId, String chatSessionNo , long sellerUsrId, String sellerUsrOpenId,  String goodsName ,  long refundAmt ,String buyUsrName , String refundReason ){
+	public void orderRefundMsgMasterWxMsg(long orderId, String chatSessionNo , long sellerUsrId, String sellerUsrOpenId,  String goodsName ,  long refundAmt ,String buyUsrName , String refundReason ){
 		String template_id = "1PmvHfjSe9hYCd7HOwHF5VHE2Nowhf0O5kbtaZd7blk"; 
 		String clickUrl =   fsServiceBaseHost+"/order/chat_index?chatSessionNo="+chatSessionNo+"&orderId="+orderId;
 		String title = "您的订单被退款";
@@ -106,7 +125,7 @@ public class WxNoticeManagerImpl {
 	}
 	
 	/** 老师第一次回复消息 给用户发送消息  **/
-	public void masterFirstReplyToBuyUsr(long orderId,  long buyUsrId, String buyUsrOpenId,String chatSessionNo,String goodsName,String masterName, String replyContent, long replayId){
+	public void masterFirstReplyUserWxMsg(long orderId,  long buyUsrId, String buyUsrOpenId,String chatSessionNo,String goodsName,String masterName, String replyContent, long replayId){
 		String template_id = "Rn7HJBcL2yUh4xGIb311Vwa8lVDSPzkminEXYI6MALU"; 
 		String clickUrl =  fsServiceBaseHost+"/order/chat_index?chatSessionNo="+chatSessionNo+"&orderId="+orderId;
 		String title = "老师已接单";
@@ -115,8 +134,8 @@ public class WxNoticeManagerImpl {
 		asynHand(orderId, buyUsrId, null, buyUsrOpenId, template_id, title, clickUrl, pushToWxdata);
 	}
 	
-	/** 老师回复消息30分钟内没有回复 给 buyUsr 用户发送消息  **/
-	public void masterReply30MinUnReadToBuyUsr(long orderId,String chatSessionNo, String goodsName, String replyContent, long replyId,String masterName,long buyUsrId,String buyUsrOpenId){
+	/** 老师回复消息立即 给 buyUsr 用户发送消息  **/
+	public void masterReplyUserWxMsg(long orderId,String chatSessionNo, String goodsName, String replyContent, long replyId,String masterName,long buyUsrId,String buyUsrOpenId){
 		String template_id = "Rn7HJBcL2yUh4xGIb311Vwa8lVDSPzkminEXYI6MALU"; 
 		String clickUrl = fsServiceBaseHost+"/order/chat_index?chatSessionNo="+chatSessionNo+"&orderId="+orderId;
 		String title = "老师有新回复";
@@ -127,7 +146,7 @@ public class WxNoticeManagerImpl {
 	
 	
 	/** 订单被退款 给 buyUsr  推送消息 **/
-	public void orderRefundMsgToBuyUsr(long orderId ,String goodsName, long buyUsrId,String buyUsrOpenId,String chatSessionNo,   boolean isRefundSucc , String refundAuditWord){
+	public void orderRefundMsgUserWxMsg(long orderId ,String goodsName, long buyUsrId,String buyUsrOpenId,String chatSessionNo,   boolean isRefundSucc , String refundAuditWord){
 		String template_id = "1PmvHfjSe9hYCd7HOwHF5VHE2Nowhf0O5kbtaZd7blk"; 
 		String clickUrl =    fsServiceBaseHost+"/order/chat_index?chatSessionNo="+chatSessionNo+"&orderId="+orderId;
 		String title = "您申请的退款已处理";
@@ -142,6 +161,7 @@ public class WxNoticeManagerImpl {
 		asynHand(orderId, buyUsrId, null, buyUsrOpenId, template_id, title, clickUrl, pushToWxdata);
 	}
 	
+	// 退款、评价消息
 	private JSONObject buildWxJsonData1(String serviceInfo, String serviceType,String serviceStatus,String time,String remark){
 		JSONObject data = new JSONObject();
 		JSONObject serviceInfoJson = new JSONObject();
@@ -162,7 +182,25 @@ public class WxNoticeManagerImpl {
 		data.put("remark", remarkJson);
 		return data;
 	}
-	
+
+	// 新订单、老师接单、老师回复、用户回复消息
+	private JSONObject buildWxJsonData2(String firstValue , String keyword1Value , String keyword2Value ,String remarkValue){
+		JSONObject data = new JSONObject();
+		JSONObject first = new JSONObject();
+		first.put("value", firstValue);
+		first.put("color", "#ff0000");
+		JSONObject keyword1 = new JSONObject();
+		keyword1.put("value", keyword1Value);		
+		JSONObject keyword2 = new JSONObject();
+		keyword2.put("value", keyword2Value);		
+		JSONObject remark = new JSONObject();
+		remark.put("value", remarkValue);		
+		data.put("first", first);
+		data.put("keyword1", keyword1);
+		data.put("keyword2", keyword2);
+		data.put("remark", remark);
+		return data;
+	}
 	
 	private void asynHand(final Long orderId, final Long usrId , final Long  chatRecordId , 
 			final String openId , final String  template_id , final String title , final String clickUrl ,final JSONObject pushToWxdata ){

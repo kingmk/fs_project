@@ -83,10 +83,11 @@
           and a.status in 
             <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
 				#{item}
-			</foreach>     
+			</foreach>
     </if>
   </where>
-       limit #{limitBegin} , #{limitEnd}
+  order by settlement_cycle_begin_time desc
+  limit #{limitBegin}, #{limitEnd}
 </select>
 
 </mapper>

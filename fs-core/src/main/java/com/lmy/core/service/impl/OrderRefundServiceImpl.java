@@ -222,9 +222,9 @@ public class OrderRefundServiceImpl {
 		JSONObject waitConfrimRefundData = new JSONObject();
 		waitConfrimRefundData.put("payRecordId", payRecordId);
 		if(isCft){
-			BeanstalkClient.put(QueueNameConstant.weiXinPayConfrim, null, 3, null, waitConfrimRefundData);	
+			BeanstalkClient.put(QueueNameConstant.QUEUE_WXPAY_CONFIRM, null, 3, null, waitConfrimRefundData);	
 		}else{
-			BeanstalkClient.put(QueueNameConstant.weiXinPayConfrim, null, 3, null, waitConfrimRefundData);
+			BeanstalkClient.put(QueueNameConstant.QUEUE_WXPAY_CONFIRM, null, 3, null, waitConfrimRefundData);
 		}
 		
 	}
@@ -271,10 +271,10 @@ public class OrderRefundServiceImpl {
 			FsOrder order = this.fsOrderDao.findById(orderId);
 			Map<Long ,FsUsr> idUsrMap = fsUsrDao.findByUsrIdsAndConvert( Arrays.asList(order.getBuyUsrId() , order.getSellerUsrId()) );
 			String buyUsrName =UsrAidUtil.getNickName2(idUsrMap.get( order.getBuyUsrId() ), "匿名");
-			wxNoticeManagerImpl.orderRefundedMsgToMaster(orderId, order.getChatSessionNo(), order.getSellerUsrId(), 
+			wxNoticeManagerImpl.orderRefundMsgMasterWxMsg(orderId, order.getChatSessionNo(), order.getSellerUsrId(), 
 					idUsrMap.get( order.getSellerUsrId() ).getWxOpenId(), order.getGoodsName(), order.getRefundRmbAmt(), buyUsrName, refundAuditWord);    //refundReason-->refundAuditWord  modify  by fidel at  2017/06/05 12:24
 			
-			wxNoticeManagerImpl.orderRefundMsgToBuyUsr(orderId, order.getGoodsName(), order.getBuyUsrId(), 
+			wxNoticeManagerImpl.orderRefundMsgUserWxMsg(orderId, order.getGoodsName(), order.getBuyUsrId(), 
 					idUsrMap.get( order.getBuyUsrId() ).getWxOpenId(), order.getChatSessionNo(), true, refundAuditWord);
 		}catch(Exception e){
 			logger.error("orderId:{},refundReason:{},refundAuditWord{}", orderId ,refundReason ,refundAuditWord );
@@ -303,7 +303,7 @@ public class OrderRefundServiceImpl {
 		try{
 			logger.info("退款审批拒接开始推送微信消息  orderId:{},refundAuditWord:{}", order.getId() ,refundAuditWord);
 			Map<Long,FsUsr> idUsrMap = this.fsUsrDao.findByUsrIdsAndConvert( Arrays.asList( order.getSellerUsrId(),order.getBuyUsrId() ) );
-			wxNoticeManagerImpl.orderRefundMsgToBuyUsr(order.getId(), order.getGoodsName(), order.getBuyUsrId(), 
+			wxNoticeManagerImpl.orderRefundMsgUserWxMsg(order.getId(), order.getGoodsName(), order.getBuyUsrId(), 
 					idUsrMap.get( order.getBuyUsrId() ).getWxOpenId(), order.getChatSessionNo(), false, refundAuditWord);
 		}catch(Exception e){
 			logger.error("orderId:{},refundAuditWord:{}", order.getId() ,refundAuditWord);

@@ -25,6 +25,7 @@ import com.lmy.core.model.FsChatRecord;
 import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsOrder;
 import com.lmy.core.model.FsUsr;
+import com.lmy.core.service.impl.AlidayuSmsFacadeImpl;
 import com.lmy.core.service.impl.UsrAidUtil;
 @Service
 public class OrderChatReadConfirmManagerServiceImpl extends QueueHandler {
@@ -41,7 +42,7 @@ public class OrderChatReadConfirmManagerServiceImpl extends QueueHandler {
 	private WxNoticeManagerImpl wxNoticeManagerImpl;
 	@Override
 	public String getQueueName() {
-		return QueueNameConstant.ORDER_CHAT_NEWMSG_UNREADCONFIRM;
+		return QueueNameConstant.QUEUE_ORDER_CHAT;
 	}
 	/**
 	 *  data.put("sentUsrId", sentUsrId);
@@ -50,10 +51,15 @@ public class OrderChatReadConfirmManagerServiceImpl extends QueueHandler {
 		data.put("_cacheTime", now);
 	 */
 	@Override
-	public Object hander(JSONObject data) throws Exception {
+	public Object handle(JSONObject data) throws Exception {
 		try{
 			if(data == null || data.isEmpty() || !data.containsKey("chatRecordId")){
 				logger.warn("参数格式错误data:{}", data);
+				return null;
+			}
+			String msgType = data.getString("msgType");
+			if (msgType == null || msgType.length() == 0) {
+				logger.warn("参数格式错误，缺少msgType，data:{}", data);
 				return null;
 			}
 			Long chatRecordId = data.getLong("chatRecordId");
@@ -93,11 +99,14 @@ public class OrderChatReadConfirmManagerServiceImpl extends QueueHandler {
 				logger.warn("订单聊天最大截止时间已过 本次操作忽略 消息丢弃 orderId:{},截止时间:{}", order.getId(), CommonUtils.dateToString(now, CommonUtils.dateFormat2, "")  );
 				return null;				
 			}
-
-			if( chatRecord.getReceUsrId() .equals( order.getSellerUsrId() )  ){
-				handerMasterUnReadMsg(chatRecord, order, now, data);
-			}else{
-				handerBuyUsrUnReadMsg(chatRecord, order);
+			if (msgType.equals(QueueNameConstant.MSG_ORDER_MASTER_NOTIFY)) {
+				notifyMaster(chatRecord, order);
+			} else if (msgType.equals(QueueNameConstant.MSG_ORDER_USER_NOTIFY)) {
+				notifyUser(chatRecord, order);
+			} else if (msgType.equals(QueueNameConstant.MSG_ORDER_MASTER_UNREAD_CHECK)) {
+				checkMasterUnread(chatRecord, order, data);
+			} else if (msgType.equals(QueueNameConstant.MSG_ORDER_USER_UNREAD_CHECK)) {
+				checkUserUnread(chatRecord, order, data);
 			}
 		}catch(Exception e){
 			logger.error("处理出错 data:{}",data,e);
@@ -105,8 +114,9 @@ public class OrderChatReadConfirmManagerServiceImpl extends QueueHandler {
 		}
 		return null;
 	}
+
 	
-	private void handerBuyUsrUnReadMsg(FsChatRecord chatRecord , FsOrder order){
+	private void notifyUser(FsChatRecord chatRecord , FsOrder order){
 		Map<Long,FsUsr> idUsrMap = 	this.fsUsrDao.findByUsrIdsAndConvert(Arrays.asList( order.getBuyUsrId(),order.getSellerUsrId() ));
 		List<FsMasterInfo> masterInfoList =  fsMasterInfoDao.findByUsrIds2(Arrays.asList(order.getSellerUsrId()), "approved", null);
 		String masterName = null;
@@ -117,22 +127,78 @@ public class OrderChatReadConfirmManagerServiceImpl extends QueueHandler {
 			masterName=  UsrAidUtil.getNickName2( idUsrMap.get( order.getSellerUsrId() ) ,"");	
 		}
 		String replyContent = this.getReplyContentForWxMsg(chatRecord);
-		wxNoticeManagerImpl.masterReply30MinUnReadToBuyUsr(order.getId(), order.getChatSessionNo(), order.getGoodsName(), replyContent, chatRecord.getId(),
+		wxNoticeManagerImpl.masterReplyUserWxMsg(order.getId(), order.getChatSessionNo(), order.getGoodsName(), replyContent, chatRecord.getId(),
 				masterName, idUsrMap.get(order.getBuyUsrId()).getId(), idUsrMap.get(order.getBuyUsrId()).getWxOpenId());
 	}
+
+	private void notifyMaster(FsChatRecord chatRecord , FsOrder order){
+		Map<Long,FsUsr> idUsrMap = this.fsUsrDao.findByUsrIdsAndConvert(Arrays.asList( order.getBuyUsrId(),order.getSellerUsrId() ));
+		String buyUsrName = UsrAidUtil.getNickName2(idUsrMap.get( order.getBuyUsrId() ), "匿名");
+		this.wxNoticeManagerImpl.userReplyMasterWxMsg(order, chatRecord, idUsrMap.get(order.getSellerUsrId()).getWxOpenId(), buyUsrName);
+	}
 	
-	private String getReplyContentForWxMsg(FsChatRecord chatRecord){
-		if("img".equals(chatRecord.getMsgType())){
-			return "[图片]";
-		}else{
-			return chatRecord.getContent().length()>20 ? chatRecord.getContent().substring(0, 20)+"..."  : chatRecord.getContent();
+	private void checkUserUnread(FsChatRecord chatRecord, FsOrder order, JSONObject data) {
+		/*
+		 * 老师发送消息后，延迟10分钟检查用户是否已读，
+		 * 如果已读，则不处理
+		 * 如果未读，则检查此前是否已经发过短消息了
+		 * 1）如果之前还未发过短消息，则立即发送给用户，并且在redis中记录本次状态30分钟
+		 * 2）如果之前发过短消息，且redis中的记录还未过期，则本次不发送
+		 * 3）如果之前发过短消息，但redis中的记录已过期，则本次仍然发送，发送后在redis中记录本次状态30分钟
+		 */
+		String key =   CacheConstant.ORDER_CHAT_BUYUSR_UNREAD_LAST_PUSH + order.getId();
+		JSONObject cacheData = (JSONObject)RedisClient.get(key);
+		boolean needSendMsg  = false;
+		
+		if (chatRecord.getIsRead().equals("Y")) {
+			// do nothing if the chat record has been read
+		} else if (cacheData == null) {
+			// if no cache, msg should be sent
+			needSendMsg = true;
+		} 
+		
+		if (needSendMsg) {
+			FsUsr user = fsUsrDao.findById(order.getBuyUsrId());
+			JSONObject smsParamJson = new JSONObject();
+			smsParamJson.put("category", order.getGoodsName());
+			AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, user.getRegisterMobile(), "SMS_101030073", null);
+			RedisClient.set(key, data, 60*30);
+		}
+	}
+
+	private void checkMasterUnread(FsChatRecord chatRecord , FsOrder order, JSONObject data) {
+		/*
+		 * 用户发送消息后，延迟10分钟检查老师是否已读，
+		 * 如果已读，则不处理
+		 * 如果未读，则检查此前是否已经发过短消息了
+		 * 1）如果之前还未发过短消息，则立即发送给老师，并且在redis中记录本次状态30分钟
+		 * 2）如果之前发过短消息，且redis中的记录还未过期，则本次不发送
+		 * 3）如果之前发过短消息，但redis中的记录已过期，则本次仍然发送，发送后在redis中记录本次状态30分钟
+		 */
+		String key =   CacheConstant.ORDER_CHAT_MASTER_UNREAD_LAST_PUSH + order.getId();
+		JSONObject cacheData = (JSONObject)RedisClient.get(key);
+		boolean needSendMsg  = false;
+		if (chatRecord.getIsRead().equals("Y")) {
+			// do nothing if the chat record has been read
+		} else if (cacheData == null) {
+			// if no cache, msg should be sent
+			needSendMsg = true;
+		}
+		if (needSendMsg) {
+			Map<Long,FsUsr> idUsrMap = 	this.fsUsrDao.findByUsrIdsAndConvert(Arrays.asList( order.getBuyUsrId(),order.getSellerUsrId() ));
+			String buyUsrName = UsrAidUtil.getNickName2(idUsrMap.get( order.getBuyUsrId() ), "匿名");
+			this.wxNoticeManagerImpl.userReplyMasterUnreadWxMsg(order, chatRecord, idUsrMap.get(order.getSellerUsrId()).getWxOpenId(), buyUsrName);
+			RedisClient.set(key, data, 60*30);
+			
+			this.put(null, 60*30+2, null, data);
 		}
 	}
 	
-	private void handerMasterUnReadMsg(FsChatRecord unReadChatRecord , FsOrder order,Date now ,JSONObject beanstalkd){
+	
+	@SuppressWarnings("unused")
+	private void handleMasterUnreadMsg(FsChatRecord unReadChatRecord , FsOrder order,Date now ,JSONObject beanstalkd){
 		//10分钟 -->修改为立即发送(延迟2秒)   modify by fidel at 2017/06/01 18:29 
-		//客户发送消息后如果10分钟内未读，则向老师推送，但如果该新消息之前已经推送过一条新消息通知，并且该新消息未被老师读取，则不会再做推送
-		//查看 之前是否已经发送过消息
+		
 		String key =   CacheConstant.ORDER_CHAT_MASTER_UNREAD_LAST_PUSH + order.getId();
 		//JSON 字符串 定包含 chatRecordId
 		JSONObject cacheValue = (JSONObject)RedisClient.get(key);
@@ -168,10 +234,19 @@ public class OrderChatReadConfirmManagerServiceImpl extends QueueHandler {
 			}
 			Map<Long,FsUsr> idUsrMap = 	this.fsUsrDao.findByUsrIdsAndConvert(Arrays.asList( order.getBuyUsrId(),order.getSellerUsrId() ));
 			String buyUsrName = 	UsrAidUtil.getNickName2(idUsrMap.get( order.getBuyUsrId() ), "匿名");
-			this.wxNoticeManagerImpl.masterNewMsgUnRead10min(order, unReadChatRecord, 	idUsrMap.get(order.getSellerUsrId()).getWxOpenId(), buyUsrName);
-			RedisClient.set(key, beanstalkd,  RedisClient.oneDaySec );			
+			this.wxNoticeManagerImpl.userReplyMasterWxMsg(order, unReadChatRecord, 	idUsrMap.get(order.getSellerUsrId()).getWxOpenId(), buyUsrName);
+			RedisClient.set(key, beanstalkd,  RedisClient.oneDaySec );
 		}
 	}
+
+	private String getReplyContentForWxMsg(FsChatRecord chatRecord){
+		if("img".equals(chatRecord.getMsgType())){
+			return "[图片]";
+		}else{
+			return chatRecord.getContent().length()>20 ? chatRecord.getContent().substring(0, 20)+"..."  : chatRecord.getContent();
+		}
+	}
+	
 	private void pushInQueueAgain(JSONObject data){
 		Integer _errorTimes = data.getInteger("_errorTimes");
 		if(_errorTimes == null ){

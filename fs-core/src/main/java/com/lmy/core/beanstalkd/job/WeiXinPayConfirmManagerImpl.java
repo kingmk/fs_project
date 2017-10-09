@@ -35,13 +35,13 @@ public class WeiXinPayConfirmManagerImpl extends QueueHandler{
 	private org.springframework.transaction.support.TransactionTemplate fsTransactionTemplate;
 	@Override
 	public String getQueueName() {
-		return QueueNameConstant.weiXinPayConfrim;
+		return QueueNameConstant.QUEUE_WXPAY_CONFIRM;
 	}
 	/**
 	 * data key:payRecordId
 	 */
 	@Override
-	public Object hander(JSONObject data) throws Exception {
+	public Object handle(JSONObject data) throws Exception {
 		try{
 			if(data == null || data.isEmpty() || !data.containsKey("payRecordId")){
 				logger.warn("参数格式错误data:{}", data);

@@ -53,7 +53,7 @@ public class PayAfter24HoursManagerImpl extends QueueHandler{
 	 * key: orderId;
 	 */
 	@Override
-	public Object hander(JSONObject data) throws Exception {
+	public Object handle(JSONObject data) throws Exception {
 		try{
 			Date now = new Date();
 			if(data == null || data.isEmpty() || !data.containsKey("orderId")){
@@ -75,12 +75,12 @@ public class PayAfter24HoursManagerImpl extends QueueHandler{
 				return null;
 			}
 			//判断 是自动的退款(大师没有回复的话) , 还是 订单变更 --> completed 状态 订单完成
-			//查询最近一笔回复
-			FsChatRecordDto chatRecord = 	fsChatRecordDao.findUsrReceLastReply(order.getChatSessionNo(), order.getBuyUsrId());
+			//查询最近一次回复
+			FsChatRecordDto chatRecord = fsChatRecordDao.findUsrReceLastReply(order.getChatSessionNo(), order.getBuyUsrId());
 			///需要做自动退款
-			if(chatRecord == null ||  chatRecord.getCreateTime().after( order.getEndChatTime() )){
+			if(chatRecord == null || chatRecord.getCreateTime().after( order.getEndChatTime() )){
 				logger.info("master 24小时内没友回复 系统自动的发起退款 ... being 退款orderId:{};chatSessionNo:{},当前状态:{}",orderId,order.getChatSessionNo(),order.getStatus());
-				doAfter24HoursUnReadMsgAutoRefund(order,data);
+				doAfter24HoursUnreadMsgAutoRefund(order,data);
 			}else{
 				doSetOrderStatusToCompleted(order, now,data);
 			}
@@ -112,7 +112,7 @@ public class PayAfter24HoursManagerImpl extends QueueHandler{
 	}
 	
 	/** 可以发起多次退款申请 但是只能成功一笔 --->退款交易表中 至多同时只存在 一条 ing|succ 的退款记录**/
-	private void doAfter24HoursUnReadMsgAutoRefund(FsOrder order ,JSONObject data){
+	private void doAfter24HoursUnreadMsgAutoRefund(FsOrder order ,JSONObject data){
 		try{
 			fsOrderDao.updateForRefundApplied(order.getId(), "Y", "老师未接单", order.getPayRmbAmt(), new Date());
 			order.setStatus( OrderStatus.refund_applied.getStrValue() );

@@ -39,10 +39,17 @@ public class AlidayuSmsFacadeImpl {
 		}
 		return true;
 	}
+	
 	public static void main(String[] args){
-		//JSONObject smsParamJson = new JSONObject();
-		//smsParamJson.put("code","123456");
-		//smsParamJson.put("product","雷门易");
-		 //AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, "18221360028", "SMS_68210019 " , null);
+//		JSONObject smsParamJson = new JSONObject();
+//		smsParamJson.put("time","11:25");
+//		smsParamJson.put("category","测试分类");
+//		AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, "18667193683", "SMS_101155069" , null);
+		
+
+		JSONObject smsParamJson = new JSONObject();
+//		smsParamJson.put("time","11:25");
+		smsParamJson.put("category","测试分类");
+		AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, "18667193683", "SMS_101030073" , null);
 	}
 }

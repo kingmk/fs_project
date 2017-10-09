@@ -91,7 +91,7 @@ public class BeanstalkClient {
 	 * @param priority 默认 1024
 	 *  @param delaySeconds 默认 0
 	 */
-	public static  synchronized boolean release(Client client,long jobId,Long priority,Integer delaySeconds ){
+	public static synchronized boolean release(Client client,long jobId,Long priority,Integer delaySeconds ){
 		try{
 			if(priority==null ||priority<0){
 				priority = 1024l;
@@ -132,7 +132,7 @@ public class BeanstalkClient {
 	public static Client getClient(){
 		Client client = null;
 		try{
-			client =     new ClientImpl(HOST, PORT);
+			client =  new ClientImpl(HOST, PORT);
 		}catch(com.surftools.BeanstalkClient.BeanstalkException e){
 			logger.error("getClient encounter error HOST="+HOST+",PORT="+PORT ,e);
 			if("Connection timed out: connect".equals(e.getMessage()) || "Connection refused".equals(e.getMessage())){
@@ -170,6 +170,7 @@ public class BeanstalkClient {
 	public static void main(String[] args) {
 		put("test1", null, null, null, "hello");
 		put("test2", null, null, null, "hello2");
+//		Client client = getClient();
 	}
 	
 }

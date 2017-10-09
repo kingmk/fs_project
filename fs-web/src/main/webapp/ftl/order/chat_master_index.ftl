@@ -2,14 +2,14 @@
 <html>
 <title>咨询${body.goodsName}</title>
 <head>
-	<script src="${host.js}/js/rem.js?${host.version}"></script>
-	<script src="${host.js}/js/jquery-1.11.3.min.js"></script>
-	<script src="${host.js}/js/iscroll-probe.js?${host.version}"></script>
-	<script src="${host.js}/js/common.js?${host.version}"></script>
-	<link rel="stylesheet" href="${host.css}/css/bgmask.css?${host.version}">
-	<link rel="stylesheet" href="${host.css}/css/liaotian.css?${host.version}">
- 	<script type="text/javascript" src="${host.js}/js/Math.uuid.js?${host.version}"></script>
- 	<style>
+<script src="${host.js}/js/rem.js?${host.version}"></script>
+<script src="${host.js}/js/jquery-1.11.3.min.js"></script>
+<script src="${host.js}/js/iscroll-probe.js?${host.version}"></script>
+<script src="${host.js}/js/common.js?${host.version}"></script>
+<link rel="stylesheet" href="${host.css}/css/bgmask.css?${host.version}">
+<link rel="stylesheet" href="${host.css}/css/liaotian.css?${host.version}">
+<script type="text/javascript" src="${host.js}/js/Math.uuid.js?${host.version}"></script>
+<style>
 #bgk-img{z-index:999;}
 .speak-window.chatting {bottom:8rem;}
 .speak-box {position: absolute; }
@@ -27,8 +27,8 @@
 .tmphdr {position: absolute; opacity: 0; top: 0; width: 100%;}
 .wait-evaluate{background:#ccc!important; color: #fff!important; border: 0.1rem solid #ddd;}
 #content.focus {height: 7rem; margin-bottom: 2rem; margin-top: 1rem;}
- </style>
- <script type="text/javascript">
+</style>
+<script type="text/javascript">
 var excludeChatIds = new Array();
 var lastTime = '${body.chatServiceSurplusSec}';
 var myScroll = null;
@@ -39,59 +39,60 @@ var secondUpadte = 3000;
 var isChatSubmit = false;
 var orderExtraInfo = <#if body.orderExtraInfo ??>true<#else>false</#if>;
 var overscroll = function(el) {
-    el.addEventListener('touchstart', function() {
-        var top = el.scrollTop
-        ,totalScroll = el.scrollHeight
-        ,currentScroll = top + el.offsetHeight;
-        if(top === 0) {
-            el.scrollTop = 1;
-        }else if(currentScroll === totalScroll) {
-            el.scrollTop = top - 1;
-        }
-    });
+	el.addEventListener('touchstart', function() {
+		var top = el.scrollTop
+		,totalScroll = el.scrollHeight
+		,currentScroll = top + el.offsetHeight;
+		if(top === 0) {
+			el.scrollTop = 1;
+		} else if(currentScroll === totalScroll) {
+			el.scrollTop = top - 1;
+		}
+	});
 
-    el.addEventListener('touchmove', function(evt) {
-    if(el.offsetHeight < el.scrollHeight)
-        evt._isScroller = true;
-    });
+	el.addEventListener('touchmove', function(evt) {
+		if(el.offsetHeight < el.scrollHeight){
+			evt._isScroller = true;
+		}
+	});
 }
 
 $(function(){
 	overscroll(document.querySelector('.speak-box'));
-  overscroll(document.querySelector('.bgmask-body'));
-  if($("#content").length>0){
-    overscroll(document.querySelector('#content'));
-    overscroll(document.querySelector('#content'));
-    $("#content").focus(function() {
-      $("#content").addClass("focus");
-      $(".speak-window").addClass("chatting");
-    });
-    $("#content").blur(function() {
-      $("#content").removeClass("focus");
-      $(".speak-window").removeClass("chatting");
-    });
-    $("#content").on("keydown",function(e) {
-    	if(e.keyCode == 13) {
-    		$("#sentTextMsgBtn").trigger("mousedown");
-    		var f = function() {
-    			$("#content").val("");
-    		}
-    		setTimeout(f, 100);
-    	}
-    });
-  }
+	overscroll(document.querySelector('.bgmask-body'));
+	if($("#content").length>0){
+	overscroll(document.querySelector('#content'));
+	overscroll(document.querySelector('#content'));
+	$("#content").focus(function() {
+		$("#content").addClass("focus");
+		$(".speak-window").addClass("chatting");
+	});
+	$("#content").blur(function() {
+		$("#content").removeClass("focus");
+		$(".speak-window").removeClass("chatting");
+	});
+	$("#content").on("keydown",function(e) {
+		if(e.keyCode == 13) {
+			$("#sentTextMsgBtn").trigger("mousedown");
+			var f = function() {
+				$("#content").val("");
+			}
+			setTimeout(f, 100);
+		}
+	});
+	}
 
-  document.body.addEventListener('touchmove', function(evt) {
-      if(!evt._isScroller) {
-          evt.preventDefault();
-      }
-  });
+	document.body.addEventListener('touchmove', function(evt) {
+		if(!evt._isScroller) {
+			evt.preventDefault();
+		}
+	});
 
 	if('${body.orderStatus}' == 'pay_succ'){
 		if(orderExtraInfo){
 			$("#userInfo").show();
 			if('${body.isWaitMasterService}' == 'Y'){
-	    	$(".lastTimeTitle").html("&nbsp;&nbsp;");
+				$(".lastTimeTitle").html("&nbsp;&nbsp;");
 				$("#lastTime").html('您可以进行对话了');
 			}else{
 				$("#lastTime").html(lastTime && lastTime!='0'?commonUtils.getTimeFix(lastTime):'0');
@@ -101,18 +102,18 @@ $(function(){
 				setInterval(function(){
 					paramsMana();
 					loadAjax(function(dom){
-				    	$("#list").append(dom);
+						$("#list").append(dom);
 					},'next')
 				}, secondUpadte);
 			}
 		}else{
 			$(".lastTimeTitle").html("&nbsp;&nbsp;");
-  	  $("#lastTime").html('等待用户提交信息');
-  	  $("#userInfo").hide();
+			$("#lastTime").html('等待用户提交信息');
+			$("#userInfo").hide();
 		}
 	}else{
 		$(".lastTimeTitle").html("&nbsp;&nbsp;");
-  	$("#lastTime").html('本次服务已结束');
+		$("#lastTime").html('本次服务已结束');
 	}
 
 
@@ -124,8 +125,8 @@ $(function(){
 
 
 	if ($(".order-completed").length > 0) {
-    $(".speak-window").css('bottom',"12rem");
-  }
+		$(".speak-window").css('bottom',"12rem");
+	}
 
 	$("#sentTextMsgBtn").on("mousedown",function(){
 		if ($.trim($("#content").val()).length == 0) {
@@ -135,11 +136,11 @@ $(function(){
 	});
 	$("#userInfo").on('click', showUserInfo)
 	$(".bgmask-close").on('click', function(){
-    $("#userForm").hide();$("body").removeClass('hidden');});
-  $("#userForm").on('click', function(){
-    $("#userForm").hide();$("body").removeClass('hidden');});
-  $(".user-data-wrapper").on('click', function(e){
-    e.stopPropagation;});
+	$("#userForm").hide();$("body").removeClass('hidden');});
+	$("#userForm").on('click', function(){
+	$("#userForm").hide();$("body").removeClass('hidden');});
+	$(".user-data-wrapper").on('click', function(e){
+		e.stopPropagation;});
 });
 //展示用户信息
 function showUserInfo(){
@@ -147,7 +148,7 @@ function showUserInfo(){
 		return;
 	}
 	$("#userForm").show();
-  $("body").addClass('hidden');
+	$("body").addClass('hidden');
 }
 //聊天发送
 function chatSubmit(msgType,dataURL,imgData){
@@ -160,21 +161,21 @@ function chatSubmit(msgType,dataURL,imgData){
 	$("#clientUniqueNo").val( clientUniqueNo );
 	var form = new FormData( $("#chatForm")[0] );
 	handBeforeChatSubmit(clientUniqueNo,dataURL,imgData);
- 	$.ajax({
-	    type: "POST",
-	    url: "${host.base}/order/chat_submit",
+	$.ajax({
+		type: "POST",
+		url: "${host.base}/order/chat_submit",
 		data:form,
-	    dataType: "json",
-	    cache: false,
-	    processData: false,
-	    contentType: false,
-	    success: function(data){
+		dataType: "json",
+		cache: false,
+		processData: false,
+		contentType: false,
+		success: function(data){
 			handAfterChatSubmit(data,clientUniqueNo,imgData);
 			isChatSubmit = false;
-	    },
-	    error: function(res){
+		},
+		error: function(res){
 			isChatSubmit = false;
-	    }
+		}
 	});
 }
 //图片上传事件
@@ -192,7 +193,7 @@ function fileUpload(self) {
 	img.src = dataURL;
 	var imgData = {};
 	img.onload = function(){
-    	imgData = adjustImageSize({w: img.width, h:img.height});
+		imgData = adjustImageSize({w: img.width, h:img.height});
 		chatSubmit('img', dataURL,imgData);
 	}
 }
@@ -207,8 +208,8 @@ function handBeforeChatSubmit(clientUniqueNo,dataURL,imgData){
 		$("#content").val('');
 		$("#list").append( $(dom));
 	}else{
-	    dom = dom + '<div class="speak-text"><img src="' + dataURL + '" style="max-width: 24rem; float:right; width:'+imgData.w+'rem; height:'+imgData.h+'rem" onclick="showImg(\''+dataURL+'\')"></div></div></div>';
-	    $("#list").append($(dom));
+		dom = dom + '<div class="speak-text"><img src="' + dataURL + '" style="max-width: 24rem; float:right; width:'+imgData.w+'rem; height:'+imgData.h+'rem" onclick="showImg(\''+dataURL+'\')"></div></div></div>';
+		$("#list").append($(dom));
 	}
 	var hWrapper = $(".speak-window").height();
 	var hBox = $(".speak-box").outerHeight();
@@ -354,9 +355,9 @@ function loadAjax(callback,firefrom){
 		_excludeChatIds = _excludeChatIds.replace("[","");
 		_excludeChatIds = _excludeChatIds.replace("]","");
 	}
- 	$.ajax({
-	    type: "POST",
-	    url: "${host.base}/order/chat_query_html_fragment_ajax",
+	$.ajax({
+		type: "POST",
+		url: "${host.base}/order/chat_query_html_fragment_ajax",
 		data:{
 			chatSessionNo:"${chatSessionNo}",
 			orderId:${orderId},
@@ -364,40 +365,39 @@ function loadAjax(callback,firefrom){
 			ltChatId:  _ltChatId,
 			excludeChatIds : _excludeChatIds,
 	    },
-	    dataType: "html",
-	    success: function(data){
+		dataType: "html",
+		success: function(data){
 			var doms = $(data);
 			calculateImg(doms);
 			callback(doms);
-	    },
-	    error: function(res){
-
-	    }
+		},
+		error: function(res){
+		}
 	});
 }
 
 //加载图片高宽处理
 function calculateImg(doms) {
-  var domImgs = doms.find("img");
-  for (var i = domImgs.length - 1; i >= 0; i--) {
-    var domImg = $(domImgs[i]);
-    var w = parseInt(domImg.attr("data-w"));
-    var h = parseInt(domImg.attr("data-h"));
-    var sizeReal = adjustImageSize({w:w, h:h});
-    domImg.css("width", sizeReal.w + "rem");
-    domImg.css("height", sizeReal.h + "rem");
-  }
+	var domImgs = doms.find("img");
+	for (var i = domImgs.length - 1; i >= 0; i--) {
+		var domImg = $(domImgs[i]);
+		var w = parseInt(domImg.attr("data-w"));
+		var h = parseInt(domImg.attr("data-h"));
+		var sizeReal = adjustImageSize({w:w, h:h});
+		domImg.css("width", sizeReal.w + "rem");
+		domImg.css("height", sizeReal.h + "rem");
+	}
 }
 
 function adjustImageSize(size) {
-  var max_w = 24;
-  var wreal = size.w;
-  var hreal = size.h;
-  if (size.w > max_w) {
-    wreal = max_w;
-    hreal = wreal * size.h / size.w;
-  }
-  return {w: wreal, h: hreal}
+	var max_w = 24;
+	var wreal = size.w;
+	var hreal = size.h;
+	if (size.w > max_w) {
+		wreal = max_w;
+		hreal = wreal * size.h / size.w;
+	}
+	return {w: wreal, h: hreal}
 }
 
 //参数管理函数
@@ -431,7 +431,7 @@ function showImg(url){
 function viewEvaluateSingle(orderId){
 	location.href = "${host.base}/usr/master/evaluate_single_detail?orderId="+orderId;
 }
- </script>
+</script>
 
 </head>
 <body>

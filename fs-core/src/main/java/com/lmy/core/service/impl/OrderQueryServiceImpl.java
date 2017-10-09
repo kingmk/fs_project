@@ -321,7 +321,7 @@ public class OrderQueryServiceImpl {
 			JSONArray eleList = new JSONArray();
 			if(currentPage ==0){
 				//未结算的
-				 List<FsOrder> waitSettleOrderList = 	this.fsOrderDao.findShortOrderInfoForSettlement1(sellerUsrId, OrderAidUtil.getMasterWaitIncometatus());
+				 List<FsOrder> waitSettleOrderList = this.fsOrderDao.findShortOrderInfoForSettlement1(sellerUsrId, OrderAidUtil.getMasterWaitIncometatus());
 				 if(CollectionUtils.isNotEmpty(waitSettleOrderList)){
 					 eleList.add(  _buildWaitSellteBill(waitSettleOrderList) );
 				 }				

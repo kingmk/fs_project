@@ -261,7 +261,6 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .content .icon-income { background-position: 0 0; }
 .content .icon-service { background-position: 0 -400%; }
 .content .icon-data { background-position: 0 -300%; }
+.content .icon-bank { background-position: 0 -500%; }
 .content .icon-rating { background-position: 0 -100%; }
 .content .icon-home { background-position: 0 -200%; }
-
-/*# sourceMappingURL=my_account.css.map */

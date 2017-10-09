@@ -41,12 +41,12 @@ public class FsWeiXinUrlServiceImpl {
 		}
 		if(logger.isDebugEnabled())  logger.debug("goTo="+goTo+",当前环境:"+FsEnvUtil.getEnv());
 		if(FsEnvUtil.isDev()){
-			redirectUrl = "http://haozhao.xicp.net/enter/weixin?_goTo="+goTo;	
+			redirectUrl = "http://fs.shuimumu.cn/enter/weixin?_goTo="+goTo;
 		}else if(FsEnvUtil.isTest()){
-			redirectUrl = "http://haozhao.xicp.net/enter/weixin?_goTo="+goTo;	
+			redirectUrl = "http://fs.shuimumu.cn/enter/weixin?_goTo="+goTo;
 		}
 		else if(FsEnvUtil.isPro()){
-			redirectUrl = "http://leimenyi.com.cn/enter/weixin?_goTo="+goTo;	
+			redirectUrl = "http://leimenyi.com.cn/enter/weixin?_goTo="+goTo;
 		}else{
 			//TODO
 			 redirectUrl = "http://app.ucaibank.com/yc/weixin/third_redirect/wx1b99f22989f7b28d?_goTo="+goTo;	

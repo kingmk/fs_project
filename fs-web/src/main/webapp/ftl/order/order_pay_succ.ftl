@@ -160,6 +160,7 @@
             mAlert.addAlert('您有未填写信息,请填写完整！',2000)
             return;
         }else{ postArr.push(c);}
+    <#--结婚吉日，择吉生产，婚恋感情-->
     <#elseif order.zxCateId=100004 || order.zxCateId=100005 || order.zxCateId==100001>
         if($("#isSelf1").hasClass('open1')){
             data1['isSelf'] = 'Y';
@@ -206,8 +207,8 @@
                 $("#form2 input[name='"+ index +"']").parents('.list-control').removeClass('error');
             }
         });
-        if($("#form1 .error").length>0 || $("#form2 .error").length>0){
-            mAlert.addAlert('您有未填写信息,请填写完整！',2000)
+        if($("#form1 .error").length>0 && $("#form2 .error").length>0){
+            mAlert.addAlert('双方信息至少有一方是完整的',2000);
             return;
         }else{postArr.push(data1); postArr.push(data2);}
         <#else>
@@ -232,10 +233,8 @@
             return;
         }else{postArr.push(data1); postArr.push(data2);}
         </#if>
-
-
-
-    <#elseif order.zxCateId=100007>
+    <#--乔迁择日-->
+    <#elseif order.zxCateId==100007>
         if($("#isSelf1").hasClass('open1')){
             data2['isSelf'] = 'Y';
         }else{

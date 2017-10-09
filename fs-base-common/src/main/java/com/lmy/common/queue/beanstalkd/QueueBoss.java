@@ -124,11 +124,11 @@ public class QueueBoss implements Runnable{
 			logger.debug("key="+key+",message obj="+obj);
 			if(obj !=null){
 				try {
-					this.handler.hander(obj);
+					this.handler.handle(obj);
 				} catch (Exception e) {
 					logger.error("key="+key+",obj="+obj+",hand encouter one error",e);
 				}
-			}			
+			}
 		}catch(Exception e){
 			logger.error("key="+key+",obj="+obj,e);
 		}

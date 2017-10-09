@@ -130,16 +130,21 @@ public class AES256Encryption {
      */
     public static void main(String[] args) throws Exception {
 
-        String str =  "jdbc:mysql://127.0.0.1:3306/fs_pro?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8";
+        String str_sqlurl =  "jdbc:mysql://127.0.0.1:3306/fs_pro?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8";
+        String str_sqluser = "fs_pro001";
+        String str_sqlpwd = "webaDmin%)0519FJkd";
         try {
-//        	str = "k0i8n1g3";
-        	String encrp  = AES256Encryption.encrypt(str);
-        	System.out.println("加密后数据=\n"+encrp );
+        	String encrp_sqlurl  = AES256Encryption.encrypt(str_sqlurl);
+        	System.out.println("加密后sql url=\n"+encrp_sqlurl );
+        	String encrp_sqluser  = AES256Encryption.encrypt(str_sqluser);
+        	System.out.println("加密后sql user=\n"+encrp_sqluser );
+        	String encrp_sqlpwd  = AES256Encryption.encrypt(str_sqlpwd);
+        	System.out.println("加密后sql pwd=\n"+encrp_sqlpwd );
 //            String data = AES256Encryption.decrypt(encrp);
 //            System.out.println("解密后数据="+data);
         	
-        	encrp = "9vxCb169jIFbQ1f/5VsvJko/XGRdj5doc9MVGgWzUoMJ9N1gZK7Q5NcTGxemP6QqbeDzsh1N+Hf8pmjlT7LNr7rEO+CUrFvrwDqqIDBPAEE8GRTSYqUl3jZb5SIyLD+wTI42KvAuH7rPNKkxKdWZNw==";
-        	String data = AES256Encryption.decrypt(encrp);
+//        	encrp = "9vxCb169jIFbQ1f/5VsvJko/XGRdj5doc9MVGgWzUoMJ9N1gZK7Q5NcTGxemP6QqbeDzsh1N+Hf8pmjlT7LNr7rEO+CUrFvrwDqqIDBPAEE8GRTSYqUl3jZb5SIyLD+wTI42KvAuH7rPNKkxKdWZNw==";
+        	String data = AES256Encryption.decrypt("upcwwS2lKHDVkvFVkbIpAK6SKWdBFf/aq6eP4R9w8pI=");
         	System.out.println("解密后数据="+data);
         	
         } catch (Exception e) {

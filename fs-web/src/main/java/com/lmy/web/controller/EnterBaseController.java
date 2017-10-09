@@ -104,6 +104,7 @@ public class EnterBaseController {
 				+"&secret="+ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.appsecret")+"&code={0}&grant_type=authorization_code";
 		String resp = httpService.doGet( MessageFormat.format(baseUrl, weiXinAuthCode) , "utf-8");
 		JSONObject respJson = JSON.parseObject(resp);
+		logger.info("get openid: "+respJson.toJSONString());
 		return respJson.getString("openid");
 	}
 	

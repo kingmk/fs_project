@@ -78,24 +78,24 @@
 						<div class="txt">${item.birthDate}</div>
 					</li>
 					</#if>
-					<#if item.nlBirthDateDesc??  && item.nlBirthDateDesc!=''>
+<!-- 					<#if item.nlBirthDateDesc??  && item.nlBirthDateDesc!=''>
 					<li>
 						<div class="tit">农历生日</div>
 						<div class="txt">${item.nlBirthDateDesc}</div>
 					</li>
-					</#if>
+					</#if> -->
           <#if item.birthTimeText?? && item.birthTimeText!=''>
           <li>
             <div class="tit">出生时间</div>
             <div class="txt">${item.birthTimeText}</div>
           </li>
           </#if>
-					<#if item.bazi??  && item.bazi!=''>
+<!-- 					<#if item.bazi??  && item.bazi!=''>
 					<li>
 						<div class="tit">八字</div>
 						<div class="txt">${item.bazi}</div>
 					</li>
-					</#if>
+					</#if> -->
 					<#if item.birthAddress?? && item.birthAddress!=''>
 					<li>
 						<div class="tit">出生地</div>

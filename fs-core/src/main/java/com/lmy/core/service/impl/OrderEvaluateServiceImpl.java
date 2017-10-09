@@ -182,7 +182,7 @@ public class OrderEvaluateServiceImpl {
 			FsOrder order = this.fsOrderDao.findById(orderId);
 			Map<Long,FsUsr> idUsrMap = this.fsUsrDao.findByUsrIdsAndConvert( Arrays.asList( order.getSellerUsrId(),order.getBuyUsrId() ) );
 			String buyUsrName =UsrAidUtil.getNickName2(idUsrMap.get( order.getBuyUsrId() ), "匿名");
-			wxNoticeManagerImpl.orderEvaluateToMaster( idUsrMap.get(order.getSellerUsrId()).getWxOpenId() , order.getSellerUsrId(), 
+			wxNoticeManagerImpl.orderEvaluateMasterWxMsg( idUsrMap.get(order.getSellerUsrId()).getWxOpenId() , order.getSellerUsrId(), 
 					orderId, order.getChatSessionNo(),order.getGoodsName(), 
 					buyUsrName, respSpeed * 2 , majorLevel * 2 , serviceAttitude * 2, (respSpeed +majorLevel +serviceAttitude ) *2/3 );			
 		}catch(Exception e){

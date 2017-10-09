@@ -21,7 +21,7 @@ public class TestPayAfter24HoursManagerImpl extends BaseTestCase{
 		JSONObject data = new JSONObject();
 		data.put("orderId", 100039);
 		data.put("_errorTimes", 4);
-		payAfter24HoursManagerImpl.hander(data);
+		payAfter24HoursManagerImpl.handle(data);
 	}
 	
 	@Test

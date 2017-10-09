@@ -14,6 +14,6 @@ public class TestOrderChatReadConfirmManagerServiceImpl extends BaseTestCase {
 	public void test_hand() throws Exception{
 		JSONObject data = new JSONObject();
 		data.put("chatRecordId", 100117);
-		orderChatReadConfirmManagerServiceImpl.hander(data);
+		orderChatReadConfirmManagerServiceImpl.handle(data);
 	}
 }

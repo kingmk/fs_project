@@ -24,7 +24,7 @@ function submit() {
     var flag = true;
     $("#selectForm :checkbox").filter(':checked').parents(".select-list-item").map(function(index, el) {
         var $el = $(el);
-        var amt = $el.find(':input[name="amt"]').val().replace(',','');
+        var amt = $el.find(':input[name="amt"]').val().replace(/,/g,'');
         if(!/^\d+(\.\d{1,2})?$/.test(amt*1) ||　amt =='' || amt*1 <= 0){
             mAlert.addAlert('请输入正确的价格');
             flag = false;

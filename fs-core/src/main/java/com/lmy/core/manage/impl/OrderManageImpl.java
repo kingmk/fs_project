@@ -38,7 +38,7 @@ public class OrderManageImpl {
 	private void pushMsgToConfirmWxUnifiedOrder( long payRecordId ){
 		JSONObject data = new JSONObject();
 		data.put("payRecordId", payRecordId);
-		BeanstalkClient.put(QueueNameConstant.weiXinPayConfrim, null, 5*60 +1, 60, data);
+		BeanstalkClient.put(QueueNameConstant.QUEUE_WXPAY_CONFIRM, null, 5*60 +1, 60, data);
 	}
 	
 	public JSONObject supplyOrderZXUsrInfo(long orderId , String chatSessionNo, long buyUsrId ,JSONArray dataList){

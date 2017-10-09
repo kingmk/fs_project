@@ -52,10 +52,11 @@ public class WeiXinInterServiceImpl {
 	private static final String ACCESS_TOKEN_KEY1=CacheConstant.FS_WEIXIN_ACCESS_TOKEN1 ;
 	private static HttpService httpService = new HttpService();
 	public static String getAccessToken1() throws IOException{
-		if(FsEnvUtil.isDev()){
-			logger.info("开发模拟的AccessToken 。。。。。。。");
-			return "T1HKeJpM3G5Sb3y7WSl4QfxjFwLdpOIpy6PnDZIZLk43N13n9FFnb2lCzUDGRwP8V57aG7p9khH9-7wll8W_qkRleRoiVA2U3BrrdL5KV9t_U67tP6-lnJUlt7JUdq2WUQQiAEAAWW";
-		}
+		logger.info("========to get access token for weixin========");
+//		if(FsEnvUtil.isDev()){
+//			logger.info("开发模拟的AccessToken 。。。。。。。");
+//			return "T1HKeJpM3G5Sb3y7WSl4QfxjFwLdpOIpy6PnDZIZLk43N13n9FFnb2lCzUDGRwP8V57aG7p9khH9-7wll8W_qkRleRoiVA2U3BrrdL5KV9t_U67tP6-lnJUlt7JUdq2WUQQiAEAAWW";
+//		}
 		//第一步从redis 中取得
 		JSONObject result = (JSONObject)RedisClient.get(ACCESS_TOKEN_KEY1);
 		if(result!=null && result.containsKey("access_token")){
@@ -69,8 +70,8 @@ public class WeiXinInterServiceImpl {
 			Date now = new Date();
 			//logger.info("获取微信access_token响应:resp="+resp);
 			JSONObject respJson = JSON.parseObject(resp);
+			logger.info("========获取微信access_token: resp="+respJson+"========");
 			if(respJson.containsKey("errcode")){
-				logger.info("获取微信access_token 错误:resp="+respJson);
 				return null;
 			}else{
 				respJson.put("_cacheTime", now);
@@ -888,6 +889,17 @@ public class WeiXinInterServiceImpl {
 		    // eg : {"errcode":0,   "errmsg":"ok", "msgid":200228332  }
 			JSONObject respJson = JSON.parseObject(resp);
 			String errcode = respJson.getString("errcode");
+			if (errcode.equals("42001")) {
+				// the access token is expired, need to get access token again
+				RedisClient.delete(ACCESS_TOKEN_KEY1);
+				httpService = new HttpService();
+				resp = httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ getAccessToken1(), requestJson.toJSONString(),	false, "utf-8");
+				if (StringUtils.isEmpty(resp)) {
+					return JsonUtils.commonJsonReturn("0001", "微信信息推送失败");
+				}
+				respJson = JSON.parseObject(resp);
+				errcode = respJson.getString("errcode");
+			}
 			JSONObject result = ( StringUtils.equals("0", errcode) )  ? JsonUtils.commonJsonReturn() : JsonUtils.commonJsonReturn("0001", "微信信息推送失败");
 			JsonUtils.setBody(result, "errcode", errcode);
 			JsonUtils.setBody(result, "errmsg", respJson.getString("errmsg"));

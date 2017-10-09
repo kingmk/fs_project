@@ -121,7 +121,7 @@ public class OrderAidUtil {
 				); //乔迁择日 list 另一半的信息  ,可选参数 expectMoveDate
 
 
-		List<String> mustParams =    mustParamsMap.get(cateId);
+		List<String> mustParams = mustParamsMap.get(cateId);
 		if(CollectionUtils.isEmpty(mustParams)){
 			return true;
 		}
@@ -129,39 +129,41 @@ public class OrderAidUtil {
 		String [] correctSex = new String[]{"M","F","O"};
 		String [] correctMarriageStatus = new String[]{"single","celibate","married","divorce","widowed","remarriage"};
 		int i=0;
+		boolean checkRlt = false;
 		for(Object obj :  dataList){
 			if (cateId == 100007l && i==1) {
 				break;
 			}
+			boolean tmpCheckRlt = true;
 			JSONObject checkData = (JSONObject) obj;
-			for(String param :  mustParams){
+			for(String param : mustParams){
 				String value = checkData.getString( param);
 				if(StringUtils.isEmpty(value)){
-					logger.warn("参数"+param+",value:"+value+  ",格式错误 checkData:" +checkData+",dataList:"+dataList );
-					return false;
+					logger.warn("参数"+param+",value:"+value+",格式错误 checkData:" +checkData+",dataList:"+dataList );
+					tmpCheckRlt = tmpCheckRlt&false;
 				}
 				if("realName".equals(param)){
-					if( StringUtils.isNotEmpty(value) &&(  value .length()<2 ||  !CommonUtils.isChinese(value)  )){
-						logger.warn("参数"+param+",value:"+value+  ",姓名格式错误 checkData:" +checkData+",dataList:"+dataList );
-						return false;
+					if( StringUtils.isNotEmpty(value) &&(value.length()<2 || !CommonUtils.isChinese(value)  )){
+						logger.warn("参数"+param+",value:"+value+",姓名格式错误 checkData:" +checkData+",dataList:"+dataList );
+						tmpCheckRlt = tmpCheckRlt&false;
 					}
 				}
 				else if("sex".equals(param)){
-					if(    !ArrayUtils.contains(correctSex,  value )    ){
-						logger.warn("参数"+param+",value:"+value+  ",性别错误 checkData:" +checkData+",dataList:"+dataList );
-						return false;
+					if(    !ArrayUtils.contains(correctSex,value)    ){
+						logger.warn("参数"+param+",value:"+value+",性别错误 checkData:" +checkData+",dataList:"+dataList );
+						tmpCheckRlt = tmpCheckRlt&false;
 					}
 				}
 				else if("marriageStatus".equals(param)){
 					if( !ArrayUtils.contains(correctMarriageStatus,   value  )    ){
-						logger.warn("参数"+param+",value:"+value+  ",婚姻状态 checkData:" +checkData+",dataList:"+dataList );
-						return false;
+						logger.warn("参数"+param+",value:"+value+",婚姻状态 checkData:" +checkData+",dataList:"+dataList );
+						tmpCheckRlt = tmpCheckRlt&false;
 					}
 				}
 				else if("birthDate".equals(param) || "expectMoveDate".equals(param) ||  "completedTime".equals(param)){
 					if(StringUtils.isEmpty(value) || ( !"未知".equals(value  )  && CommonUtils.stringToDate(value, "yyyy-MM-dd") ==null)   ){
-						logger.warn("参数"+param+",value:"+value+  ",日期错误 checkData:" +checkData+",dataList:"+dataList );
-						return false;
+						logger.warn("参数"+param+",value:"+value+",日期错误 checkData:" +checkData+",dataList:"+dataList );
+						tmpCheckRlt = tmpCheckRlt&false;
 					}
 				}
 				//第几胎
@@ -169,17 +171,28 @@ public class OrderAidUtil {
 				else if("fetusNum".equals(param)){
 					Long d = Long.valueOf(value);
 					if( d<1 || d>10 ){
-						logger.warn("参数"+param+",value:"+value+  ", 第几胎错误 checkData:" +checkData+",dataList:"+dataList );
-						return false;
+						logger.warn("参数"+param+",value:"+value+", 第几胎错误 checkData:" +checkData+",dataList:"+dataList );
+						tmpCheckRlt = tmpCheckRlt&false;
 					}
 				}else{
 					if( value.length()<1 ){
-						logger.warn("参数"+param+",value:"+value+  ", 参数长度错误 checkData:" +checkData+",dataList:"+dataList );
-						return false;
+						logger.warn("参数"+param+",value:"+value+", 参数长度错误 checkData:" +checkData+",dataList:"+dataList );
+						tmpCheckRlt = tmpCheckRlt&false;
 					}
 				}
 			}
+			
+			if (cateId != 100001l && !tmpCheckRlt) {
+				// if the category is not for love event, any false check can cause the final result to be false
+				return false;
+			} else {
+				checkRlt = checkRlt|tmpCheckRlt;
+			}
 			i++;
+		}
+		if (cateId == 100001l && !checkRlt) {
+			// if the category is for love, two personal data are all wrong, the final result is false
+			return false;
 		}
 		return true;
 	}

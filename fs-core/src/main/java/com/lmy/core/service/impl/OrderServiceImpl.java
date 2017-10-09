@@ -174,7 +174,7 @@ public class OrderServiceImpl {
 				return JsonUtils.commonJsonReturn("0001","数据错误");
 			}
 			if(! OrderAidUtil.supplyOrderInfoParamsCheck(order.getZxCateId(), dataList) ){
-				return JsonUtils.commonJsonReturn("0002"," 缺少必要参数");
+				return JsonUtils.commonJsonReturn("0002","还有信息没有填写");
 			}
 			//作为第一条聊天记录  
 			final FsOrder beanForUpdate = new FsOrder();
@@ -273,21 +273,36 @@ public class OrderServiceImpl {
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
-				_putBeanstalkMsgAndWxNotifyForNewOrder(order);
+				_putAllMsgForNewOrder(order);
 			}
 		};
 		FsExecutorUtil.getExecutor().execute(r);
 	}
-	private void _putBeanstalkMsgAndWxNotifyForNewOrder(FsOrder order ){
+	private void _putAllMsgForNewOrder(FsOrder order ){
 		try{
-			//build beanstalk msg
-			JSONObject beanstalkMsg = new JSONObject();
-			beanstalkMsg.put("orderId", order.getId());
-			BeanstalkClient.put(QueueNameConstant.masterNoReply24HoursAutoRefund, null, 3600 * 24 + 1, null, beanstalkMsg);
+			logger.info("========prepare body for new order msgs========");
+			// build beanstalk msg for 24 hours auto refund
+			JSONObject beanstalkMsg24 = new JSONObject();
+			beanstalkMsg24.put("orderId", order.getId());
+			BeanstalkClient.put(QueueNameConstant.masterNoReply24HoursAutoRefund, null, 3600 * 24 + 1, null, beanstalkMsg24);
+			
+			// build beanstalk msg for 10 minutes user info check
+			JSONObject beanstalkMsgInfo = new JSONObject();
+			beanstalkMsgInfo.put("orderId", order.getId());
+			beanstalkMsgInfo.put("msgType", QueueNameConstant.MSG_ORDER_INFO_CHECK);
+			BeanstalkClient.put(QueueNameConstant.QUEUE_ORDER, null, 600 + 1, null, beanstalkMsgInfo);
+
+			// build beanstalk msg for 10 minutes master begin check
+			JSONObject beanstalkMsgBegin = new JSONObject();
+			beanstalkMsgBegin.put("orderId", order.getId());
+			beanstalkMsgBegin.put("msgType", QueueNameConstant.MSG_ORDER_BEGIN_CHECK);
+			BeanstalkClient.put(QueueNameConstant.QUEUE_ORDER, null, 600 + 1, null, beanstalkMsgBegin);
+
+			// immediately send wx msg to master
 			Map<Long,FsUsr> usrIdMap =  this.fsUsrDao.findByUsrIdsAndConvert( Arrays.asList( order.getSellerUsrId(),order.getBuyUsrId()  )  );
 			String sellerUsrOpenId = usrIdMap.get( order.getSellerUsrId() ) .getWxOpenId();
 			String buyUsrName = UsrAidUtil.getNickName2(usrIdMap.get( order.getBuyUsrId() ), "匿名") ;
-			wxNoticeManagerImpl.masterNewOrderMsg(order, sellerUsrOpenId, buyUsrName);
+			wxNoticeManagerImpl.masterNewOrderWxMsg(order, sellerUsrOpenId, buyUsrName);
 		}catch(Exception e){
 			logger.error("orderId:"+order.getId(), e);
 		}
@@ -321,7 +336,7 @@ public class OrderServiceImpl {
 					Date now = new Date();
 					Date completedTime =   DateUtils.addDays(now, 1)  ;
 					Date settlementTime =   DateUtils.addDays(completedTime, 7) ;
-					//在订单完成后的第7个自然日22点从服务号转账给老师的微信钱包
+					//在订单完成后的第7个自然日22点为结算时间
 					settlementTime = DateUtils.setHours(settlementTime, 22);
 					settlementTime = DateUtils.setMinutes(settlementTime, 0);
 					settlementTime = DateUtils.setSeconds(settlementTime, 0);
@@ -329,11 +344,11 @@ public class OrderServiceImpl {
 					List<FsChatSession> listForInsert = buildFsChatSessionForInsert(order.getBuyUsrId(), order.getSellerUsrId(), order.getChatSessionNo() ,now ,completedTime);
 					fsChatSessionDao.batchInsert(listForInsert);
 					int effectOrderNum = fsOrderDao.updateForPayByResult1(order.getId(),     
-							(paySucc ) ? OrderStatus.pay_succ.getStrValue() :  OrderStatus.pay_fail.getStrValue()   
-							, now, completedTime, now, completedTime, settlementTime, now);
-					Assert.isTrue(  effectOrderNum ==1 );
+						(paySucc ) ? OrderStatus.pay_succ.getStrValue() :  OrderStatus.pay_fail.getStrValue(),   
+						now, completedTime, now, completedTime, settlementTime, now);
+					Assert.isTrue(effectOrderNum ==1 );
 					int effectPayNum = fsPayRecordDao.updateForPayByResult(payRecord.getId(),bank_type,transaction_id ,paySucc, now);
-					Assert.isTrue(    effectPayNum ==1 );
+					Assert.isTrue(effectPayNum ==1 );
 					return true;
 				}
 			});

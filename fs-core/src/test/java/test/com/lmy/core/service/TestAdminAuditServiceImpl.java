@@ -25,7 +25,7 @@ public class TestAdminAuditServiceImpl extends BaseTestCase {
 	public void test_2(){
 		JSONObject waitConfrimRefundData = new JSONObject();
 		waitConfrimRefundData.put("payRecordId", 100181);
-		BeanstalkClient.put(QueueNameConstant.weiXinPayConfrim, null, 3, null, waitConfrimRefundData);	
+		BeanstalkClient.put(QueueNameConstant.QUEUE_WXPAY_CONFIRM, null, 3, null, waitConfrimRefundData);	
 	}
 	
 }

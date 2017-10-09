@@ -48,7 +48,6 @@ $(function(){
 var isClick = false;
 $(function(){
 	//是否完成了个人资料
-	var hasCard = ${result.body.hasCard};
 	if( "${result.body.isPerfectPersonalData}" =="N" ){
 		$.bgmask({
 			hasClose:false,

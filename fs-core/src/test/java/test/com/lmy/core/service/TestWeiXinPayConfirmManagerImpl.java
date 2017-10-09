@@ -18,7 +18,7 @@ public class TestWeiXinPayConfirmManagerImpl extends BaseTestCase {
 		JSONObject data = new JSONObject();
 		data.put("payRecordId", 100042l);
 		data.put("_errorTimes", 4);
-		weiXinPayConfirmManagerImpl.hander(data);
+		weiXinPayConfirmManagerImpl.handle(data);
 	}
 	
 	
