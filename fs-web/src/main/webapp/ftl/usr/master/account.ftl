@@ -44,6 +44,19 @@ $(function(){
 		location.href = "${host.base}/usr/master/order_list_nav"
 	});
 
+<#if result.body.serviceStatus="FORBID">
+	$(".forbid-bar-btn").click(function() {
+		$.bgmask({
+			hasClose: false,
+			hasHeader: false,
+			title: "下线理由",
+			text: "${result.body.forbidReason}",
+			type: "normal",
+			buttonTxt: "我知道了"
+		})
+	})
+</#if>
+
 });
 var isClick = false;
 $(function(){
@@ -130,15 +143,19 @@ function changeServiceStatus(serviceStatus,dom){
 	isClick = true;
 	var _serviceStatus = serviceStatus;
 	$.ajax({
-    type: "POST",
-    url: "${host.base}/usr/master/recruit/config_oder_taking_submit",
-    dataType: "json",
+		type: "POST",
+		url: "${host.base}/usr/master/recruit/update_service_status",
+		dataType: "json",
 		data:{
 				masterInfoId :${result.body.masterInfoId},
 				serviceStatus : _serviceStatus
 		},
-	  success: function(data){
-	    isClick = false;
+		success: function(data){
+			isClick = false;
+			if (data.head != "0000") {
+				mAlert.addAlert(data.head.msg);
+				return;
+			}
 			dom.attr("serviceStatus",_serviceStatus);
 			if(_serviceStatus =="ING"){
 				mAlert.addAlert('开启接单成功')
@@ -151,9 +168,9 @@ function changeServiceStatus(serviceStatus,dom){
 				$(".name-box").find("p[class='status']").text("状态：暂停接单");
 				dom.find("span").text("开起接单");
 			}
-	  },
-    error: function(res){}
-	});
+		},
+		error: function(res){}
+		});
 }
 </script>
 
@@ -171,6 +188,9 @@ function changeServiceStatus(serviceStatus,dom){
 	.text-right{font-weight: bold!important;}
 </style>
 <body>
+<#if result.body.serviceStatus="FORBID">
+<div class="forbid-bar"><span class="forbid-bar-btn">下线理由</span>${result.body.forbidTimeStr}</div>
+</#if>
 <div class="header">
     <div class="header-top  <#if result.body.serviceStatus="ING">stop<#else>start</#if>">
         <div class="header-top-left">
@@ -181,12 +201,12 @@ function changeServiceStatus(serviceStatus,dom){
             </div>
             <div class="name-box">
                 <p class="name">${result.body.masterNickName}</p>
-                <p class="status">状态：<#if result.body.serviceStatus="ING">接单中<#else>暂停接单</#if>  </p>
+                <p class="status">状态：<#if result.body.serviceStatus="ING">接单中<#elseif result.body.serviceStatus="NOTING">暂停接单<#elseif result.body.serviceStatus="FORBID">已下线</#if>  </p>
             </div>
         </div>
         <#if result.body.serviceStatus="ING">
         	  <div class="header-button" serviceStatus="${result.body.serviceStatus}">	<span>暂停接单</span></div>
-        <#else>
+        <#elseif result.body.serviceStatus="NOTING">
         	  <div class="header-button" serviceStatus="${result.body.serviceStatus}">	<span>开启接单</span></div>
         </#if>
     </div>

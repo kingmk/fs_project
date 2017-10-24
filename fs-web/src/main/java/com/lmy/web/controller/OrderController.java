@@ -74,7 +74,7 @@ public class OrderController {
 									,@RequestParam(value = "masterServiceCateId" , required = true) long masterServiceCateId
 									,@RequestParam(value = "masterInfoId" , required = true) long masterInfoId 
 			) {
-		FsUsr usr = 	SessionUtil.getFsUsr(request);
+		FsUsr usr = SessionUtil.getFsUsr(request);
 		JSONObject result = orderManageImpl.unifiedorderWeixin(usr.getId(), usr.getWxOpenId(),usr.getRegisterMobile(), WebUtil.getIpAddr(request), masterInfoId, masterServiceCateId);
 		return result.toJSONString();
 	}

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.lmy.core.service.impl.AdminAuditServiceImpl;
 import com.lmy.core.service.impl.OrderSettlementServiceImpl;
 
 /**
@@ -17,6 +18,8 @@ public class LmySpringWebJob {
 	private static final Logger logger  = LoggerFactory.getLogger(LmySpringWebJob.class);
 	@Autowired
 	private OrderSettlementServiceImpl orderSettlementServiceImpl;
+	@Autowired
+	private AdminAuditServiceImpl adminAuditServiceImpl;
 	//就每个月7号晚上22点结算上个月的全部订单
 	 @Scheduled(cron="0 0 22 */7 * ?")
 	public void lmyAutoSettle(){
@@ -29,8 +32,15 @@ public class LmySpringWebJob {
 	 /**
 	  * @since 2017/06/05 19:03 防止 部分订单到点没有执行 (pay_succ|refund_fail)) -->completed , 这里进行补救一次
 	  */
-	 @Scheduled(fixedRate = 3600*8 * 1000)
+	 @Scheduled(fixedRate = 3600 * 1000)
 	 public void autoPaySuccToCompleted(){
-			 orderSettlementServiceImpl.autoPaySuccToCompleted(new Date());
-		 }
+		 logger.info("======auto make the order completed in case that the queue is missing======");
+		 orderSettlementServiceImpl.autoPaySuccToCompleted(new Date());
+	 }
+
+	 @Scheduled(fixedRate = 3600 * 1000)
+	 public void autoUnforbidMasters() {
+		 logger.info("======auto unforbid masters in case that the queue is missing======");
+		 adminAuditServiceImpl.unforbidMasterAuto();
+	 }
 }

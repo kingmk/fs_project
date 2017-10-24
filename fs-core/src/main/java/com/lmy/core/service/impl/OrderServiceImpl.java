@@ -23,6 +23,7 @@ import com.lmy.common.component.JsonUtils;
 import com.lmy.common.queue.beanstalkd.BeanstalkClient;
 import com.lmy.common.utils.ResourceUtils;
 import com.lmy.core.beanstalkd.job.QueueNameConstant;
+import com.lmy.core.constant.FsConstants;
 import com.lmy.core.dao.FsChatSessionDao;
 import com.lmy.core.dao.FsMasterInfoDao;
 import com.lmy.core.dao.FsMasterServiceCateDao;
@@ -67,8 +68,9 @@ public class OrderServiceImpl {
 					JsonUtils.setBody(result, "payRecord", payRecordForInsert);
 	 */
 	public JSONObject unifiedorderWeixin(long buyUsrId, final String buyUsrOpenId ,String registerMobile, final String buyUsrIp,  long masterInfoId , long masterServiceCateId){
-		FsMasterServiceCate masterServiceCate = 	fsMasterServiceCateDao.findById(masterServiceCateId);
+		FsMasterServiceCate masterServiceCate = fsMasterServiceCateDao.findById(masterServiceCateId);
 		FsMasterInfo masterInfo =  this.fsMasterInfoDao.findById(masterInfoId);
+		FsUsr buyUser = fsUsrDao.findById(buyUsrId);
 		if(masterServiceCate == null ||  masterServiceCate.getFsMasterInfoId() ==null ||masterInfo == null){
 			logger.warn("buyUsrId="+buyUsrId+",masterInfoId="+masterInfoId+",masterServiceCateId="+masterServiceCateId+" 参数错误");
 			return JsonUtils.commonJsonReturn("0001", "参数错误");
@@ -85,6 +87,10 @@ public class OrderServiceImpl {
 		if(masterInfo.getUsrId() == null || masterInfo.getUsrId().equals(buyUsrId)){
 			logger.warn("buyUsrId="+buyUsrId+",masterInfoId="+masterInfoId+",masterUsrId="+masterInfo.getUsrId()+",自己买自己产品/服务");
 			return JsonUtils.commonJsonReturn("0002", "不能刷单");
+		}
+		if(buyUser.getStatus().equals("black") ){
+			logger.warn("buyUsrId="+buyUsrId+",masterInfoId="+masterInfoId+",masterServiceCateId="+masterServiceCateId+",该用户是黑名单用户");
+			return JsonUtils.commonJsonReturn("0003", "抱歉，您的账号异常，无法下单，请联系客服");
 		}
 		if( !"ON".equals( masterServiceCate.getStatus()) ){
 			logger.warn("buyUsrId="+buyUsrId+",masterInfoId="+masterInfoId+",masterServiceCateId="+masterServiceCateId+" 不在服务状态  masterServiceCate.getStatus():"+ masterServiceCate.getStatus());
@@ -180,24 +186,19 @@ public class OrderServiceImpl {
 			final FsOrder beanForUpdate = new FsOrder();
 			beanForUpdate.setId(orderId);
 			Date now = new Date();
-			Date completedTime =   DateUtils.addDays(now, 1)  ;
-			Date settlementTime =   DateUtils.addDays(completedTime, 7) ;
-			//在订单完成后的第7个自然日22点从服务号转账给老师的微信钱包
-			settlementTime = DateUtils.setHours(settlementTime, 22);
-			settlementTime = DateUtils.setMinutes(settlementTime, 0);
-			settlementTime = DateUtils.setSeconds(settlementTime, 0);
-			settlementTime = DateUtils.setMilliseconds(settlementTime, 0);
-			beanForUpdate.setOrderExtraInfo(dataList.toJSONString()) .setSettlementTime(settlementTime);
-			beanForUpdate.setBuyUsrId(buyUsrId).setBeginChatTime(now).setEndChatTime(completedTime).setUpdateTime(now) .setCompletedTime(completedTime);
+			beanForUpdate.setOrderExtraInfo(dataList.toJSONString()).setUpdateTime(now).setBuyUsrId(buyUsrId);
+			if (order.getBeginChatTime() == null) {
+				beanForUpdate.setBeginChatTime(now);
+			}
 			FsUsr usrForUpdate=	this.fsTransactionTemplate.execute(new TransactionCallback<FsUsr>() {
 				@Override
 				public FsUsr doInTransaction(TransactionStatus status) {
-					if(order.getSellerFirstReplyTime()!=null){
-						logger.info("orderId:"+order.getId()+" 补充咨询信息,老师已经有过答复getSellerFirstReplyTime: "+CommonUtils.dateToString(order.getSellerFirstReplyTime(), CommonUtils.dateFormat2, "")+",不再更新 开始、结束会话时间,服务完成时间，与老师结算时间，只更新最近一次聊天时间");
-						fsOrderDao.updateLastChatTime(order.getId());
-					}
-					fsOrderDao.update(beanForUpdate);				
-					return   _infoUpdteToUsr(buyUsrId, dataList);
+//					if(order.getSellerFirstReplyTime()!=null){
+//						logger.info("orderId:"+order.getId()+" 补充咨询信息,老师已经有过答复getSellerFirstReplyTime: "+CommonUtils.dateToString(order.getSellerFirstReplyTime(), CommonUtils.dateFormat2, "")+",不再更新 开始、结束会话时间,服务完成时间，与老师结算时间，只更新最近一次聊天时间");
+//						fsOrderDao.updateLastChatTime(order.getId());
+//					}
+					fsOrderDao.update(beanForUpdate);
+					return _infoUpdteToUsr(buyUsrId, dataList);
 				}
 			});
 			JSONObject result =  JsonUtils.commonJsonReturn();
@@ -280,18 +281,19 @@ public class OrderServiceImpl {
 	}
 	private void _putAllMsgForNewOrder(FsOrder order ){
 		try{
-			logger.info("========prepare body for new order msgs========");
+			// logger.info("========prepare body for new order msgs========");
 			// build beanstalk msg for 24 hours auto refund
 			JSONObject beanstalkMsg24 = new JSONObject();
 			beanstalkMsg24.put("orderId", order.getId());
-			BeanstalkClient.put(QueueNameConstant.masterNoReply24HoursAutoRefund, null, 3600 * 24 + 1, null, beanstalkMsg24);
+			BeanstalkClient.put(QueueNameConstant.masterNoReply24HoursAutoRefund, null, FsConstants.ORDER_SERVICE_TIME_IN_SECONDS+5, null, beanstalkMsg24);
 			
-			// build beanstalk msg for 10 minutes user info check
-			JSONObject beanstalkMsgInfo = new JSONObject();
-			beanstalkMsgInfo.put("orderId", order.getId());
-			beanstalkMsgInfo.put("msgType", QueueNameConstant.MSG_ORDER_INFO_CHECK);
-			BeanstalkClient.put(QueueNameConstant.QUEUE_ORDER, null, 600 + 1, null, beanstalkMsgInfo);
-
+			if (OrderAidUtil.getNeedSupplyOrderInfoZxCateIds().contains(order.getZxCateId())) {
+				// build beanstalk msg for 10 minutes user info check
+				JSONObject beanstalkMsgInfo = new JSONObject();
+				beanstalkMsgInfo.put("orderId", order.getId());
+				beanstalkMsgInfo.put("msgType", QueueNameConstant.MSG_ORDER_INFO_CHECK);
+				BeanstalkClient.put(QueueNameConstant.QUEUE_ORDER, null, 600 + 1, null, beanstalkMsgInfo);
+			}
 			// build beanstalk msg for 10 minutes master begin check
 			JSONObject beanstalkMsgBegin = new JSONObject();
 			beanstalkMsgBegin.put("orderId", order.getId());
@@ -334,7 +336,7 @@ public class OrderServiceImpl {
 				@Override
 				public Boolean doInTransaction(TransactionStatus status) {
 					Date now = new Date();
-					Date completedTime =   DateUtils.addDays(now, 1)  ;
+					Date completedTime =   DateUtils.addSeconds(now, FsConstants.ORDER_SERVICE_TIME_IN_SECONDS);
 					Date settlementTime =   DateUtils.addDays(completedTime, 7) ;
 					//在订单完成后的第7个自然日22点为结算时间
 					settlementTime = DateUtils.setHours(settlementTime, 22);
@@ -384,4 +386,5 @@ public class OrderServiceImpl {
 			return JsonUtils.commonJsonReturn("9999","系统错误");
 		}
 	}
+	
 }

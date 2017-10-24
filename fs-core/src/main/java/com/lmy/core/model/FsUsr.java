@@ -7,45 +7,46 @@ import com.lmy.common.model.base.BaseObject;
 @SuppressWarnings("serial")
 public class FsUsr  extends BaseObject {
   /** 微信opend_id */
-  private  String  wxOpenId;
-  /** 订阅号open_id */
-  private  String  wx2OpenId;
-  /** 订阅号open_id 关联时间 */
-  private  Date  wx2RelationTime;
+  private String  wxOpenId;
   /** 注册手机号码 */
-  private  String  registerMobile;
+  private String  registerMobile;
   /** 注册手机时间/手机验证码通过时间 */
-  private  Date  registerTime;
+  private Date  registerTime;
+  /** 注册来源 */
+  private String registerSrc;
   /** 真实姓名 */
-  private  String  realName;
+  private String  realName;
   /** 用户昵称 */
-  private  String  nickName;
+  private String  nickName;
   /** 英文名 */
-  private  String  englishName;
+  private String  englishName;
   /** rank 区间; min 精确到分钟 */
-  private  String  birthTimeType;
+  private String  birthTimeType;
   /** 09:30~11:20; 00:00~23:59 未填写; 21:30 精确到分 */
   private  String  birthTime;
   /** 阳历出生日期(样例生日) :eg:0112  一月12号 */
-  private  String  birthDate;
+  private String  birthDate;
   /** 出生年份 eg: 1986  1986年出生 */
-  private  Integer  birthYear;
+  private Integer  birthYear;
   /** 出生地址 */
-  private  String  birthAddress;
+  private String  birthAddress;
   /** 现居住地 */
-  private  String  liveAddress;
+  private String  liveAddress;
   /** 性别 M男人;F女人;O其他 */
-  private  String  sex;
+  private String  sex;
   /** single 单身;celibate 独身;married 已婚;divorce 离异;widowed 丧偶;remarriage 在婚 */
-  private  String  marriageStatus;
+  private String  marriageStatus;
   /** 家中排行 ：eg 老大,长子;次女 */
-  private  String  familyRank;
+  private String  familyRank;
   /** 用户类别 common 普通;master 风水师 */
-  private  String  usrCate;
+  private String  usrCate;
   /**  */
-  private  Date  updateTime;
+  private Date  updateTime;
   /** 用户自定义头像 */
-  private  String  usrHeadImgUrl;
+  private String  usrHeadImgUrl;
+  /** normal, black */
+  private String status;
+  
   /** 微信opend_id */
 	public String getWxOpenId(){
 		return this.wxOpenId;
@@ -53,24 +54,6 @@ public class FsUsr  extends BaseObject {
   /** 微信opend_id */
 	public FsUsr setWxOpenId(String wxOpenId){
 		 this.wxOpenId=wxOpenId;
-		 return this;
-	}
-  /** 订阅号open_id */
-	//public String getWx2OpenId(){
-	//	return this.wx2OpenId;
-	//}
-  /** 订阅号open_id */
-	public FsUsr setWx2OpenId(String wx2OpenId){
-		 this.wx2OpenId=wx2OpenId;
-		 return this;
-	}
-  /** 订阅号open_id 关联时间 */
-	public Date getWx2RelationTime(){
-		return this.wx2RelationTime;
-	}
-  /** 订阅号open_id 关联时间 */
-	public FsUsr setWx2RelationTime(Date wx2RelationTime){
-		 this.wx2RelationTime=wx2RelationTime;
 		 return this;
 	}
   /** 注册手机号码 */
@@ -91,34 +74,34 @@ public class FsUsr  extends BaseObject {
 		 this.registerTime=registerTime;
 		 return this;
 	}
-  /** 真实姓名 */
+	public String getRegisterSrc() {
+		return registerSrc;
+	}
+	public FsUsr setRegisterSrc(String registerSrc) {
+		this.registerSrc = registerSrc;
+		return this;
+	}
 	public String getRealName(){
 		return this.realName;
 	}
-  /** 真实姓名 */
 	public FsUsr setRealName(String realName){
 		 this.realName=realName;
 		 return this;
 	}
-  /** 用户昵称 */
 	public String getNickName(){
 		return this.nickName;
 	}
-  /** 用户昵称 */
 	public FsUsr setNickName(String nickName){
 		 this.nickName=nickName;
 		 return this;
 	}
-  /** 英文名 */
 	public String getEnglishName(){
 		return this.englishName;
 	}
-  /** 英文名 */
 	public FsUsr setEnglishName(String englishName){
 		 this.englishName=englishName;
 		 return this;
 	}
-	/** rank 区间; min 精确到分钟 */
 	public String getBirthTimeType(){
 		return this.birthTimeType;
 	}
@@ -154,20 +137,16 @@ public class FsUsr  extends BaseObject {
 		 this.birthYear=birthYear;
 		 return this;
 	}
-  /** 出生地址 */
 	public String getBirthAddress(){
 		return this.birthAddress;
 	}
-  /** 出生地址 */
 	public FsUsr setBirthAddress(String birthAddress){
 		 this.birthAddress=birthAddress;
 		 return this;
 	}
-  /** 现居住地 */
 	public String getLiveAddress(){
 		return this.liveAddress;
 	}
-  /** 现居住地 */
 	public FsUsr setLiveAddress(String liveAddress){
 		 this.liveAddress=liveAddress;
 		 return this;
@@ -225,6 +204,13 @@ public class FsUsr  extends BaseObject {
 	public FsUsr setUsrHeadImgUrl(String usrHeadImgUrl){
 		 this.usrHeadImgUrl=usrHeadImgUrl;
 		 return this;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	public String toString(){
 	    return JSON.toJSONString(this,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue);

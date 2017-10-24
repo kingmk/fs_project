@@ -78,7 +78,7 @@ public class SearchMasterServiceImpl {
 				if(StringUtils.isEmpty(orderBy)){
 					orderBy = "priceAsc";
 				}
-				//去所有数据 , group by order by 会有问题.
+				//取所有数据 , group by order by 会有问题.
 				List<FsMasterServiceCate> list = this.fsMasterServiceCateDao.findOneOrderByPriceGroupByUsrId(null,Arrays.asList("ON"), (StringUtils.equals("Y", isPlatRecomm)  ?"Y":null ), zxCateId, orderBy, 0, 2000);
 				if(CollectionUtils.isEmpty(list)){
 					return JsonUtils.commonJsonReturn("1000", "查无数据");

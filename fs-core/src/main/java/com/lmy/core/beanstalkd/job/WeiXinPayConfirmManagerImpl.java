@@ -107,7 +107,7 @@ public class WeiXinPayConfirmManagerImpl extends QueueHandler{
 		JSONObject weiXinQueryResult = WeiXinInterServiceImpl.analysitWeiXinQueryResp(weixinRespXml);
 		//支付成功
 		if(JsonUtils.equalDefSuccCode(weiXinQueryResult)){
-			JSONObject result = 	orderServiceImpl.zxOrderHandWeiXinNotify(payRecord.getOutTradeNo(),  
+			JSONObject result = orderServiceImpl.zxOrderHandWeiXinNotify(payRecord.getOutTradeNo(),  
 					(String)JsonUtils.getBodyValue(weiXinQueryResult, "bank_type") ,
 					(String)JsonUtils.getBodyValue(weiXinQueryResult, "transaction_id") , true);
 			if(JsonUtils.codeEqual(result, "9999")){
@@ -116,7 +116,7 @@ public class WeiXinPayConfirmManagerImpl extends QueueHandler{
 		}
 		//支付失败
 		else if(  JsonUtils.codeEqual(weiXinQueryResult, "0001") ){
-			JSONObject result = 	orderServiceImpl.zxOrderHandWeiXinNotify(payRecord.getOutTradeNo(),  
+			JSONObject result = orderServiceImpl.zxOrderHandWeiXinNotify(payRecord.getOutTradeNo(),  
 					(String)JsonUtils.getBodyValue(weiXinQueryResult, "bank_type") , 
 					(String)JsonUtils.getBodyValue(weiXinQueryResult, "transaction_id") , false);
 			if(JsonUtils.codeEqual(result, "9999")){

@@ -16,6 +16,7 @@ import com.lmy.core.dao.FsUsrDao;
 import com.lmy.core.manage.impl.WxNoticeManagerImpl;
 import com.lmy.core.model.FsOrder;
 import com.lmy.core.model.FsUsr;
+import com.lmy.core.model.enums.OrderStatus;
 import com.lmy.core.service.impl.AlidayuSmsFacadeImpl;
 import com.lmy.core.service.impl.UsrAidUtil;
 
@@ -81,7 +82,7 @@ public class OrderQueueManagerServiceImpl extends QueueHandler {
 	}
 	
 	private void checkOrderBegin(FsOrder order, JSONObject data) {
-		if (order.getSellerFirstReplyTime() == null) {
+		if (order.getSellerFirstReplyTime() == null && order.getStatus().equals(OrderStatus.pay_succ.getStrValue())) {
 			Map<Long,FsUsr> usrIdMap =  this.fsUsrDao.findByUsrIdsAndConvert( Arrays.asList( order.getSellerUsrId(),order.getBuyUsrId()  )  );
 			String sellerUsrOpenId = usrIdMap.get( order.getSellerUsrId() ) .getWxOpenId();
 			String buyUsrName = UsrAidUtil.getNickName2(usrIdMap.get( order.getBuyUsrId() ), "匿名");

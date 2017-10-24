@@ -34,19 +34,21 @@
 	<result column="is_sign_other" property="isSignOther"/>
 	<result column="create_time" property="createTime"/>
 	<result column="update_time" property="updateTime"/>
+	<result column="forbid_time" property="forbidTime"/>
+	<result column="forbid_reason" property="forbidReason"/>
 </resultMap>
 <select id="findById" parameterType="long"  resultMap="fs_master_info">
 	select * 	from fs_master_info where id=#{id}  
 </select>  
 <insert id="insert"  parameterType="com.lmy.core.model.FsMasterInfo"  useGeneratedKeys="true" keyProperty="id">
-	insert into fs_master_info(id ,usr_id ,wx_open_id ,audit_status ,audit_time ,audit_word ,service_status ,name ,nick_name ,english_name ,sex ,cert_type ,cert_no ,cert_img1_url ,cert_img2_url ,head_img_url ,birth_year ,birth_date ,live_address ,contact_mobile ,contact_qq ,contact_weixin ,school ,experience ,achievement ,good_at ,profession ,work_date ,is_full_time ,is_sign_other ,create_time ,update_time)
-   values(#{id,jdbcType=INTEGER} ,#{usrId,jdbcType=INTEGER} ,#{wxOpenId,jdbcType=VARCHAR} ,#{auditStatus,jdbcType=VARCHAR} ,#{auditTime,jdbcType=TIMESTAMP} ,#{auditWord,jdbcType=VARCHAR} ,#{serviceStatus,jdbcType=VARCHAR} ,#{name,jdbcType=VARCHAR} ,#{nickName,jdbcType=VARCHAR} ,#{englishName,jdbcType=VARCHAR} ,#{sex,jdbcType=VARCHAR} ,#{certType,jdbcType=VARCHAR} ,#{certNo,jdbcType=VARCHAR} ,#{certImg1Url,jdbcType=VARCHAR} ,#{certImg2Url,jdbcType=VARCHAR} ,#{headImgUrl,jdbcType=VARCHAR} ,#{birthYear,jdbcType=INTEGER} ,#{birthDate,jdbcType=VARCHAR} ,#{liveAddress,jdbcType=VARCHAR} ,#{contactMobile,jdbcType=VARCHAR} ,#{contactQq,jdbcType=VARCHAR} ,#{contactWeixin,jdbcType=VARCHAR} ,#{school,jdbcType=VARCHAR} ,#{experience,jdbcType=VARCHAR} ,#{achievement,jdbcType=VARCHAR} ,#{goodAt,jdbcType=VARCHAR} ,#{profession,jdbcType=VARCHAR} ,#{workDate,jdbcType=TIMESTAMP} ,#{isFullTime,jdbcType=VARCHAR} ,#{isSignOther,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP}) 
+	insert into fs_master_info(id ,usr_id ,wx_open_id ,audit_status ,audit_time ,audit_word ,service_status ,name ,nick_name ,english_name ,sex ,cert_type ,cert_no ,cert_img1_url ,cert_img2_url ,head_img_url ,birth_year ,birth_date ,live_address ,contact_mobile ,contact_qq ,contact_weixin ,school ,experience ,achievement ,good_at ,profession ,work_date ,is_full_time ,is_sign_other ,create_time ,update_time, forbid_time)
+   values(#{id,jdbcType=INTEGER} ,#{usrId,jdbcType=INTEGER} ,#{wxOpenId,jdbcType=VARCHAR} ,#{auditStatus,jdbcType=VARCHAR} ,#{auditTime,jdbcType=TIMESTAMP} ,#{auditWord,jdbcType=VARCHAR} ,#{serviceStatus,jdbcType=VARCHAR} ,#{name,jdbcType=VARCHAR} ,#{nickName,jdbcType=VARCHAR} ,#{englishName,jdbcType=VARCHAR} ,#{sex,jdbcType=VARCHAR} ,#{certType,jdbcType=VARCHAR} ,#{certNo,jdbcType=VARCHAR} ,#{certImg1Url,jdbcType=VARCHAR} ,#{certImg2Url,jdbcType=VARCHAR} ,#{headImgUrl,jdbcType=VARCHAR} ,#{birthYear,jdbcType=INTEGER} ,#{birthDate,jdbcType=VARCHAR} ,#{liveAddress,jdbcType=VARCHAR} ,#{contactMobile,jdbcType=VARCHAR} ,#{contactQq,jdbcType=VARCHAR} ,#{contactWeixin,jdbcType=VARCHAR} ,#{school,jdbcType=VARCHAR} ,#{experience,jdbcType=VARCHAR} ,#{achievement,jdbcType=VARCHAR} ,#{goodAt,jdbcType=VARCHAR} ,#{profession,jdbcType=VARCHAR} ,#{workDate,jdbcType=TIMESTAMP} ,#{isFullTime,jdbcType=VARCHAR} ,#{isSignOther,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP} ,#{forbidTime,jdbcType=TIMESTAMP}) 
 </insert>
 <insert id="batchInsert"  parameterType="list">
-	insert into fs_master_info(id ,usr_id ,wx_open_id ,audit_status ,audit_time ,audit_word ,service_status ,name ,nick_name ,english_name ,sex ,cert_type ,cert_no ,cert_img1_url ,cert_img2_url ,head_img_url ,birth_year ,birth_date ,live_address ,contact_mobile ,contact_qq ,contact_weixin ,school ,experience ,achievement ,good_at ,profession ,work_date ,is_full_time ,is_sign_other ,create_time ,update_time)
+	insert into fs_master_info(id ,usr_id ,wx_open_id ,audit_status ,audit_time ,audit_word ,service_status ,name ,nick_name ,english_name ,sex ,cert_type ,cert_no ,cert_img1_url ,cert_img2_url ,head_img_url ,birth_year ,birth_date ,live_address ,contact_mobile ,contact_qq ,contact_weixin ,school ,experience ,achievement ,good_at ,profession ,work_date ,is_full_time ,is_sign_other ,create_time ,update_time, forbid_time)
    values
 	<foreach collection="list" item="item" index="index"   separator=","> 
-    (#{item.id,jdbcType=INTEGER} ,#{item.usrId,jdbcType=INTEGER} ,#{item.wxOpenId,jdbcType=VARCHAR} ,#{item.auditStatus,jdbcType=VARCHAR} ,#{item.auditTime,jdbcType=TIMESTAMP} ,#{item.auditWord,jdbcType=VARCHAR} ,#{item.serviceStatus,jdbcType=VARCHAR} ,#{item.name,jdbcType=VARCHAR} ,#{item.nickName,jdbcType=VARCHAR} ,#{item.englishName,jdbcType=VARCHAR} ,#{item.sex,jdbcType=VARCHAR} ,#{item.certType,jdbcType=VARCHAR} ,#{item.certNo,jdbcType=VARCHAR} ,#{item.certImg1Url,jdbcType=VARCHAR} ,#{item.certImg2Url,jdbcType=VARCHAR} ,#{item.headImgUrl,jdbcType=VARCHAR} ,#{item.birthYear,jdbcType=INTEGER} ,#{item.birthDate,jdbcType=VARCHAR} ,#{item.liveAddress,jdbcType=VARCHAR} ,#{item.contactMobile,jdbcType=VARCHAR} ,#{item.contactQq,jdbcType=VARCHAR} ,#{item.contactWeixin,jdbcType=VARCHAR} ,#{item.school,jdbcType=VARCHAR} ,#{item.experience,jdbcType=VARCHAR} ,#{item.achievement,jdbcType=VARCHAR} ,#{item.goodAt,jdbcType=VARCHAR} ,#{item.profession,jdbcType=VARCHAR} ,#{item.workDate,jdbcType=TIMESTAMP} ,#{item.isFullTime,jdbcType=VARCHAR} ,#{item.isSignOther,jdbcType=VARCHAR} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP})
+    (#{item.id,jdbcType=INTEGER} ,#{item.usrId,jdbcType=INTEGER} ,#{item.wxOpenId,jdbcType=VARCHAR} ,#{item.auditStatus,jdbcType=VARCHAR} ,#{item.auditTime,jdbcType=TIMESTAMP} ,#{item.auditWord,jdbcType=VARCHAR} ,#{item.serviceStatus,jdbcType=VARCHAR} ,#{item.name,jdbcType=VARCHAR} ,#{item.nickName,jdbcType=VARCHAR} ,#{item.englishName,jdbcType=VARCHAR} ,#{item.sex,jdbcType=VARCHAR} ,#{item.certType,jdbcType=VARCHAR} ,#{item.certNo,jdbcType=VARCHAR} ,#{item.certImg1Url,jdbcType=VARCHAR} ,#{item.certImg2Url,jdbcType=VARCHAR} ,#{item.headImgUrl,jdbcType=VARCHAR} ,#{item.birthYear,jdbcType=INTEGER} ,#{item.birthDate,jdbcType=VARCHAR} ,#{item.liveAddress,jdbcType=VARCHAR} ,#{item.contactMobile,jdbcType=VARCHAR} ,#{item.contactQq,jdbcType=VARCHAR} ,#{item.contactWeixin,jdbcType=VARCHAR} ,#{item.school,jdbcType=VARCHAR} ,#{item.experience,jdbcType=VARCHAR} ,#{item.achievement,jdbcType=VARCHAR} ,#{item.goodAt,jdbcType=VARCHAR} ,#{item.profession,jdbcType=VARCHAR} ,#{item.workDate,jdbcType=TIMESTAMP} ,#{item.isFullTime,jdbcType=VARCHAR} ,#{item.isSignOther,jdbcType=VARCHAR} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP} ,#{item.forbidTime,jdbcType=TIMESTAMP})
 	</foreach> 
 </insert>
 <update id="update"	parameterType="com.lmy.core.model.FsMasterInfo">
@@ -80,6 +82,8 @@
 	<if test="isFullTime != null">is_full_time=#{isFullTime},</if>
 	<if test="isSignOther != null">is_sign_other=#{isSignOther},</if>
 	<if test="updateTime != null">update_time=#{updateTime}</if>
+	<if test="forbidTime != null">forbid_time=#{forbidTime}</if>
+	<if test="forbidReason != null">forbid_reason=#{forbidReason}</if>
 </set>
 	where id=#{id}
 </update>
@@ -124,16 +128,26 @@
 	</where>   
 </select>
 
-<update id="configOderTaking" parameterType="hashmap">
+<update id="updateServiceStatus" parameterType="hashmap">
    update fs_master_info
    <set>
       service_status =  #{serviceStatus}
    </set>
     <where>
-        <if test="	 id!=null   "> id=#{id}</if>
-        <if test="	 usrId!=null   ">and usr_id=#{usrId}</if>
+        <if test="id!=null"> id=#{id}</if>
+        <if test="usrId!=null">and usr_id=#{usrId}</if>
         and service_status &lt;&gt; #{serviceStatus}
     </where>
+</update>
+
+<update id="unforbidMastersAuto" parameterType="hashmap">
+   update fs_master_info
+   <set>
+      service_status = 'NOTING'
+   </set>
+   <where>
+       service_status = 'FORBID' and forbid_time is not null and forbid_time &lt; now()
+   </where>
 </update>
 
 <select id="findByUsrIds2" parameterType="hashmap" resultMap="fs_master_info">
@@ -159,10 +173,11 @@
 	 left join fs_master_service_cate b
 	 on a.usr_id = b.usr_id
 	 <where>
+	     a.service_status != 'FORBID'
 	 	<if test=" auditStatus!=null  ">and a.audit_status = #{auditStatus}</if>
 	 	 <if test="status!=null" >  and b.status = #{status}</if>
 	 	 <if test="  zxCateId!=null ">and b.fs_zx_cate_id=#{zxCateId}  </if>
-		<if test="  isPlatRecomm!=null ">b.is_plat_recomm=#{isPlatRecomm}  </if>	
+		<if test="  isPlatRecomm!=null ">b.is_plat_recomm=#{isPlatRecomm}  </if>
 	 </where>
 </select>
 

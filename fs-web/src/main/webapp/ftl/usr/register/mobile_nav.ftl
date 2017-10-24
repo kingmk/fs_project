@@ -1,6 +1,6 @@
  <#import "/common/host.ftl" as host>
 <html>
-<title>免费注册</title>
+<title>注册雷门易</title>
 <head>
 	<script src="${host.js}/js/rem.js?${host.version}"></script>
     <script src="${host.js}/js/jquery-1.11.3.min.js"></script>
@@ -103,6 +103,20 @@ function sendCode(data, callback,errBack){
  </script>
 </head>
 <body>
-<div class="sendcode-mask"><div class="bgmask-wrap"><div class="bgmask-header">免费注册</div><div class="bgmask-body"><div class="form" id="form">	<div class="form-item"><input type="text" name="mobile" id="mobile" placeholder="手机号" '=""></div><div class="form-item code"><input type="text" name="code" id="codeInput" placeholder="验证码"><span class="form-code" id="code">获取验证码</span></div></div></div><div class="bgmask-footer"><div class="button" id='submit'>注册</div></div></div></div>
+<div class="sendcode-mask">
+	<div class="bgmask-wrap">
+		<div class="bgmask-header">免费注册</div>
+		<div class="bgmask-body">
+			<div class="form" id="form">	
+				<div class="form-item">
+					<input type="text" name="mobile" id="mobile" placeholder="手机号">
+				</div>
+				<div class="form-item code">
+					<input type="text" name="code" id="codeInput" placeholder="验证码">
+					<span class="form-code" id="code">获取验证码</span>
+				</div>
+			</div>
+		</div>
+		<div class="bgmask-footer"><div class="button" id='submit'>注册</div></div></div></div>
 </body>
 </html>

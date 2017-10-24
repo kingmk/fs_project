@@ -76,8 +76,8 @@
         data3[item.name] = value;
     })
     var postArr = [];
-    <#--流年运势,健康事业财运 ,命运祥批-->
-    <#if order.zxCateId==100000 || order.zxCateId==100002 || order.zxCateId==100003>
+    <#--全年运势, 健康旺衰, 事业财运, 学业预测, 命运祥批, 堪舆类-->
+    <#if order.zxCateId==100000 || order.zxCateId==100016 || order.zxCateId==100002 || order.zxCateId==100017 || order.zxCateId==100003 || (order.zxCateId>=100018 && order.zxCateId<=100023)>
         if($("#isSelf1").hasClass('open1')){
             data1['isSelf'] = 'Y';
         }else{
@@ -87,7 +87,7 @@
         data1['birthDate'] = data1['birth'];
         data1['birthTimeType']= 'min';
         $.map(data1, function(item, index) {
-            if(index != 'englishName'){
+            if(index != 'englishName') {
                 if(!item || item == 'placeholder'){
                     $("input[name='"+ index +"']").parents('.list-control').addClass('error');
                 }else{
@@ -365,8 +365,8 @@
 <div class="button fix" style="margin-top: 3rem; z-index:9;" id='submit'>提交，开始对话</div>
 
 <script>
-	<#--流年运势,健康事业财运 ,命运祥批-->
-	<#if order.zxCateId==100000 || order.zxCateId==100002 || order.zxCateId==100003>
+	<#--全年运势, 健康旺衰, 事业财运, 学业预测, 命运祥批, 堪舆类-->
+	<#if order.zxCateId==100000 || order.zxCateId==100016 || order.zxCateId==100002 || order.zxCateId==100017 || order.zxCateId==100003 || (order.zxCateId>=100018 && order.zxCateId<=100023)>
 		var arr = [
 		{type:'isRadio',label: '是否本人',value:'Y',id :'isSelf1'},
 		{type:'input',className:'',name:'realName',label: '中文姓名',value:'${usr.realName}',placeholder:'必填',hasArr:false},
@@ -374,9 +374,11 @@
  		{type: 'select',className: 'birth',name: 'birth',placeholder:'必填',label: '阳历生日',value: '${usrBirthDate}',hasArr: true},
  		{type: 'select',className: 'birthTime',name: 'birthTime',placeholder:'必填',label: '出生时间',value: '<#if usr.birthTime??>${usr.birthTime}<#else>不清楚</#if>',hasArr: true},
  		{type: 'select',className: 'birthCity',name: 'birthAddress',placeholder:'必填',label: '出生地',value: '<#if usr.birthAddress??>${usr.birthAddress}<#else>placeholder</#if>',hasArr: true},
- 		{type: 'select',className: 'sex',name: 'sex',placeholder:'必填',label: '性别',value: '<#if usr.sex??>${usr.sex}<#else>M</#if>',hasArr: true},
- 		{type: 'select',className: 'marriage',name: 'marriageStatus',placeholder:'必填',label: '婚姻状况',value: '<#if usr.marriageStatus?? >${usr.familyRank}<#else>single</#if>',hasArr: true},
+ 		{type: 'select',className: 'sex',name: 'sex',placeholder:'必填',label: '性别',value: '<#if usr.sex??>${usr.sex}<#else>M</#if>',hasArr: true}
+        <#if order.zxCateId==100000 || order.zxCateId==100002 || order.zxCateId==100003>
+ 		,{type: 'select',className: 'marriage',name: 'marriageStatus',placeholder:'必填',label: '婚姻状况',value: '<#if usr.marriageStatus?? >${usr.familyRank}<#else>single</#if>',hasArr: true},
  		{type: 'select',className: 'familyRank',name: 'familyRank',placeholder:'必填',label: '家中排行',value: '<#if usr.familyRank?? >${usr.familyRank}<#else>1</#if>',hasArr: true}
+        </#if>
  		]
  		$("#formItem").tmpl(arr).appendTo("#form1 .list-body");
  	<#--个人改名-->
@@ -431,7 +433,7 @@
         $("#form1 .list-header").html('企业信息');
         $("#form2 .list-header").html('企业主信息');
         $("#form2").show();
-	<#--结婚吉日-- ---100005--婚恋感情100001--->
+	<#--结婚吉日-- 择吉生产 -- 婚恋感情100001--->
 	<#elseif order.zxCateId==100004 || order.zxCateId==100005 || order.zxCateId==100001 >
 	var arr1 = [
 		{type:'isRadio',label: '是否本人', value:'<#if usr.sex?? && usr.sex=="F">N<#else>Y</#if>' , id:'isSelf1'},
@@ -449,23 +451,23 @@
         {type: 'select',className: 'birthTime',name: 'birthTime',placeholder:'必填',label: '出生时间',value: '<#if usr.sex?? && usr.sex=="M">不清楚<#else><#if usr.birthTime??>${usr.birthTime}<#else>不清楚</#if></#if>',hasArr: true},
         {type: 'select',className: 'birthCity',name: 'birthAddress',placeholder:'必填',label: '出生地',value: '<#if usr.sex?? && usr.sex=="M"><#else><#if usr.birthAddress??>${usr.birthAddress}<#else>placeholder</#if></#if>',hasArr: true}
 	]
-    <#--结婚吉日-->
-    <#if order.zxCateId=100004>
+        <#--结婚吉日-->
+        <#if order.zxCateId=100004>
         var arr3 = [
             {type: 'select',className: 'expectDate',name: 'expectMarriageDateBegin',placeholder:'非必填',label: '期望结婚时间',value: '',hasArr: true},
             {type: 'select',className: 'expectDate',style:'text-align:center;',name: 'expectMarriageDateEnd', placeholder:'非必填', label: '至',value: '',hasArr: true},
         ]
         $("#form1 .list-header").html('未婚夫信息');
         $("#form2 .list-header").html('未婚妻信息');
-    <#--择日生子-->
-    <#elseif order.zxCateId=100005>
+        <#--择日生子-->
+        <#elseif order.zxCateId=100005>
         var arr3 = [
             {type: 'select',className: 'number',name: 'fetusNum',placeholder:'必填',label: '第几胎',value: '1',hasArr: true},
         ]
         $("#form1 .list-header").html('父亲信息');
         $("#form2 .list-header").html('母亲信息');
         $("#form3 .list-header").html('子女信息');
-    </#if>
+        </#if>
     <#if order.zxCateId==100001>
     $("#form1 .list-header").html('男朋友信息');
     $("#form2 .list-header").html('女朋友信息');

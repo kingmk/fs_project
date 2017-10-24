@@ -69,16 +69,17 @@ public class OrderAidUtil {
 	
 	public static List<Long> getNeedSupplyOrderInfoZxCateIds(){
 		return Arrays.asList(
-				100000L,100001L,100002L,100003L , 
-				100008L,100009L  ,100010L,
-				100004L , 100005L,
-				100006L,
-				100007L
+				100000L,100001L,100016L,100002L,100017L,
+				100004L,100006L,100007L,100009L,100003L,
+				100010L,100005L,
+				100018L,100019L,100020L,
+				100021L,100022L,100023L
 				);
 	}
 	
 	
 	public static boolean supplyOrderInfoParamsCheck(Long cateId , JSONArray dataList){
+		logger.info("=====data list for supply info: "+ dataList.toJSONString()+"=====");
 		if(!getNeedSupplyOrderInfoZxCateIds().contains( cateId )){
 			logger.info("cateId:"+cateId+",不需要补充资料 dataList:"+dataList);
 			return true;
@@ -96,31 +97,77 @@ public class OrderAidUtil {
 		//isFiancee Y|N;isFiance Y|N;isFather Y|N;isMather Y|N;isOwner 是否为主人;isSpouse 是否为配偶 Y:N
 		//birthTimeType  	rank 区间; min 精确到分钟;birthTime 09:30~11:20; 00:00~23:59 未填写; 21:30 精确到分
 		Map<Long , List<String>> mustParamsMap = new HashMap<Long ,List<String>>();
-		mustParamsMap.put(100000l, Arrays.asList("isSelf","realName" ,"birthDate" , "sex" , "birthAddress", "birthTimeType", "birthTime","marriageStatus" , "familyRank")); // 流年运势  1994-02-20 ;birthTimeType 	rank 区间; min 精确到分钟;birthTime 09:30~11:20; 00:00~23:59 未填写; 21:30 精确到分; 可选参数:  englishName
-		mustParamsMap.put(100001l, Arrays.asList("isSelf","realName" ,"birthDate" , "sex" , "birthAddress", "birthTimeType", "birthTime")); //婚恋感情
-		mustParamsMap.put(100002l, Arrays.asList("isSelf","realName" ,"birthDate" , "sex" , "birthAddress", "birthTimeType", "birthTime","marriageStatus" , "familyRank")); //健康事业财运
-		mustParamsMap.put(100003l, Arrays.asList("isSelf","realName" ,"birthDate" , "sex" , "birthAddress", "birthTimeType", "birthTime","marriageStatus" , "familyRank")); //命运祥批  
+		// 全年运势
+		mustParamsMap.put(100000l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime",
+				"marriageStatus","familyRank"));
+		// 婚恋感情
+		mustParamsMap.put(100001l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime"));
+		// 健康旺衰
+		mustParamsMap.put(100016l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime"));
+		// 事业财运
+		mustParamsMap.put(100002l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime",
+				"marriageStatus","familyRank"));
+		// 学业预测
+		mustParamsMap.put(100017l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime"));
 
+		// 结婚吉日  list 可选 参数 englishName, expectMarriageDateBegin,expectMarriageDateEnd
+		mustParamsMap.put(100004l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime","isFiancee","isFiance"));
+		// 开张开市 可选参数: 公司曾用名
+		mustParamsMap.put(100006l, Arrays.asList("industry","comAddress","scopeOfBusiness",
+				"curComName","isSelf","realName","birthAddress","birthDate",
+				"sex" ,"birthTimeType","birthTime")); 
+		// 乔迁择日 list 另一半的信息  ,可选参数 expectMoveDate
+		mustParamsMap.put(100007l, Arrays.asList("newAddress","completedTime",
+				"isSelf","realName","birthAddress","birthDate","sex",
+				"birthTimeType","birthTime","isOwner","isSpouse")
+				);
 		
-		mustParamsMap.put(100008l, Arrays.asList("isSelf","realName" ,"birthDate" , "sex" ,"birthTimeType", "birthTime", "marriageStatus" , "familyRank")); //个人改名  curUsrName 当前名; 曾用名 onceName
-		mustParamsMap.put(100009l, Arrays.asList("birthDate" , "birthTimeType", "birthTime","sex"  , "familyRank")); //个人起名   TODO 
-		//																	成立时间                  行业           公司地址         经营范围                 是否本人Y|N   企业主姓名
-		mustParamsMap.put(100010l, Arrays.asList("establishedDate" , "industry" , "comAddress","scopeOfBusiness" ,"isSelf",         "realName"  ,    "birthDate" , "sex" ,"birthTimeType", "birthTime")); //公司起名 可选参数: 公司现用名 comNowName
-		//																																																	     期望结婚时间               //
-		mustParamsMap.put(100004l, Arrays.asList("isSelf","realName" ,"birthDate" , "sex" , "birthAddress", "birthTimeType", "birthTime" ,"isFiancee","isFiance")); //结婚吉日  list 可选 参数 englishName, expectMarriageDateBegin,expectMarriageDateEnd
+		// 个人改名 curUsrName 当前名; 曾用名 onceName
+		mustParamsMap.put(100008l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthTimeType","birthTime","marriageStatus","familyRank"));
+		// 个人起名
+		mustParamsMap.put(100009l, Arrays.asList("birthDate","birthTimeType","birthTime",
+				"sex","familyRank"));
 		
-		//fetusNum  第几胎
-		mustParamsMap.put(100005l, Arrays.asList("isSelf","realName" ,"birthDate" , "sex" , "birthAddress", "birthTimeType", "birthTime","fetusNum", "isFather","isMather")); //择日生子 list 可选参数:  englishName ;expectTimeRange eg: 2017-01-01 08:18~2017-01-01 08:18
-		
-		//		成立时间                  行业           公司地址         经营范围                  企业现用名         是否本人Y|N   企业主姓名
-		mustParamsMap.put(100006l, Arrays.asList(  "industry" , "comAddress","scopeOfBusiness" ,"curComName" ,"isSelf",  "realName"  ,  "birthAddress",  "birthDate" , "sex" ,"birthTimeType", "birthTime")); ///开张开市 可选参数: 公司曾用名 
-		
-																		//新宅地址          //新宅落成时间       					
-		mustParamsMap.put(100007l, Arrays.asList("newAddress" , "completedTime",
-				"isSelf",         "realName"  ,  "birthAddress",  "birthDate" , "sex" ,"birthTimeType", "birthTime","isOwner","isSpouse")
-				); //乔迁择日 list 另一半的信息  ,可选参数 expectMoveDate
+		// 八字详批
+		mustParamsMap.put(100003l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime",
+				"marriageStatus","familyRank"));
+		// 公司起名 可选参数: 公司现用名 comNowName
+		mustParamsMap.put(100010l, Arrays.asList("establishedDate","industry",
+				"comAddress","scopeOfBusiness","isSelf","realName","birthDate",
+				"sex","birthTimeType","birthTime"));
+		// 择吉生产 fetusNum  第几胎，
+		// list 可选参数:  englishName;expectTimeRange eg: 2017-01-01 08:18~2017-01-01 08:18
+		mustParamsMap.put(100005l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime","fetusNum",
+				"isFather","isMather"));
 
-
+		// 远程公寓居家风水
+		mustParamsMap.put(100018l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime"));
+		// 远程复式、联排别墅居家风水
+		mustParamsMap.put(100019l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime"));
+		// 远程独立别墅居家风水
+		mustParamsMap.put(100020l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime"));
+		// 远程500平米以下办公风水
+		mustParamsMap.put(100021l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime"));
+		// 远程500-1000平米办公风水
+		mustParamsMap.put(100022l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime"));
+		// 远程1000平米以上办公风水
+		mustParamsMap.put(100023l, Arrays.asList("isSelf","realName","birthDate",
+				"sex","birthAddress","birthTimeType","birthTime"));
+		
 		List<String> mustParams = mustParamsMap.get(cateId);
 		if(CollectionUtils.isEmpty(mustParams)){
 			return true;
@@ -190,6 +237,7 @@ public class OrderAidUtil {
 			}
 			i++;
 		}
+		logger.info("====check supply info rlt: "+Boolean.toString(checkRlt)+"====");
 		if (cateId == 100001l && !checkRlt) {
 			// if the category is for love, two personal data are all wrong, the final result is false
 			return false;

@@ -44,14 +44,14 @@ public class FsMasterInfoDao extends GenericDAOImpl<FsMasterInfo> {
 		return this.getSqlSession().selectOne(this.getNameSpace()+".statRecordNum1", map);
 	}
 	
-	public int configOderTaking(Long fsMasterInfoId ,  Long usrId , String serviceStatus){
+	public int updateServiceStatus(Long fsMasterInfoId ,  Long usrId , String serviceStatus){
 		Assert.isTrue( StringUtils.isNotEmpty(serviceStatus) );
 		Assert.isTrue( !( fsMasterInfoId == null && usrId == null )   );
 		JSONObject map = new JSONObject();
 		map.put("id" , fsMasterInfoId);
 		map.put("usrId" , usrId);
 		map.put("serviceStatus" , serviceStatus);
-		return this.getSqlSession().update(this.getNameSpace()+".configOderTaking", map);
+		return this.getSqlSession().update(this.getNameSpace()+".updateServiceStatus", map);
 	}
 	public List<FsMasterInfo> findByUsrIds2(List<Long> usrIdList,String auditStatus , String serviceStatus){
 		Assert.isTrue(  CollectionUtils.isNotEmpty(usrIdList)  );
@@ -79,6 +79,10 @@ public class FsMasterInfoDao extends GenericDAOImpl<FsMasterInfo> {
 		}
 		map.put("zxCateId", zxCateId);
 		return this.getSqlSession().selectList(this.getNameSpace()+".findShortInfo1", map);
+	}
+	
+	public int unforbidMastersAuto() {
+		return this.getSqlSession().update(this.getNameSpace()+".unforbidMastersAuto", null);
 	}
 	
 }

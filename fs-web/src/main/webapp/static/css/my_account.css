@@ -235,6 +235,11 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .actived .icon.account { background-position: 0 0%; }
 .actived .icon.order { background-position: 0 -100%; }
 
+.bgmask .bgmask-wrap .bgmask-body { padding-left: 1.5rem; padding-right: 1.5rem; }
+
+.forbid-bar { height: 3.5rem; line-height: 3.5rem; background-color: #f33d3c; padding: 0 1.5rem; font-size: 1.2rem; color: #fff; }
+.forbid-bar .forbid-bar-btn { float: right; width: 6rem; height: 2.2rem; line-height: 2.2rem; border-radius: 0.25rem; font-size: 1rem; color: #f33d3c; background-color: #fff; text-align: center; margin-top: 0.65rem; }
+
 .header { width: 100%; padding: 0 1.5rem; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; height: 22rem; background: url("../images/account_bg.png") no-repeat; background-size: 100% 100%; }
 .header .header-top { padding-top: 2.5rem; display: flex; display: -webkit-flex; align-items: center; -webkit-align-items: center; justify-content: space-between; -webkit-justify-content: space-between; padding-bottom: 5rem; }
 .header .header-top .header-top-left { display: flex; display: -webkit-flex; align-items: center; -webkit-align-items: center; }

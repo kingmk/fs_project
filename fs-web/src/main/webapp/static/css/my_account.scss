@@ -1,6 +1,30 @@
 @import "style";
 @import "list";
 @import "footer_nav";
+.bgmask .bgmask-wrap .bgmask-body {
+  padding-left: px2rem(30);
+  padding-right: px2rem(30);
+}
+.forbid-bar {
+  height: px2rem(70);
+  line-height: px2rem(70);
+  background-color: #f33d3c;
+  padding: 0 px2rem(30);
+  font-size: px2rem(24);
+  color: #fff;
+  .forbid-bar-btn {
+    float: right;
+    width: px2rem(120);
+    height: px2rem(44);
+    line-height: px2rem(44);
+    border-radius: px2rem(5);
+    font-size: px2rem(20);
+    color: #f33d3c;
+    background-color: #fff;
+    text-align: center;
+    margin-top: px2rem(13);
+  }
+}
 .header {
   width: 100%;
   padding: 0 px2rem(30);

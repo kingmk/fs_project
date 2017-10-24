@@ -48,30 +48,31 @@
 </update>
 
 
-<select id="findZxCate1"		parameterType="hashmap"	resultMap="fs_zx_cate">
+<select id="findZxCate1" parameterType="hashmap" resultMap="fs_zx_cate">
 	SELECT id, name, description, level, parent_id, parent_name, suggest_amt, usr_defined, create_usr_id, status
 	FROM fs_zx_cate
 	<where>
-	    	<if test="  id!=null"> id = #{id}</if>
+	    	<if test=" id!=null"> id = #{id}</if>
 	    	<if test=" parentId!=null  ">and parent_id=#{parentId} </if>
 	    	<if test="  level!=null ">and level =#{level}</if>
 	    	<if test="  usrDefined!=null "> and usr_defined = #{usrDefined}</if>
 	    	<if test="  status!=null ">and status =#{status}</if>
 	</where>
+	ORDER BY sort DESC
 </select>
 
-<select id="findZxCate2"		parameterType="hashmap"	resultMap="fs_zx_cate">
+<select id="findZxCate2" parameterType="hashmap" resultMap="fs_zx_cate">
 	SELECT id, name, description, level, parent_id, parent_name, suggest_amt, usr_defined, create_usr_id, status
 	FROM fs_zx_cate
 	<where>
-	    	<if test="  level!=null ">level =#{level}</if>
-	    	<if test="  usrDefined!=null "> and usr_defined = #{usrDefined}</if>
-	    	<if test="  status!=null ">and status =#{status}</if>
-	    	<if test="  customUsrId!=null ">or create_usr_id =#{customUsrId}</if>
+	    	<if test="level!=null">level =#{level}</if>
+	    	<if test="usrDefined!=null"> and usr_defined = #{usrDefined}</if>
+	    	<if test="status!=null">and status =#{status}</if>
+	    	<if test="customUsrId!=null">or create_usr_id =#{customUsrId}</if>
 	</where>
 </select>
 
-<select id="findByIds"		parameterType="hashmap"	resultMap="fs_zx_cate">
+<select id="findByIds"	parameterType="hashmap"	resultMap="fs_zx_cate">
 	SELECT id, name, description, level, parent_id, parent_name, suggest_amt, usr_defined, create_usr_id, status
 	FROM fs_zx_cate
 	<where>

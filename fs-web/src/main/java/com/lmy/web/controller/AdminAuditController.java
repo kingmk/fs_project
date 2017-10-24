@@ -49,7 +49,7 @@ public class AdminAuditController {
 	@ResponseBody
 	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
 	public String api2(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response			) throws IOException {
-		logger.info("AccessToken is:"+WeiXinInterServiceImpl.getAccessToken1());
+		logger.info("AccessToken is:"+WeiXinInterServiceImpl.getAccessToken());
 		return "";
 	}
 	
@@ -104,5 +104,15 @@ public class AdminAuditController {
 	public String refund_apply_audit(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response) {
 		JSONObject dataJson = (JSONObject)request.getAttribute("dataJson");
 		return adminAuditServiceImpl.refundApplyAudit(dataJson.getLongValue("orderId"), dataJson.getString("isAgree"), dataJson.getString("refundAuditWord")).toJSONString();
+	}
+
+	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
+	@RequestMapping(value="/admin/audit/api/forbid_master" , method={RequestMethod.POST})
+	@ResponseBody
+	public String forbid_master(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response) {
+		JSONObject dataJson = (JSONObject)request.getAttribute("dataJson");
+		return adminAuditServiceImpl.forbidMasterNotify(dataJson.getLongValue("masterInfoId"), 
+				dataJson.getLongValue("forbidStartTime"), dataJson.getLongValue("forbidEndTime"), 
+				dataJson.getString("reason")).toJSONString();
 	}
 }

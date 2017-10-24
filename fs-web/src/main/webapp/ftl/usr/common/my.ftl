@@ -8,7 +8,7 @@
 	<script src="${host.js}/js/rem.js?${host.version}"></script>
     <script src="${host.js}/js/jquery-1.11.3.min.js"></script>
     <script src="${host.js}/js/common.js?${host.version}"></script>
-    <link rel="stylesheet" href="${host.css}/css/user_mine.css?${host.version}">
+    <link rel="stylesheet" href="${host.css}/css/user_mine.css?${host.version}20">
 <style>
 .img-logo-box{width: 7.5rem; height: 7.5rem ;border-radius: 50%; border: 0.1rem solid #fff; overflow: hidden ;position: relative; margin: 0 auto 2.5rem;}
 .img-logo-box img{position: absolute; z-index: 9;}
@@ -48,6 +48,15 @@ function goRegister() {
         <a class="list-item" href="${host.base}/usr/common/follow_list_nav?currentPage=0&perPageNum=20">
             <div class="list-icon icon-follow"></div>
             <div class="list-label">我的关注</div>
+            <div class="list-arrow"></div>
+        </a>
+    </div>
+</div>
+<div class="list">
+    <div class="list-body">
+        <a class="list-item" href="${host.base}/html/agreement_user.html">
+            <div class="list-icon icon-agreement"></div>
+            <div class="list-label">用户协议</div>
             <div class="list-arrow"></div>
         </a>
     </div>

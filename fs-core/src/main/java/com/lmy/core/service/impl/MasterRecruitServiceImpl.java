@@ -180,11 +180,16 @@ public class MasterRecruitServiceImpl {
 			logger.warn("参数错误 serviceStatus:"+serviceStatus+", fsMasterInfoId:"+fsMasterInfoId+", usrId="+usrId);
 			return JsonUtils.commonJsonReturn("0001","参数错误");
 		}
+		FsMasterInfo masterInfo = fsMasterInfoDao.findById(fsMasterInfoId);
+		if (masterInfo.getServiceStatus().equals("FORBID")) {
+			logger.warn("current status is forbid, for "+fsMasterInfoId+", usrId="+usrId);
+			return JsonUtils.commonJsonReturn("0001","您已经被强制下线，请联系客服");
+		}
 		try{
 			this.fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
 				@Override
 				public Boolean doInTransaction(TransactionStatus status) {
-					int effectNum = fsMasterInfoDao.configOderTaking(fsMasterInfoId, usrId, serviceStatus);
+					int effectNum = fsMasterInfoDao.updateServiceStatus(fsMasterInfoId, usrId, serviceStatus);
 					Assert.isTrue( effectNum>0 );
 					return true;
 				}

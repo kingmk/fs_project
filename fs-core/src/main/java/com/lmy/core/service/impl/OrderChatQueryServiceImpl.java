@@ -110,7 +110,7 @@ public class OrderChatQueryServiceImpl {
 		JsonUtils.setBody(result, "buyUsrName", UsrAidUtil.getNickName2(buyUsr, cacheBuyUsrWxInfo, "") );  
 		JsonUtils.setBody(result, "buyUsrHeadImgUrl", UsrAidUtil.getUsrHeadImgUrl2(buyUsr, cacheBuyUsrWxInfo, ""));  
 		JsonUtils.setBody(result, "isWaitMasterService",  ( OrderStatus.pay_succ.getStrValue().equals(order.getStatus() )  && order.getSellerFirstReplyTime()==null ) ? 'Y' :'N' );  	//是否等待老师服务
-		JsonUtils.setBody(result, "goodsName", order.getGoodsName());  	
+		JsonUtils.setBody(result, "goodsName", order.getGoodsName());
 		JsonUtils.setBody(result, "payRmbAmt",order.getPayRmbAmt());  //单位分
 		JsonUtils.setBody(result, "payRmbAmtDesc",CommonUtils.numberFormat(order.getPayRmbAmt()/100d , "###,##0.00", "0.0"));
 		JsonUtils.setBody(result, "chatServiceSurplusSec", chatServiceSurplusSec);  //聊天服务剩余秒数

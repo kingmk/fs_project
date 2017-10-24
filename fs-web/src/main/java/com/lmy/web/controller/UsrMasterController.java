@@ -191,7 +191,7 @@ public class UsrMasterController {
 	 */
 	@RequestMapping(value="/usr/master/personal_home_page")
 	public String personal_home_page(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
-			,@RequestParam(value = "masterInfoId" , required = true) long masterInfoId){
+			){
 		JSONObject result = this.masterQueryServiceImpl.masterPersonalHomePage(WebUtil.getUserId(request));
 		modelMap.put("result", result);
 		return "/usr/master/personal_home_page";

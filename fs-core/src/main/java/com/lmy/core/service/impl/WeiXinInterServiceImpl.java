@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,19 +20,22 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
+
 import javax.net.ssl.SSLContext;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;  
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.springframework.util.Assert;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lmy.common.component.CommonUtils;
@@ -42,7 +47,6 @@ import com.lmy.common.redis.RedisClient;
 import com.lmy.common.utils.ResourceUtils;
 import com.lmy.core.constant.CacheConstant;
 import com.lmy.core.model.FsPayRecord;
-import com.lmy.core.utils.FsEnvUtil;
 /**
  * 与微信接口交互类
  * @author Administrator
@@ -51,18 +55,13 @@ public class WeiXinInterServiceImpl {
 	private static final Logger logger = Logger.getLogger(WeiXinInterServiceImpl.class);
 	private static final String ACCESS_TOKEN_KEY1=CacheConstant.FS_WEIXIN_ACCESS_TOKEN1 ;
 	private static HttpService httpService = new HttpService();
-	public static String getAccessToken1() throws IOException{
-		logger.info("========to get access token for weixin========");
-//		if(FsEnvUtil.isDev()){
-//			logger.info("开发模拟的AccessToken 。。。。。。。");
-//			return "T1HKeJpM3G5Sb3y7WSl4QfxjFwLdpOIpy6PnDZIZLk43N13n9FFnb2lCzUDGRwP8V57aG7p9khH9-7wll8W_qkRleRoiVA2U3BrrdL5KV9t_U67tP6-lnJUlt7JUdq2WUQQiAEAAWW";
-//		}
+	public static String getAccessToken() throws IOException{
 		//第一步从redis 中取得
 		JSONObject result = (JSONObject)RedisClient.get(ACCESS_TOKEN_KEY1);
 		if(result!=null && result.containsKey("access_token")){
 			//logger.info("获取微信access_token缓存命中 result="+result);
 			return (String)result.get("access_token");
-		}else{
+		} else{
 			String appId = ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.appId");  
 			String secret = ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.appsecret");   
 			//重新获取一次
@@ -80,11 +79,95 @@ public class WeiXinInterServiceImpl {
 			}
 		}
 	}
+	
+	public static Boolean accessTokenNeedRefetch(String errcode) {
+		if (errcode.equals("40001") || errcode.equals("40014") || errcode.equals("42001")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public static String getJSApiTicket() throws IOException {
+		JSONObject result = (JSONObject) RedisClient.get(CacheConstant.FS_JSAPI_TICKET);
+		String jsapiTicket = null;
+		if(result!=null && result.containsKey("ticket")){
+			//logger.info("获取微信access_token缓存命中 result="+result);
+			jsapiTicket = (String)result.get("ticket");
+		} else{
+			Date now = new Date();
+			boolean retry = false;
+			int retrycount = 0;
+			do {
+				retry = false;
+				String accessToken = getAccessToken();
+				String resp = httpService.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi", "utf-8");
+				JSONObject respJson = JSON.parseObject(resp);
+				//logger.info("获取微信access_token响应:resp="+resp);
+				logger.info("========jsapi fetched, resp="+respJson+"========");
+				String errcode = respJson.getString("errcode");
+				if (accessTokenNeedRefetch(errcode) && retrycount <= 3) {
+					RedisClient.delete(ACCESS_TOKEN_KEY1);
+					logger.info("=====the access token expired, it should be fetched again=====");
+					retry = true;
+					retrycount++;
+				} else if (errcode.equals("0")) {
+					respJson.put("_cacheTime", now);
+					RedisClient.set(CacheConstant.FS_JSAPI_TICKET, respJson, 6000);
+					jsapiTicket = respJson.getString("ticket");
+				}
+			} while(retry);
+		}
+		return jsapiTicket;
+	}
+	
+	public static JSONObject getJSSign(String url) throws NoSuchAlgorithmException, IOException {
+		Date now = new Date();
+		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+		if(uuid.length()>32){
+			uuid = uuid.substring(0, 32);
+		}
+		String noncestr = uuid;
+		String jsapi_ticket = getJSApiTicket();
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("noncestr", noncestr);
+		parameters.put("jsapi_ticket", jsapi_ticket);
+		parameters.put("timestamp", ""+now.getTime());
+		parameters.put("url", url);
+
+		Collection<String> keyset= parameters.keySet();  
+		List<String> list = new ArrayList<String>(keyset);  
+		//对key键值按字典升序排序  
+		Collections.sort(list);
+		String s = "";
+		JSONObject jsonRlt = new JSONObject();
+		for (int i = 0; i < list.size(); i++) {
+			String key = list.get(i);
+			String val = parameters.get(key);
+			String stmp = key+"="+val;
+			jsonRlt.put(key, val);
+			if (i==0) {
+				s = stmp;
+			} else {
+				s += "&"+stmp;
+			}
+		}
+		MessageDigest mDigest = MessageDigest.getInstance("SHA1");
+        byte[] result = mDigest.digest(s.getBytes());
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < result.length; i++) {
+            sb.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        jsonRlt.put("appid", ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.appId"));
+        jsonRlt.put("signature", sb.toString());
+		return jsonRlt;
+	}
+	
 	/** userInfo={"subscribe":1,"openid":"osEKMwYRbYFlaiQmu0du1ryMkxKM","nickname":"周兆华","sex":1,"language":"zh_CN","city":"浦东新区","province":"上海","country":"中国","headimgurl":"http:\/\/wx.qlogo.cn\/mmopen\/pqLhiccpwO1fqpQqDLSEXIgTGWY5dIfmNNNHBwA1TDeWPTMakKr8nZGpuTKyNlxsSZSFHTKnTCmMLia2jOLtGY2IwQpU21geF3\/0","subscribe_time":1456890469,"remark":"","groupid":0}
 	 * **/
 	public static JSONObject getUserInfo1(String openId) {
 		try {
-			String authorizerAccessToken = getAccessToken1();
+			String authorizerAccessToken = getAccessToken();
 			String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + authorizerAccessToken + "&openid=" + openId + "&lang=zh_CN";
 			HttpService hs = new HttpService();
 			String getResult = hs.doPost(url, null, "utf-8");
@@ -101,7 +184,7 @@ public class WeiXinInterServiceImpl {
 		requestJson.put("template_id", templateId);
 		requestJson.put("url", clickUrl);
 		requestJson.put("data", data);
-		return  httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+getAccessToken1(), requestJson.toJSONString(), false,"utf-8");
+		return  httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+getAccessToken(), requestJson.toJSONString(), false,"utf-8");
 	}
 	
 	/**
@@ -137,13 +220,13 @@ public class WeiXinInterServiceImpl {
 			parameters.put("openid",  payRecord.getOpenId());  //用户标识 N
 
 			Collection<String> keyset= parameters.keySet();  
-	    	 List<String> list = new ArrayList<String>(keyset);  
-	         //对key键值按字典升序排序  
-	         Collections.sort(list);  
-	         SortedMap<String,String> sortMap = new  TreeMap<String,String>();
-	         for (int i = 0; i < list.size(); i++) {  
-	        	 sortMap.put(list.get(i), parameters.get(list.get(i)));
-	         }  
+			List<String> list = new ArrayList<String>(keyset);  
+			//对key键值按字典升序排序  
+			Collections.sort(list);  
+			SortedMap<String,String> sortMap = new  TreeMap<String,String>();
+			for (int i = 0; i < list.size(); i++) {  
+				sortMap.put(list.get(i), parameters.get(list.get(i)));
+			}
 			String sign =createMd5Sign( sortMap);
 			Assert.isTrue( StringUtils.isNotEmpty(sign)  );
 			sortMap.put("sign", sign);
@@ -343,10 +426,8 @@ public class WeiXinInterServiceImpl {
 				return  JsonUtils.commonJsonReturn("9999","系统错误");
 			}
 			sortMap.put("sign", sign);
-			 requestXml = getWeixinRequestXml(sortMap);
-			logger.info("微信 refundquery requestXML="+requestXml);
-			 respXml = httpService.doPostRequestEntity("https://api.mch.weixin.qq.com/pay/refundquery", requestXml,false,"utf-8"); 
-			logger.info("微信 refundquery resp="+respXml);		
+			requestXml = getWeixinRequestXml(sortMap);
+			respXml = httpService.doPostRequestEntity("https://api.mch.weixin.qq.com/pay/refundquery", requestXml,false,"utf-8");
 			Element root = XmlHelper.getField(respXml);
 			Element returnCodeEle = XmlHelper.child(root, "return_code");
 			String return_code =  returnCodeEle!=null ? returnCodeEle.getText():null;
@@ -359,6 +440,8 @@ public class WeiXinInterServiceImpl {
 			
 			if(!"SUCCESS".equals(result_code)  && "SUCCESS".equals(return_code) ){
 				logger.info("微信 refund 下单失败 return_code:"+return_code+";return_msg:"+return_msg);
+				logger.info("微信 refundquery requestXML="+requestXml);
+				logger.info("微信 refundquery responseXML="+respXml);
 				JSONObject result =   JsonUtils.commonJsonReturn("0001","退款失败");
 				JsonUtils.setBody(result, "respXml", respXml);
 				return result;
@@ -882,18 +965,18 @@ public class WeiXinInterServiceImpl {
 			requestJson.put("data", data);
 			logger.debug(requestJson);
 			HttpService httpService = new HttpService();
-			String resp = httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ getAccessToken1(), requestJson.toJSONString(),	false, "utf-8");
+			String resp = httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ getAccessToken(), requestJson.toJSONString(),	false, "utf-8");
 			if (StringUtils.isEmpty(resp)) {
 				return JsonUtils.commonJsonReturn("0001", "微信信息推送失败");
 			}
 		    // eg : {"errcode":0,   "errmsg":"ok", "msgid":200228332  }
 			JSONObject respJson = JSON.parseObject(resp);
 			String errcode = respJson.getString("errcode");
-			if (errcode.equals("42001")) {
+			if (accessTokenNeedRefetch(errcode)) {
 				// the access token is expired, need to get access token again
 				RedisClient.delete(ACCESS_TOKEN_KEY1);
 				httpService = new HttpService();
-				resp = httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ getAccessToken1(), requestJson.toJSONString(),	false, "utf-8");
+				resp = httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ getAccessToken(), requestJson.toJSONString(),	false, "utf-8");
 				if (StringUtils.isEmpty(resp)) {
 					return JsonUtils.commonJsonReturn("0001", "微信信息推送失败");
 				}

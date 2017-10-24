@@ -9,7 +9,7 @@
   .header-top {
 	height          : px2rem(430);
 	width           : 100%;
-	background      : url("../images/teacher_home_bg.jpg") no-repeat;
+	background      : url("../images/user_teacher_bg.jpg") no-repeat;
 	background-size : 100% 100%;
 	padding-top     : px2rem(50);
 	box-sizing      : border-box;
@@ -19,7 +19,7 @@
 	  padding-bottom : px2rem(30);
 	  font-size      : px2rem(32);
 	  font-weight    : bold;
-	  color          : #fff;
+	  color          : #000;
 	  line-height    : 1;
 	}
 	.hreader-top-nav {
@@ -93,7 +93,9 @@
 			background-size: 100% 100%;
 	  	}
 	  	&.not-heart{
-	  		color: #ddd;
+	  		color:#999; 
+	  		background:#fff; 
+	  		border:1px solid rgba(0,0,0,0.1);
 	  		span{
 				background: url('../images/notheart.png') no-repeat;
 				background-size: 100% 100%;
@@ -423,7 +425,8 @@
   font-size: px2rem(24);
   color: $text-color-secondary;
   text-align: center;
-  margin-bottom: px2rem(100)
+  margin-bottom: px2rem(100);
+  padding-bottom: px2rem(240)!important;
 }
 
 .item-title {
@@ -442,4 +445,25 @@
 	bottom        : 0;
 	border-bottom : 1px solid rgba(0, 0, 0, 0.1);
   }
+}
+
+.button {
+	&.service {
+		width: 77%;
+		right: 0;
+	}
+	&.share {
+		width: 23%;
+		left: 0;
+		background-color: #fff;
+		color: #3f3f3f!important;
+		border-top: 1px solid #3f3f3f;
+		img {
+			width: 1.4rem;
+			height: 1.4rem;
+			vertical-align: middle;
+			margin-right: 0.5rem;
+		}
+	}
+
 }

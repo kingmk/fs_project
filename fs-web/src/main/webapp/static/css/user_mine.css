@@ -603,7 +603,9 @@ a {
   background-position: 0 -100%; }
 
 .list {
-  display: block; }
+  display: block; 
+  margin-bottom: 1rem;
+}
   .list .list-header {
     width: 100%;
     padding: 2rem 1.5rem 1rem;
@@ -737,19 +739,21 @@ a {
   resize: none; }
 
 .list-icon {
-  background: url("../images/user_account_icon.png?1") no-repeat;
+  background: url("../images/user_account_icon.png?6");
   background-size: 100% auto; }
   .list-icon.icon-mine {
-    background-position: 0 0; }
+    background-position: 0 -200%; }
   .list-icon.icon-follow {
-    background-position: 0 100%; }
+    background-position: 0 -300%; }
+  .list-icon.icon-agreement {
+    background-position: 0 -500%; }
 
 .header {
   width: 100%;
   height: 22rem;
   background: url("../images/user_min_bg.jpg") no-repeat;
   background-size: 100% 100%;
-  margin-bottom: 1rem; }
+}
   .header .header-center {
     display: flex;
     display: -webkit-flex;

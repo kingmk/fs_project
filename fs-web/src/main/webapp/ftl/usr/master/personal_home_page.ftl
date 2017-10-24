@@ -3,30 +3,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>预览个人主页</title>
-	<script src="${host.js}/js/rem.js?${host.version}"></script>
-    <script src="${host.js}/js/jquery-1.11.3.min.js"></script>
-    <script src="${host.js}/js/common.js?${host.version}"></script>
-	<link rel="stylesheet" href="${host.css}/css/teacher_home.css?${host.version}">
-	<link rel="stylesheet" href="${host.css}/css/star.css?${host.version}">
-	<script src="${host.js}/js/components.js?${host.version}"></script>
-	<style>
-		.fixed {
-			position: fixed;
-			top: 0;
-			left: 0;
-			right: 0;
-		}
-		.center-fixed{
-			padding-top: 4.5rem;
-		}
-		.mb30{
-			margin-bottom: 30rem;
-		}
-		.center .service-intros .service-intros-list .service-intros-item{justify-content: inherit;}
-
-
+<meta charset="UTF-8">
+<title>预览个人主页</title>
+<script src="${host.js}/js/rem.js?${host.version}"></script>
+<script src="${host.js}/js/jquery-1.11.3.min.js"></script>
+<script src="${host.js}/js/common.js?${host.version}"></script>
+<link rel="stylesheet" href="${host.css}/css/teacher_home.css?${host.version}">
+<link rel="stylesheet" href="${host.css}/css/star.css?${host.version}">
+<script src="${host.js}/js/components.js?${host.version}"></script>
+<style>
+.fixed {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+}
+.center-fixed{
+	padding-top: 4.5rem;
+}
+.center .service-intros .service-intros-list .service-intros-item{justify-content: inherit;}
 .img-logo-box{width: 9rem; height: 9rem ;border-radius: 50%; border: 0.1rem solid #fff; overflow: hidden ;position: relative; margin: 0 auto;}
 .img-logo-box img{position: absolute; z-index: 9;}
 .briefs-item-tit span{background-image: url(${host.img}/images/dot.png)!important;}

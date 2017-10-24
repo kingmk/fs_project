@@ -1,0 +1,284 @@
+@import "style";
+@import "footer_nav";
+@import "bgmask";
+
+.border, .teacher-content .content-list .content-item:before, .content .content-list .content-item:before, .teacher-content .content-list .content-item:after, .content .content-list .content-item:after {
+	content: '';
+	display: block;
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 0.1rem;
+	transform: scale(1, 0.5);
+	background: #ddd; 
+	border-top: 0.1rem solid #ddd;
+}
+
+.teacher-content, .content{
+	margin-bottom: 0.5rem; 
+	.content-title {
+		padding: 2.5rem 0 1.5rem;
+		line-height: 1;
+		font-size: 1.4rem;
+		text-align: center; 
+	}
+	.content-list {
+		.content-item {
+			position: relative;
+			background: #fff;
+			margin-bottom: 1rem;
+			height: 16rem;
+			padding: 0 1.5rem 0 1rem;
+			width: 100%;
+			display: flex;
+			display: -webkit-flex;
+			justify-content: space-between;
+			-webkit-justify-content: space-between;
+			align-items: center;
+			-webkit-align-items: center;
+			color: #3f3f3f !important;
+			&:before {
+				content: '';
+				top: 0; 
+			};
+			&:after{
+				content: '';
+				bottom: 0; 
+			};
+			.left {
+				width: 10rem;
+				box-sizing: border-box;
+				display: flex;
+				display: -webkit-flex;
+				align-items: center;
+				-webkit-align-items: center;
+				flex-direction: column;
+				-webkit-flex-direction: column;
+				flex-shrink: 0;
+				-webkit-flex-shrink: 0;
+				.img {
+					width: 7.5rem;
+					height: 7.5rem;
+					border-radius: 50%; 
+				}
+				.name {
+					font-size: 1.4rem;
+					line-height: 1;
+					padding-top: 1rem;
+					box-sizing: border-box;
+					font-weight: bold; 
+				}
+				.star {
+					transform: scale(0.5, 0.5); 
+				}
+			}
+			.right {
+				margin-left: 2rem;
+				display: flex;
+				display: -webkit-flex;
+				flex-direction: column;
+				-webkit-flex-direction: column;
+				align-items: flex-end;
+				-webkit-align-items: flex-end;
+				.price {
+					font-weight: bold;
+					font-size: 1.8rem;
+					line-height: 1;
+					padding-bottom: 1.4rem;
+					.small {
+						font-size: 1.4rem; 
+					}
+				}
+				.incoming-box {
+					display: flex;
+					display: -webkit-flex;
+					justify-content: flex-end;
+					-webkit-justify-content: flex-end;
+					li {
+						width: 5.3rem;
+						height: 1.7rem;
+						line-height: 1.7rem;
+						text-align: center;
+						color: #fff;
+						font-size: 1.1rem;
+						margin-left: 0.5rem;
+						margin-bottom: 1.2rem; 
+						&.green {
+							background: #18a2c0; 
+						}
+						&.red {
+							background: #d84b2a; 
+						}
+						&.yellow {
+							background: #d8b12a;
+						}
+						&.blue {
+							background: #19c097;
+						}
+					}
+				}
+				.info {
+					line-height: 1.7rem;
+					max-height: 5.1rem;
+					font-size: 1.2rem;
+					color: #999;
+					height: 5.1rem;
+					text-overflow: ellipsis;
+					display: -webkit-box;
+					-webkit-line-clamp: 3;
+					-webkit-box-orient: vertical;
+					overflow: hidden;
+				}
+			}
+		}
+	}
+}
+#consultation {
+ 	padding-top: 6rem; 
+}
+
+.header {
+	height: 5rem;
+	background: #fff;
+	margin-bottom: 1rem;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 999;
+	.header-list {
+		display: flex;
+		display: -webkit-flex;
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+		height: 100%; 
+		.header-item {
+			flex-grow: 1;
+			-webkit-flex-grow: 1;
+			font-size: 1.4rem;
+			align-self: center;
+			-webkit-align-self: center;
+			display: flex;
+			display: -webkit-flex;
+			justify-content: center;
+			-webkit-justify-content: center;
+			align-items: center;
+			-webkit-align-items: center; 
+			&.on {
+				color: #d88c3a !important;
+				font-weight: bold; 
+			}
+			span {
+				&.arr {
+					width: 0.8rem;
+					height: 0.95rem;
+					background: url("../images/teacher_arr_icon.png?1") no-repeat;
+					background-position: 0 0;
+					display: block;
+					margin-left: 0.5rem;
+					background-size: 100% auto; 
+					&.top {
+						background-position: 0 50%; 
+					}
+					&.bottom {
+						background-position: 0 100%; 
+					}
+				}
+				&.select {
+					width: 1rem;
+					height: 1rem;
+					background: url("../images/teacher_select_icon.png") no-repeat;
+					background-position: 0 0;
+					display: block;
+					margin-left: 0.5rem;
+					background-size: 100% auto; 
+					&.on {
+						background-position: 0 100%; 
+					}
+				}
+			}
+		}
+	}
+}
+
+.select-mask {
+	position: fixed;
+	top: 5rem;
+	bottom: 0;
+	width: 100%;
+	background: rgba(0, 0, 0, 0.6);
+	z-index: 99;
+	display: none; 
+	.select-mask-wrap {
+		background: #fff;
+		width: 100%;
+		height: 100%;
+		border-top: 1px solid rgba(0, 0, 0, 0.1);
+		.select-mask-body {
+			overflow-y: auto;
+			position: absolute;
+			width: 100%;
+			top: 0;
+			bottom: 5rem;
+		}
+		.mask-item {
+			position: relative;
+			padding: 0 1.5rem;
+			box-sizing: border-box; 
+			&:after {
+				content: '';
+				position: absolute;
+				left: 1.5rem;
+				right: 0;
+				border-top: 1px solid #ddd;
+				bottom: 0; 
+			}
+			.main-class {
+				line-height: 1;
+				padding: 1.5rem 0;
+				font-size: 1.4rem;
+				font-weight: bold; 
+			}
+			.sub-class {
+				li {
+					padding: 0 1rem;
+					height: 3rem;
+					float: left;
+					text-align: center;
+					line-height: 3rem;
+					font-size: 1.2rem;
+					background: #f5f5f5;
+					margin-right: 1rem; 
+					margin-bottom: 1rem;
+					&:last-of-type {
+						margin-right: 0; 
+					}
+					&.actived {
+						background: #d88c39;
+						color: #fff; 
+					}
+				}
+			}
+		}
+		.select-mask-footer {
+			height: 5rem;
+			position: fixed;
+			bottom: 0;
+			width: 100%;
+			.footer-item {
+				text-align: center;
+				line-height: 5rem;
+				font-size: 1.6rem;
+				color: #fff; 
+				width: 50%;
+				float: left;
+				&:last-of-type {
+					background: #d88c39; 
+				}
+				&:first-of-type {
+					background: #999; 
+				}
+			}
+		}
+	}
+}

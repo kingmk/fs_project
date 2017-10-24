@@ -15,11 +15,13 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
+import com.lmy.common.component.CommonUtils;
 import com.lmy.common.component.JsonUtils;
 import com.lmy.common.queue.beanstalkd.BeanstalkClient;
 import com.lmy.common.redis.RedisClient;
 import com.lmy.core.beanstalkd.job.QueueNameConstant;
 import com.lmy.core.constant.CacheConstant;
+import com.lmy.core.constant.FsConstants;
 import com.lmy.core.dao.FsChatRecordDao;
 import com.lmy.core.dao.FsChatSessionDao;
 import com.lmy.core.dao.FsMasterInfoDao;
@@ -32,6 +34,7 @@ import com.lmy.core.model.FsFileStore;
 import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsOrder;
 import com.lmy.core.model.FsUsr;
+import com.lmy.core.model.enums.OrderStatus;
 import com.lmy.core.utils.FsExecutorUtil;
 @Service
 public class OrderChatServiceImpl {
@@ -172,7 +175,7 @@ public class OrderChatServiceImpl {
 			 if(isMasterFirstReply){
 				logger.info("老师第一次回复  chatSessionNo:"+chatSessionNo+",orderId:"+orderId+",sendUsrId:"+chatReply.getSentUsrId());
 				FsOrder order = this.fsOrderDao.findById(orderId);
-				final Date completedTime =   DateUtils.addDays(now, 1)  ;
+				final Date completedTime =   DateUtils.addSeconds(now, FsConstants.ORDER_SERVICE_TIME_IN_SECONDS)  ;
 				Date settlementTime =   DateUtils.addDays(completedTime, 7) ;
 				//在订单完成后的第7个自然日22点是结算时间
 				settlementTime = DateUtils.setHours(settlementTime, 22);
@@ -195,7 +198,7 @@ public class OrderChatServiceImpl {
 				//2017/05/25 add by fidel bug fix see PayAfter24HoursManagerImpl#doSetOrderStatusToCompleted L91
 				JSONObject beanstalkMsg = new JSONObject();
 				beanstalkMsg.put("orderId", order.getId());
-				BeanstalkClient.put(QueueNameConstant.masterNoReply24HoursAutoRefund, null, 3600 * 24 + 1, null, beanstalkMsg);
+				BeanstalkClient.put(QueueNameConstant.masterNoReply24HoursAutoRefund, null, FsConstants.ORDER_SERVICE_TIME_IN_SECONDS+5, null, beanstalkMsg);
 				
 				JSONObject cacheValue2 = new JSONObject();
 				cacheValue2.put("orderId", orderId);
@@ -309,4 +312,110 @@ public class OrderChatServiceImpl {
 		}
 		return false;
 	}
+
+	public JSONObject endOrderByBuyer(final long orderId, final String chatSessionNo, final long buyerId) {
+		final FsOrder order =   this.fsOrderDao.findById(orderId);
+		if( order == null){
+			return JsonUtils.commonJsonReturn("0001","订单不存在");
+		}
+		if( !order.getBuyUsrId().equals(buyerId) ){
+			return JsonUtils.commonJsonReturn("0002","该订单不是当前用户的订单");
+		}
+		if( !order.getStatus().equals(OrderStatus.pay_succ.getStrValue())){
+			return JsonUtils.commonJsonReturn("0003","该订单不是进行中的订单");
+		}
+		if( order.getSellerFirstReplyTime() == null){
+			return JsonUtils.commonJsonReturn("0004","老师接单后才可提前结束");
+		}
+		
+		Boolean rltTrans = this.fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
+			@Override
+			public Boolean doInTransaction(TransactionStatus status) {
+				Date now = new Date();
+				Date completedTime = now;
+				Date settlementTime = DateUtils.addDays(completedTime, 7) ;
+				//在订单完成后的第7个自然日22点为结算时间
+				settlementTime = DateUtils.setHours(settlementTime, 22);
+				settlementTime = DateUtils.setMinutes(settlementTime, 0);
+				settlementTime = DateUtils.setSeconds(settlementTime, 0);
+				settlementTime = DateUtils.setMilliseconds(settlementTime, 0);
+
+				final FsOrder orderForUpdate = new FsOrder();
+				orderForUpdate.setId(orderId);
+				orderForUpdate.setUpdateTime(now).setEndChatTime(completedTime)
+					.setSettlementTime(settlementTime).setCompletedTime(completedTime)
+					.setStatus(OrderStatus.completed.getStrValue());
+
+				fsOrderDao.update(orderForUpdate);
+				fsChatSessionDao.updateExpiryDateByChatSessionNo(chatSessionNo, completedTime);
+				return true;
+			}
+		});
+		if (!rltTrans) {
+			return JsonUtils.commonJsonReturn("0099","系统异常，请稍后再试");
+		}
+
+		JSONObject result = JsonUtils.commonJsonReturn();
+		return result;
+	}
+
+	public JSONObject extendOrderByMaster(final long orderId, final String chatSessionNo, final long masterId, final int extendedHours) {
+		final FsOrder order =   this.fsOrderDao.findById(orderId);
+		if( order == null){
+			return JsonUtils.commonJsonReturn("0001","订单不存在");
+		}
+		if( !order.getSellerUsrId().equals(masterId) ){
+			return JsonUtils.commonJsonReturn("0002","该订单不是当前老师的订单");
+		}
+		if( !order.getStatus().equals(OrderStatus.pay_succ.getStrValue())){
+			return JsonUtils.commonJsonReturn("0003","该订单不是进行中的订单");
+		}
+		if( order.getSellerFirstReplyTime() == null){
+			return JsonUtils.commonJsonReturn("0004","老师接单后才可延长服务");
+		}
+		if( extendedHours < 1 || extendedHours > 48){
+			return JsonUtils.commonJsonReturn("0005","延长小时数只能在1-48小时内");
+		}
+
+		final Date now = new Date();
+		int extendedSeconds = extendedHours*FsConstants.ORDER_EXTEND_PERIOD_IN_SECONDS;
+		final Date completedTime = DateUtils.addSeconds(order.getCompletedTime(), extendedSeconds); 
+		long timeDiff = (completedTime.getTime()-now.getTime())/1000;
+		Boolean rltTrans = this.fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
+			@Override
+			public Boolean doInTransaction(TransactionStatus status) {
+				Date settlementTime = DateUtils.addDays(completedTime, 7) ;
+				//在订单完成后的第7个自然日22点为结算时间
+				settlementTime = DateUtils.setHours(settlementTime, 22);
+				settlementTime = DateUtils.setMinutes(settlementTime, 0);
+				settlementTime = DateUtils.setSeconds(settlementTime, 0);
+				settlementTime = DateUtils.setMilliseconds(settlementTime, 0);
+				final FsOrder orderForUpdate = new FsOrder();
+				orderForUpdate.setId(orderId);
+				orderForUpdate.setUpdateTime(now).setEndChatTime(completedTime)
+					.setSettlementTime(settlementTime).setCompletedTime(completedTime);
+
+				fsOrderDao.update(orderForUpdate);
+				fsChatSessionDao.updateExpiryDateByChatSessionNo(chatSessionNo, completedTime);
+
+				return true;
+			}
+		});
+		if (!rltTrans) {
+			return JsonUtils.commonJsonReturn("0099","系统异常，请稍后再试");
+		}
+		
+		JSONObject beanstalkMsg = new JSONObject();
+		beanstalkMsg.put("orderId", order.getId());
+		timeDiff = timeDiff+5;
+		BeanstalkClient.put(QueueNameConstant.masterNoReply24HoursAutoRefund, null, (int)timeDiff, null, beanstalkMsg);
+		JSONObject result = JsonUtils.commonJsonReturn();
+		boolean isServiceEnd = now.after( order.getEndChatTime() ) || (order.getRefundApplyTime()!=null ||  StringUtils.equals(order.getIsAutoRefund(), "Y"));
+		Date now2 = new Date();
+		long chatServiceSurplusSec = (isServiceEnd || !OrderStatus.pay_succ.getStrValue().equals(order.getStatus() ) )? 0l : CommonUtils.calculateDiffSeconds(now2,  order.getEndChatTime() );
+		chatServiceSurplusSec += extendedHours*3600;
+		JsonUtils.setBody(result, "chatServiceSurplusSec", chatServiceSurplusSec);
+		return result;
+	}
+	
 }

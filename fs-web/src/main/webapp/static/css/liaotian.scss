@@ -34,6 +34,7 @@
       margin-right: px2rem(10);
     }
     .time{
+      margin-left: px2rem(10);
       font-size: px2rem(24);
       color: $text-color-secondary;
       b{
@@ -44,11 +45,15 @@
   .speak-header-btn{
     background: $link-color;
     color: #fff;
-    width: px2rem(160);
+    width: px2rem(130);
     height: px2rem(60);
     line-height: px2rem(60);
     text-align: center;
     font-size: px2rem(24);
+    &.btn-service {
+      background: $btn-default-bg;
+      margin-left: px2rem(10);
+    }
   }
 
 }
@@ -369,5 +374,27 @@
     font-size: px2rem(28);
     color: #3f3f3f;
     font-weight: bold;
+  }
+}
+
+.form-hour-extend {
+  .text {
+    font-size: px2rem(24);
+    color: #888;
+  }
+  .input{
+    width: 52%;
+    margin: px2rem(15) auto 0;
+    border: 1px solid #ddd;
+    height: px2rem(72);
+    input {
+      border: none;
+      height: px2rem(68);
+      line-height: px2rem(68);
+      font-size: px2rem(40);
+      width: 100%;
+      text-align: center;
+      color: #3f3f3f;
+    }
   }
 }

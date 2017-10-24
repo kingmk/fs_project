@@ -99,6 +99,9 @@ public class EnterBaseController {
 			logger.info("dev 环境: 模拟用户 "+(StringUtils.isNotEmpty(testOpenId) ? testOpenId : "test_weixin_openid_10000"));
 			return StringUtils.isNotEmpty(testOpenId) ? testOpenId : "test_weixin_openid_01";
 		}
+		if (StringUtils.isEmpty(weiXinAuthCode)) {
+			return null;
+		}
 		String baseUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="+
 				ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.appId") 
 				+"&secret="+ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.appsecret")+"&code={0}&grant_type=authorization_code";

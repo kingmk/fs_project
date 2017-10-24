@@ -129,6 +129,7 @@ public class OrderSettlementServiceImpl {
 			logger.error("autoPaySuccToCompleted 系统错误",e);
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public void settlementOne(final Long waitSettleSellerUsrId ,  final Date settlementCycleBeginTime , final Date settlementCycleEndTime){
 		JSONObject wxTransResult = null;
 		try{

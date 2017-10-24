@@ -1,4 +1,8 @@
 package com.lmy.web.controller;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,6 +24,7 @@ import com.lmy.core.model.dto.LoginCookieDto;
 import com.lmy.core.service.impl.MasterQueryServiceImpl;
 import com.lmy.core.service.impl.OrderEvaluateServiceImpl;
 import com.lmy.core.service.impl.SearchMasterServiceImpl;
+import com.lmy.core.service.impl.WeiXinInterServiceImpl;
 import com.lmy.web.common.WebUtil;
 /**
  * @author fidel
@@ -79,6 +84,15 @@ public class SearchMasterController {
 		modelMap.put("result", result);
 		modelMap.put("resultStr", JSON.toJSONString(result,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue));
 		//logger.info("普通用户视角 result"+result);
+
+		try {
+			JSONObject wxconfig = WeiXinInterServiceImpl.getJSSign(WebUtil.getFullUrlString(request));
+			modelMap.put("wxconfig", JSON.toJSONString(wxconfig,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue));
+		} catch (NoSuchAlgorithmException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		
 		return "/usr/search/master_detail";
 	}
 	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})

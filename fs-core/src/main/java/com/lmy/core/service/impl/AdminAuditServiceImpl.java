@@ -11,9 +11,12 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import com.alibaba.fastjson.JSONObject;
 import com.lmy.common.component.JsonUtils;
+import com.lmy.common.queue.beanstalkd.BeanstalkClient;
+import com.lmy.core.beanstalkd.job.QueueNameConstant;
 import com.lmy.core.dao.FsMasterInfoDao;
 import com.lmy.core.dao.FsOrderDao;
 import com.lmy.core.dao.FsUsrDao;
+import com.lmy.core.manage.impl.WxNoticeManagerImpl;
 import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsOrder;
 import com.lmy.core.model.FsUsr;
@@ -28,6 +31,8 @@ public class AdminAuditServiceImpl {
 	private FsOrderDao fsOrderDao;
 	@Autowired
 	private OrderRefundServiceImpl orderRefundServiceImpl;
+	@Autowired
+	private WxNoticeManagerImpl wxNoticeManagerImpl;
 	@Autowired
 	private org.springframework.transaction.support.TransactionTemplate fsTransactionTemplate;
 	
@@ -125,5 +130,26 @@ public class AdminAuditServiceImpl {
 			logger.error("退款申请审批系统错误", e);
 			return JsonUtils.commonJsonReturn("9999","系统错误");
 		}
+	}
+	
+	public JSONObject forbidMasterNotify(long masterInfoId, long forbidStartTime, long forbidEndTime, String reason) {
+		FsMasterInfo masterInfo = fsMasterInfoDao.findById(masterInfoId);
+		if (masterInfo == null) {
+			return JsonUtils.commonJsonReturn("9999","系统错误");
+		}
+		
+		wxNoticeManagerImpl.forbidMasterWxMsg(masterInfo.getUsrId(), masterInfo.getWxOpenId(), forbidStartTime, forbidEndTime, reason);
+		
+		long timeNow = (new Date()).getTime();
+
+		JSONObject beanstalkMsg = new JSONObject();
+		beanstalkMsg.put("masterInfoId", masterInfoId);
+		beanstalkMsg.put("msgType", QueueNameConstant.MSG_ADMIN_UNFORBID_MASTER);
+		BeanstalkClient.put(QueueNameConstant.QUEUE_ADMIN, null, (int)(forbidEndTime-timeNow)+3, null, beanstalkMsg);
+		return JsonUtils.commonJsonReturn();
+	}
+	
+	public void unforbidMasterAuto() {
+		
 	}
 }

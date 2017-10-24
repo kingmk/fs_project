@@ -29,7 +29,7 @@ public class ZxCateIntroController {
 	 * @return
 	 */
 	@RequestMapping(value="/cate/introduce_index")
-	public String usr_common_index(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+	public String category_index(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 			,@RequestParam(value = "zxCateId" , required = true) long zxCateId  														//afterSupplySubmit ; afterServiceConfigSubmit
 			){
 		//查询平台推荐大师列表
@@ -48,7 +48,7 @@ public class ZxCateIntroController {
 	 * @return
 	 */
 	@RequestMapping(value="/cate/introduce_nav")
-	public String usr_common_index(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response){
+	public String category_nav(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response){
 		modelMap.put("zxCateList", fsZxCateQueryServiceImpl.findZxCate1(null, null, 2l, "N", "EFFECT"));
 		return "/cate/introduce_nav";
 	}

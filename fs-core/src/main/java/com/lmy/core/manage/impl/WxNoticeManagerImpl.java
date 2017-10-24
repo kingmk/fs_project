@@ -38,7 +38,6 @@ public class WxNoticeManagerImpl {
 		String title = "您有新订单";
 		String remarkValue = buyUsrName+"于"+CommonUtils.dateToString(new Date(), "HH:mm", "")+"咨询问题";
 		JSONObject pushToWxdata =  buildWxJsonData2(title, buyUsrName, order.getGoodsName(), remarkValue);
-		logger.info("========to send new order wx msg to master========");
 		asynHand(order.getId(), order.getSellerUsrId(), null, sellerUsrOpenId, template_id, title,  clickUrl, pushToWxdata);
 	}
 	
@@ -159,6 +158,31 @@ public class WxNoticeManagerImpl {
 		}
 		JSONObject pushToWxdata =  buildWxJsonData1(title,serviceType , serviceStatus, time, remark);
 		asynHand(orderId, buyUsrId, null, buyUsrOpenId, template_id, title, clickUrl, pushToWxdata);
+	}
+	
+	public void forbidMasterWxMsg(long masterUsrId, String masterOpenId, long forbidStartTime, long forbidEndTime, String reason) {
+		String template_id = "uXeW9lQXxZLMFPP1LMNaSUh_C63F4pr1sM-0lP9csRQ";
+		String clickUrl = fsServiceBaseHost+"/usr/master/account";
+		String title = "强制下线通知";
+		JSONObject wxData = new JSONObject();
+		JSONObject first = new JSONObject();
+		first.put("value", title);
+		first.put("color", "#ff0000");
+		JSONObject keyword1 = new JSONObject();
+		keyword1.put("value", CommonUtils.dateToString(new Date(forbidStartTime), CommonUtils.dateFormat4, null));		
+		JSONObject keyword2 = new JSONObject();
+		keyword2.put("value", CommonUtils.dateToString(new Date(forbidEndTime), CommonUtils.dateFormat4, null));
+		JSONObject keyword3 = new JSONObject();
+		keyword3.put("value", reason);
+		JSONObject remark = new JSONObject();
+		remark.put("value", "在下线期间内您无法接单，如果您还有未完成订单，为避免客户投诉，还请您完成好服务。如有疑问请咨询平台客服。");		
+		wxData.put("first", first);
+		wxData.put("keyword1", keyword1);
+		wxData.put("keyword2", keyword2);
+		wxData.put("keyword3", keyword3);
+		wxData.put("remark", remark);
+		
+		asynHand(null, masterUsrId, null, masterOpenId, template_id, title, clickUrl, wxData);
 	}
 	
 	// 退款、评价消息

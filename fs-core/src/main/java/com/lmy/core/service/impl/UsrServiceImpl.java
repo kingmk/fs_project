@@ -34,17 +34,17 @@ public class UsrServiceImpl {
 		return usr;
 	}
 
-	public JSONObject usrRegMobileWithNoCheck(Long usrId, String mobile) {
+	public JSONObject usrRegMobileWithNoCheck(Long usrId, String mobile, String source) {
 		Date now = new Date();
 		final FsUsr usrForUpdate = new FsUsr();
 		usrForUpdate.setId(usrId);
 		//setRegisterTime(now) add by fidel at 2017/06/02 20:37 bugfix 
-		usrForUpdate.setRegisterMobile(mobile).setUpdateTime(now).setRegisterTime(now);
+		usrForUpdate.setRegisterMobile(mobile).setUpdateTime(now).setRegisterTime(now).setRegisterSrc(source);
 		try{
 			 fsTransactionTemplate.execute(new TransactionCallback<Integer>() {
 				@Override
 				public Integer doInTransaction(TransactionStatus status) {
-					int effectNum = 	 fsUsrDao.update(usrForUpdate);
+					int effectNum = fsUsrDao.update(usrForUpdate);
 					Assert.isTrue( effectNum ==1 );
 					return effectNum;
 				}

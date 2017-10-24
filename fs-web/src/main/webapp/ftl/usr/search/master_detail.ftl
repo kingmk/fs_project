@@ -3,36 +3,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>老师主页</title>
-	<script src="${host.js}/js/rem.js?${host.version}"></script>
-  <script src="${host.js}/js/jquery-1.11.3.min.js"></script>
-  <script src="${host.js}/js/common.js?${host.version}"></script>
-	<link rel="stylesheet" href="${host.css}/css/teacher_home.css?${host.version}">
-	<link rel="stylesheet" href="${host.css}/css/star.css?${host.version}">
-	<script src="${host.js}/js/components.js?${host.version}"></script>
-	<style>
+<meta charset="UTF-8">
+<title>老师主页</title>
+<script src="${host.js}/js/rem.js?${host.version}"></script>
+<script src="${host.js}/js/jquery-1.11.3.min.js"></script>
+<script src="${host.js}/js/common.js?${host.version}"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<link rel="stylesheet" href="${host.css}/css/teacher_home.css?${host.version}">
+<link rel="stylesheet" href="${host.css}/css/star.css?${host.version}">
+<script src="${host.js}/js/components.js?${host.version}"></script>
+<style>
 .fixed{position:fixed;top:0;left:0;right:0}
 .center-fixed{padding-top:4.5rem}
-.mb30{margin-bottom:20rem}
 .img-logo-box{width:9rem;height:9rem;border-radius:50%;overflow:hidden;position:relative;margin:0 auto}
 .img-logo-box img{position:absolute;z-index:9}
-.header .header-top{background: url('${host.img}/images/user_teacher_bg.png') no-repeat; background-size: 100% 100%;}
-.header .header-top .header-top-h3{color: #000;}
-.header .header-bottom .header-bottom-item .btn.not-heart{color:#999; background:#fff; border:1px solid rgba(0,0,0,0.1);}
 .header .header-bottom .header-bottom-item .item-num{color: #d88c3a;}
 .center .center-nav .nav-item.actived:after{background: #d88c3a;}
 
-	</style>
+</style>
 
 
 <script>
 var isFollowed  = '${result.body.isFollowed}';
 var isZxCateId = '${zxCateId}';
 var a = ${resultStr};
+var wxconfig = ${wxconfig};
 $(function(){
 	window.scrollTo(0,0);
-	$(".button.fix").click(function(){
+	$(".button.service").click(function(){
 		if ($(this).hasClass("disabled")) {
 			return;
 		};
@@ -45,8 +43,55 @@ $(function(){
 			 mAlert.addAlert("请选择服务");
 		</#if>
 	});
+
+	$(".button.share").click(function() {
+		var domMask = $('<div class="m-alert" id="share_bg"><img src="${host.img}/images/bg_share.png" style="width:100%;"></div>');
+		domMask.click(function() {
+			domMask.remove();
+		})
+		$("body").append(domMask);
+	});
 	loadServiceIntro();
 	loadUsrCommentsIntro();
+	initFollow();
+	window.scrollTo(0,0);
+	$('.center-nav .nav-item').on('click', function(e){
+		$('.center-nav').addClass('fixed')
+		$('.center').addClass('center-fixed');
+		var top = $("."+$(this).attr('id')).offset().top;
+		$('html, body').animate({scrollTop:top-$('.center-nav').height()}, 'slow');
+	})
+
+	$("#linkTo").on('click',function(){
+		location.href='${host.base}/usr/master/evaluate_summary?masterUsrId=${result.body.masterUsrId}'
+	})
+
+	initWxShare();
+});
+
+window.onscroll = function(e){
+	var navHeight = $('.center-nav').height();
+	var briefsTop = $('.teacher-briefs').offset().top;
+	var introsTop = $('.service-intros').offset().top;
+	var commentsTop =  $('.user-comments').offset().top;
+	isClick = false;
+	if($('body').scrollTop() > briefsTop-navHeight-10){
+		$('.center-nav').addClass('fixed')
+		$('.center').addClass('center-fixed');
+	}else{
+		$('.center-nav').removeClass('fixed')
+		$('.center').removeClass('center-fixed');
+	}
+	if($('body').scrollTop() <= (introsTop-navHeight-2) && $('body').scrollTop() >= (briefsTop-navHeight-10) ){
+		$("#teacher-briefs").addClass('actived').siblings().removeClass('actived');
+	}else if($('body').scrollTop() <= (commentsTop-navHeight-2) && $('body').scrollTop() >= (introsTop-navHeight-10)){
+		$("#service-intros").addClass('actived').siblings().removeClass('actived');
+	}else if($('body').scrollTop() >= (commentsTop-navHeight-10)){
+		$("#user-comments").addClass('actived').siblings().removeClass('actived');
+	}
+}
+
+function initFollow() {
 	//取消关注事件
 	$(".btn").on("click", function(){
 		if(isFollowed == 'Y'){
@@ -92,39 +137,6 @@ $(function(){
 			})
 		}
 	})
-	window.scrollTo(0,0);
-	$('.center-nav .nav-item').on('click', function(e){
-		$('.center-nav').addClass('fixed')
-		$('.center').addClass('center-fixed');
-		var top = $("."+$(this).attr('id')).offset().top;
-		$('html, body').animate({scrollTop:top-$('.center-nav').height()}, 'slow');
-	})
-
-	$("#linkTo").on('click',function(){
-		location.href='${host.base}/usr/master/evaluate_summary?masterUsrId=${result.body.masterUsrId}'
-	})
-});
-
-window.onscroll = function(e){
-	var navHeight = $('.center-nav').height();
-	var briefsTop = $('.teacher-briefs').offset().top;
-	var introsTop = $('.service-intros').offset().top;
-	var commentsTop =  $('.user-comments').offset().top;
-	isClick = false;
-	if($('body').scrollTop() > briefsTop-navHeight-10){
-		$('.center-nav').addClass('fixed')
-		$('.center').addClass('center-fixed');
-	}else{
-		$('.center-nav').removeClass('fixed')
-		$('.center').removeClass('center-fixed');
-	}
-	if($('body').scrollTop() <= (introsTop-navHeight-2) && $('body').scrollTop() >= (briefsTop-navHeight-10) ){
-		$("#teacher-briefs").addClass('actived').siblings().removeClass('actived');
-	}else if($('body').scrollTop() <= (commentsTop-navHeight-2) && $('body').scrollTop() >= (introsTop-navHeight-10)){
-		$("#service-intros").addClass('actived').siblings().removeClass('actived');
-	}else if($('body').scrollTop() >= (commentsTop-navHeight-10)){
-		$("#user-comments").addClass('actived').siblings().removeClass('actived');
-	}
 }
 
 function loadServiceIntro(){
@@ -164,6 +176,45 @@ function loadUsrCommentsIntro(){
 	    error: function(res){
 	    }
 	});
+}
+
+function initWxShare() {
+	if (!wx) {
+		return;
+	};
+	wx.config({
+		appId: wxconfig.appid,
+		timestamp: wxconfig.timestamp,
+		nonceStr: wxconfig.noncestr,
+		signature: wxconfig.signature,
+		jsApiList: ["onMenuShareTimeline","onMenuShareAppMessage"]
+	});
+	wx.ready(function() {
+		var image = "${result.body.masterHeadImgUrl}";
+		var link = "${host.base}/enter/weixin?_goTo="+encodeURIComponent("/usr/search/master_detail?masterInfoId=${result.body.masterInfoId}");
+
+		wx.onMenuShareTimeline({
+			title:"我分享出来，就是要准得你吓一跳", 
+			link:link, 
+			imgUrl: image,
+			success:function(){
+				$("#share_bg").remove();
+			}, 
+			cancel:function(){
+			}
+		})
+		wx.onMenuShareAppMessage({
+			title:"我分享出来，就是要准得你吓一跳", 
+			desc: "你的命超乎你的想象",
+			link:link, 
+			imgUrl: image,
+			success:function(){
+				$("#share_bg").remove();
+			}, 
+			cancel:function(){
+			}
+		})
+	})
 }
 </script>
 
@@ -271,18 +322,19 @@ function loadUsrCommentsIntro(){
 	</div>
 </div>
 <#--用户评价 end -->
-<div class="footer mb30">
+<div class="footer">
 	因风水老师擅长术数及风格各有特点，故所有观点仅作参考。
 </div>
-<div class="button fix <#if result.body.serviceStatus!='ING'>disabled</#if>">
+<div class="button fix share"><img src="${host.img}/images/icon_share.png">分享</div>
+<div class="button service fix <#if result.body.serviceStatus!='ING'>disabled</#if>">
 <#if zxCateId ??>
-	${result.body.curServiceCateInfo.fsZxCateParentName} ${result.body.curServiceCateInfo.name}
-
-	¥ ${funUtils.formatNumber(result.body.curServiceCateInfo.amt/100,"###,##0.00","--")}
+	咨询&nbsp;${result.body.curServiceCateInfo.name}&nbsp;¥ ${funUtils.formatNumber(result.body.curServiceCateInfo.amt/100,"###,##0.00","--")}
 <#elseif result.body.serviceStatus=="ING">
 	请选择服务
 <#elseif result.body.serviceStatus=="NOTING">
 	老师太忙了，等会儿再接单
+<#else>
+	老师暂时无法接单
 </#if>
 </div>
 <script>

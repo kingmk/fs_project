@@ -13,7 +13,6 @@
 #bgk-img{z-index:999;}
 .speak-box {position: absolute; }
 .speak-box #list {position: relative;}
-.speak-header-btn{background: #d88c3a!important;}
 .speak-box .speak-text {word-wrap: break-word; display: block;}
 .speak-right .speak-text {float: none; padding-right: 0; margin-right: 6rem; }
 .speak-right .speak-text  p {float: right; background-color: #d88c3a!important; border: none!important; position: relative;}
@@ -39,6 +38,7 @@ var isScrollUp = false;
 var isUpdating = false;
 var secondUpadte = 3000;
 var isChatSubmit = false;
+var isServiceEnd = "${body.isServiceEnd}";
 
 
 var overscroll = function(el) {
@@ -89,25 +89,30 @@ $(function() {
       }
   });
 
-  if('${body.orderStatus}' == 'pay_succ'){
-    if('${body.isWaitMasterService}' == 'Y'){
-      $(".lastTimeTitle").html("&nbsp;&nbsp;");
-      $("#lastTime").html('等待大师回复')
-    }else{
-      $("#lastTime").html(lastTime && lastTime!='0'?commonUtils.getTimeFix(lastTime):'0');
-      var time = setInterval(function() {
-        $("#lastTime").html(lastTime && lastTime!='0'?commonUtils.getTimeFix(lastTime--):'0');
-      }, 1000);
-      setInterval(function() {
-        paramsMana();
-        loadAjax(function(dom) {
-          $("#list").append(dom);
-        },'next')
-      },secondUpadte);
-    }
-  }else{
-    $(".lastTimeTitle").html("&nbsp;&nbsp;");
-    $("#lastTime").html('本次服务已结束')
+  if('${body.isWaitMasterService}' != 'Y' && "${body.isServiceEnd}" != "Y"){
+    $("#lastTime").html(lastTime && lastTime!='0'?commonUtils.getTimeFix(lastTime):'0');
+    var time = setInterval(function() {
+      $("#lastTime").html(lastTime && lastTime!='0'?commonUtils.getTimeFix(lastTime--):'0');
+    }, 1000);
+    setInterval(function() {
+      paramsMana();
+      loadAjax(function(dom) {
+        $("#list").append(dom);
+      },'next')
+    },secondUpadte);
+    $("#preEnd").click(function(){
+      var mask = new Bgmsk({
+        title: "是否提前结束订单?", 
+        text:"订单结束后，对话将立刻终止，<br/>如需再找老师咨询，需重新下单", 
+        buttonTxt:"确认结束",
+        buttonFn: function() {
+          loading.addLoading('${host.img}/images/ajax-loader.gif');
+          preEnd("${orderId}", "${chatSessionNo}");
+        }
+      });
+      mask.init();
+    })
+
   }
 
 
@@ -437,6 +442,34 @@ function showImg(url) {
 function goToorderEvaluate(orderId) {
   location.href = "${host.base}/order/evaluate/common_view?orderId=" + orderId
 }
+
+function preEnd(orderId, chatSessionNo) {
+  $.ajax({
+    type: "POST",
+    url: "${host.base}/order/pre_end_chat",
+    data: {
+      orderId: orderId,
+      chatSessionNo: chatSessionNo
+    },
+    dataType: "json",
+    success: function(data) {
+      if (data.head.code == "0000") {
+        mAlert.addAlert("本次服务已结束，感谢您的支持", 3000);
+        var f = function() {
+          goToorderEvaluate(orderId);
+        }
+        setTimeout(f, 2500);
+      } else {
+        mAlert.addAlert(data.head.msg);
+        loading.removeLoading();
+      }
+    },
+    error: function(res) {
+      loading.removeLoading();
+      mAlert.addAlert("系统暂时异常，请刷新后再试");
+    }
+  });
+}
  </script>
 
 </head>
@@ -445,11 +478,22 @@ function goToorderEvaluate(orderId) {
 <div class="speak-header">
 	<div class="speak-header-img">
 		<img class="img" src="${body.chatWithUsrHeadImgUrl}">
-		<div class="time"><span class="lastTimeTitle">本次服务剩余：</span><b id='lastTime'></b></div>
+		<div class="time">
+      <#if body.isWaitMasterService == "Y">
+      <b id='lastTime'>等待老师接单</b>
+      <#elseif body.isServiceEnd != "Y">
+      <span class="lastTimeTitle">本次服务剩余：</span><br/><b id='lastTime'></b>
+      <#else>
+      <b id='lastTime'>本次服务已结束</b>
+      </#if>
+    </div>
 	</div>
-	<div class="speak-header-btn" id='userInfo'>
-		我的信息
-	</div>
+  <#if body.goodsName != "吉凶占卜">
+	<div class="speak-header-btn" id='userInfo'>我的信息</div>
+  </#if>
+  <#if body.isWaitMasterService != "Y" && body.isServiceEnd != "Y">  
+  <div class="speak-header-btn btn-service" id='preEnd'>结束订单</div>
+  </#if>
 </div>
 <div class="speak-window">
 <div class="speak-box" id ="chatListDiv">

@@ -1,114 +1,19 @@
-.bgmask {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 99; }
-  .bgmask .bgmask-wrap {
-    width: 25rem;
-    min-height: 20rem;
-    background: #fff;
-    margin: auto;
-    position: relative;
-    top: 15rem;
-    left: 0;
-    right: 0;
-    overflow: hidden; }
-    .bgmask .bgmask-wrap .bgmask-close {
-      position: absolute;
-      width: 4rem;
-      height: 4rem;
-      background: url("../images/mask_close.png") no-repeat;
-      background-size: 100% 100%;
-      left: 0;
-      top: 0; }
-    .bgmask .bgmask-wrap .bgmask-header {
-      position: absolute;
-      text-align: center;
-      width: 100%;
-      height: 5rem;
-      line-height: 5rem;
-      font-size: 1.6rem; }
-    .bgmask .bgmask-wrap .bgmask-body {
-      padding-top: 5rem;
-      width: 100%; }
-      .bgmask .bgmask-wrap .bgmask-body .title {
-        font-size: 1.6rem;
-        color: #c09318;
-        text-align: center;
-        line-height: 1;
-        padding-bottom: 0.8rem;
-        font-weight: bold; }
-      .bgmask .bgmask-wrap .bgmask-body .text {
-        font-size: 1.3rem;
-        color: #999;
-        text-align: center;
-        line-height: 1;
-        padding-bottom: 0.3rem; }
-      .bgmask .bgmask-wrap .bgmask-body .form {
-        width: 100%;
-        padding: 0 2rem;
-        box-sizing: border-box;
-        margin-top: 1.5rem; }
-        .bgmask .bgmask-wrap .bgmask-body .form .form-item {
-          display: flex;
-          display: -webkit-flex;
-          width: 100%;
-          border-bottom: 1px solid #ddd;
-          padding: 0.5rem 0; }
-          .bgmask .bgmask-wrap .bgmask-body .form .form-item.code {
-            height: 4.5rem;
-            padding: 1.5rem 0 0;
-            box-sizing: border-box; }
-          .bgmask .bgmask-wrap .bgmask-body .form .form-item .form-code {
-            font-size: 1.2rem;
-            line-height: 2.95rem;
-            color: #c09318;
-            text-align: center;
-            flex-grow: 1;
-            -webkit-flex-grow: 1;
-            min-width: 7rem;
-            position: relative; }
-            .bgmask .bgmask-wrap .bgmask-body .form .form-item .form-code:before {
-              content: '';
-              position: absolute;
-              left: 0;
-              top: 0.5rem;
-              bottom: 0.5rem;
-              border-left: 1px solid #ddd; }
-            .bgmask .bgmask-wrap .bgmask-body .form .form-item .form-code.disabled {
-              color: #999; }
-        .bgmask .bgmask-wrap .bgmask-body .form input {
-          border: none;
-          outline: none;
-          width: 100%;
-          font-size: 1.2rem; }
-    .bgmask .bgmask-wrap .bgmask-footer {
-      padding: 2.5rem; }
-      .bgmask .bgmask-wrap .bgmask-footer .button {
-        width: 100%;
-        height: 4.5rem;
-        text-align: center;
-        line-height: 4.5rem;
-        color: #fff;
-        font-size: 1.6rem;
-        background: #3f3f3f; }
+.bgmask { position: fixed; top: 0; bottom: 0; right: 0; left: 0; background: rgba(0, 0, 0, 0.7); z-index: 99; }
+.bgmask .bgmask-wrap { width: 25rem; min-height: 20rem; background: #fff; margin: auto; position: relative; top: 15rem; left: 0; right: 0; overflow: hidden; }
+.bgmask .bgmask-wrap .bgmask-close { position: absolute; width: 4rem; height: 4rem; background: url("../images/mask_close.png") no-repeat; background-size: 100% 100%; left: 0; top: 0; }
+.bgmask .bgmask-wrap .bgmask-header { position: absolute; text-align: center; width: 100%; height: 5rem; line-height: 5rem; font-size: 1.6rem; }
+.bgmask .bgmask-wrap .bgmask-body { padding-top: 5rem; width: 100%;}
+.bgmask .bgmask-wrap .bgmask-body .title { font-size: 1.6rem; color: #d68b38; text-align: center; line-height: 1; padding-bottom: 1.4rem; font-weight: bold; }
+.bgmask .bgmask-wrap .bgmask-body .text { font-size: 1.3rem; color: #999; text-align: center; line-height: 2.2rem; padding-bottom: 0.3rem; }
+.bgmask .bgmask-wrap .bgmask-body .form { width: 100%; padding: 0 2rem; box-sizing: border-box; margin-top: 1.5rem; }
+.bgmask .bgmask-wrap .bgmask-body .form .form-item { display: flex; display: -webkit-flex; width: 100%; border-bottom: 1px solid #ddd; padding: 0.5rem 0; }
+.bgmask .bgmask-wrap .bgmask-body .form .form-item.code {height: 4.5rem; padding: 1.5rem 0 0; box-sizing: border-box; }
+.bgmask .bgmask-wrap .bgmask-body .form .form-item .form-code { font-size: 1.2rem; line-height: 2.95rem; color: #c09318; text-align: center; flex-grow: 1; -webkit-flex-grow: 1; min-width: 7rem; position: relative; }
+.bgmask .bgmask-wrap .bgmask-body .form .form-item .form-code:before { content: ''; position: absolute; left: 0; top: 0.5rem; bottom: 0.5rem; border-left: 1px solid #ddd; }
+.bgmask .bgmask-wrap .bgmask-body .form .form-item .form-code.disabled { color: #999; }
+.bgmask .bgmask-wrap .bgmask-body .form input { border: none; outline: none; width: 100%; font-size: 1.2rem; }
+.bgmask .bgmask-wrap .bgmask-footer { padding: 2.5rem; }
+.bgmask .bgmask-wrap .bgmask-footer .button { width: 100%; height: 4.5rem; text-align: center; line-height: 4.5rem; color: #fff; font-size: 1.6rem; background: #d68b38; }
 
-.m-alert {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 99999; }
-  .m-alert .alert-msg {
-    background: #3a3a3a;
-    color: #fff;
-    font-size: 1.4rem;
-    border-radius: 0.3rem;
-    padding: 0.5rem 1.5rem;
-    display: inline-block;
-    box-sizing: border-box; }
+.m-alert { position: fixed; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.6); z-index: 99999; }
+.m-alert .alert-msg { background: #3a3a3a; color: #fff; font-size: 1.4rem; border-radius: 0.3rem; padding: 0.5rem 1.5rem; display: inline-block; box-sizing: border-box; }

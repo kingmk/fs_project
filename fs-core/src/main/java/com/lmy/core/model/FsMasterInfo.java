@@ -65,6 +65,10 @@ public class FsMasterInfo  extends BaseObject {
   private  String  isSignOther;
   /**  */
   private  Date  updateTime;
+  
+  private Date forbidTime;
+  
+  private String forbidReason;
   /**  */
 	public Long getUsrId(){
 		return this.usrId;
@@ -333,6 +337,22 @@ public FsMasterInfo setNickName(String nickName) {
 	public FsMasterInfo setUpdateTime(Date updateTime){
 		 this.updateTime=updateTime;
 		 return this;
+	}
+	
+	public Date getForbidTime() {
+		return forbidTime;
+	}
+	public FsMasterInfo setForbidTime(Date forbidTime) {
+		this.forbidTime = forbidTime;
+		return this;
+	}
+	
+	public String getForbidReason() {
+		return forbidReason;
+	}
+	public FsMasterInfo setForbidReason(String forbidReason) {
+		this.forbidReason = forbidReason;
+		return this;
 	}
 	public String toString(){
 	    return JSON.toJSONString(this,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue);

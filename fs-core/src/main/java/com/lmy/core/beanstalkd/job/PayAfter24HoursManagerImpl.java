@@ -60,7 +60,7 @@ public class PayAfter24HoursManagerImpl extends QueueHandler{
 				logger.warn("参数格式错误data:{}", data);
 				return null;
 			}
-			Long orderId  =  data.getLong("orderId");
+			Long orderId = data.getLong("orderId");
 			if(orderId == null){
 				logger.warn("参数格式错误data:{}", data);
 				return null;
@@ -70,7 +70,7 @@ public class PayAfter24HoursManagerImpl extends QueueHandler{
 				logger.warn("查无数据 data:{}", data);
 				return null;				
 			}
-			if(   !expectStatusList.contains( order.getStatus() )    ){
+			if(!expectStatusList.contains(order.getStatus() )){
 				logger.warn("订单状态错误 data:{},当前状态:{} , 期待状态:{}", data , order.getStatus() , ArrayUtils.toString(expectStatusList));
 				return null;
 			}
@@ -79,10 +79,11 @@ public class PayAfter24HoursManagerImpl extends QueueHandler{
 			FsChatRecordDto chatRecord = fsChatRecordDao.findUsrReceLastReply(order.getChatSessionNo(), order.getBuyUsrId());
 			///需要做自动退款
 			if(chatRecord == null || chatRecord.getCreateTime().after( order.getEndChatTime() )){
-				logger.info("master 24小时内没友回复 系统自动的发起退款 ... being 退款orderId:{};chatSessionNo:{},当前状态:{}",orderId,order.getChatSessionNo(),order.getStatus());
+				logger.info("======master 24小时内没回复 系统自动的发起退款======being 退款orderId:{};chatSessionNo:{},当前状态:{}",orderId,order.getChatSessionNo(),order.getStatus());
 				doAfter24HoursUnreadMsgAutoRefund(order,data);
-			}else{
-				doSetOrderStatusToCompleted(order, now,data);
+			} else {
+				logger.info("======将订单转为完成状态===== "+data.toJSONString());
+				doSetOrderStatusToCompleted(order, now, data);
 			}
 		}catch(Exception e){
 			logger.error("处理出错 data:{}", data,e);
@@ -94,14 +95,19 @@ public class PayAfter24HoursManagerImpl extends QueueHandler{
 	private void doSetOrderStatusToCompleted(FsOrder order , Date now , JSONObject data){
 		//see OrderChatServiceImpl #asynHandIfMasterFirstReply # _handIfMasterFirstReply L177
 		//老师有回复 则服务截止时间为 老师第一次回复 24小时后  bugfix at 2017/05/30 22:39
-		if( order.getSellerFirstReplyTime()!=null &&   now.before( order.getEndChatTime() )){
-			logger.info("master 第一次回复时间{} , 当前时间不满足到状态 -->completed orderId:{};chatSessionNo:{},当前状态:{}",  CommonUtils.dateToString(order.getSellerFirstReplyTime(), CommonUtils.dateFormat2, "")  
-					,order.getId(),order.getChatSessionNo(),order.getStatus());
+		logger.info("=====now is "+CommonUtils.dateToString(now, CommonUtils.dateFormat2, "")+"=====");
+		if( order.getSellerFirstReplyTime()!=null && now.before( order.getEndChatTime() )){
+			logger.info("=====当前时间不满足完成状态: first reply: {}, orderId:{};chatSessionNo:{},end_chat_time:{}=====",  
+					CommonUtils.dateToString(order.getSellerFirstReplyTime(), CommonUtils.dateFormat2, ""),  
+					order.getId(), order.getChatSessionNo(),
+					CommonUtils.dateToString(order.getEndChatTime(), CommonUtils.dateFormat2, ""));
 			return;
 		}
-		if(   !expectStatusList.contains( order.getStatus() )    ){
-			logger.info("master 第一次回复时间{} , 当前状态不满足到状态 -->completed orderId:{};chatSessionNo:{},当前状态:{},期待状态:{}",  CommonUtils.dateToString(order.getSellerFirstReplyTime(), CommonUtils.dateFormat2, "")  
-					,order.getId(),order.getChatSessionNo(),order.getStatus() , ArrayUtils.toString(expectStatusList));
+		if(!expectStatusList.contains( order.getStatus())){
+			logger.info("=====当前状态不满足完成状态: orderId:{};chatSessionNo:{},当前状态:{},期待状态:{}=====",  
+					CommonUtils.dateToString(order.getSellerFirstReplyTime(), CommonUtils.dateFormat2, ""), 
+					order.getId(), order.getChatSessionNo(),
+					order.getStatus(), ArrayUtils.toString(expectStatusList));
 			return ;
 		}
 		FsOrder orderForUpate = new FsOrder();

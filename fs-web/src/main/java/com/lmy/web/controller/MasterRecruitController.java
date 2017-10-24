@@ -275,9 +275,9 @@ public class MasterRecruitController {
 	/**
 	 * 配置接单状态
 	 */
-	@RequestMapping(value="/usr/master/recruit/config_oder_taking_submit",method={RequestMethod.POST})
+	@RequestMapping(value="/usr/master/recruit/update_service_status",method={RequestMethod.POST})
 	@ResponseBody
-	public String config_oder_taking_submit(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+	public String update_service_status(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 												,@RequestParam(value="masterInfoId" , required = false) Long masterInfoId
 												,@RequestParam(value="serviceStatus" , required = true) String serviceStatus  //当前服务状态 ING 服务中;NOTING 非服务状态
 			){

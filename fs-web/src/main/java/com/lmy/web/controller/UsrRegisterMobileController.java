@@ -42,7 +42,7 @@ public class UsrRegisterMobileController {
 	public String mobile_nav(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 			,@RequestParam(value = "backUrl" , required = true) String backUrl) {
 		modelMap.put("backUrl", backUrl);
-		return "/usr/register/mobile_nav";
+		return "/usr/register/register";
 	}
 	
 	@RequestMapping(value="/usr/register/mobile_sent_code",method={RequestMethod.POST})
@@ -81,6 +81,7 @@ public class UsrRegisterMobileController {
 	public String mobile_check_code(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 			,@RequestParam(value = "mobile" , required = true) String mobile
 			,@RequestParam(value = "code" , required = true) String code
+			,@RequestParam(value = "source" , required = false) String source
 			) {
 		JSONObject checkbase1Result  = 	edit_mobile_check_base1(mobile, code, request);
 		if(! JsonUtils.equalDefSuccCode(checkbase1Result) ){
@@ -109,7 +110,7 @@ public class UsrRegisterMobileController {
 			return JsonUtils.commonJsonReturn("0004","校验失败").toJSONString();
 		}
 		FsUsr usr  = SessionUtil.getFsUsr(request);
-		JSONObject regMobileResult =  usrServiceImpl.usrRegMobileWithNoCheck(usr.getId(), mobile);
+		JSONObject regMobileResult =  usrServiceImpl.usrRegMobileWithNoCheck(usr.getId(), mobile, source);
 		if(JsonUtils.equalDefSuccCode(regMobileResult)){
 			logger.info("【用户注册手机号码】  注册成功 开始 清除redis , 更新 session fsUsr 信息");
 			//WebUtil.removeSessionKey(request, sendSmsResultSessionKey);
@@ -149,17 +150,17 @@ public class UsrRegisterMobileController {
 		JSONArray jarray =	(JSONArray)RedisClient.get(sendSmsResultSessionKey + WebUtil.getUserId(request))	;	//(JSONArray) 	WebUtil.getFromSession(request,sendSmsResultSessionKey )	;
 		if(CollectionUtils.isEmpty(jarray)){
 			logger.warn("【用户注册手机号码】 没有短信发送记录reqParams="+WebUtil.getRequestParams(request) ) ;
-			return JsonUtils.commonJsonReturn("0001","非法请求");
+			return JsonUtils.commonJsonReturn("0001","请先获取短信验证码");
 		}
 		//上一次发送短信记录
 		JSONObject last = jarray.getJSONObject( jarray.size()-1 );
 		if(last == null){
 			logger.warn("【用户注册手机号码】没有短信发送记录 非法请求 reqParams="+WebUtil.getRequestParams(request) ) ;
-			return JsonUtils.commonJsonReturn("0001","非法请求");
+			return JsonUtils.commonJsonReturn("0001","请先获取短信验证码");
 		}
 		if(! StringUtils.equals(  mobile, last.getString("mobile")) ){
 			logger.warn("【用户注册手机号码】非法请求 手机号码不一致reqParams="+WebUtil.getRequestParams(request)+ ",last="+last);
-			return JsonUtils.commonJsonReturn("0001","非法请求");
+			return JsonUtils.commonJsonReturn("0001","注册异常，请刷新后重试");
 		}
 		//码的有效时长  校验 加上时间 2016/10/17 16:09  BEGIN
 		int checkCodeEffectiveSec = 90;

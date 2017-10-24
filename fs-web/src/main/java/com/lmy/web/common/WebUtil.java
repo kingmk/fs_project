@@ -198,4 +198,12 @@ public class WebUtil {
 		return 	URLEncoder.encode(	url+ sb.toString() , "utf-8");
 	}
 	
+	public static String getFullUrlString(HttpServletRequest request) {
+		String url = "";
+		url = request.getRequestURL().toString();
+		if (request.getQueryString() != null){
+		    url += "?" + request.getQueryString();
+		}
+		return url;
+	}
 }

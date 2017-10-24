@@ -88,34 +88,38 @@ $(function(){
 		}
 	});
 
-	if('${body.orderStatus}' == 'pay_succ'){
-		if(orderExtraInfo){
-			$("#userInfo").show();
-			if('${body.isWaitMasterService}' == 'Y'){
-				$(".lastTimeTitle").html("&nbsp;&nbsp;");
-				$("#lastTime").html('您可以进行对话了');
-			}else{
-				$("#lastTime").html(lastTime && lastTime!='0'?commonUtils.getTimeFix(lastTime):'0');
-				var time = setInterval(function() {
-				  $("#lastTime").html(lastTime  && lastTime!='0'?commonUtils.getTimeFix(lastTime--):'0');
-				},1000);
-				setInterval(function(){
-					paramsMana();
-					loadAjax(function(dom){
-						$("#list").append(dom);
-					},'next')
-				}, secondUpadte);
-			}
-		}else{
-			$(".lastTimeTitle").html("&nbsp;&nbsp;");
-			$("#lastTime").html('等待用户提交信息');
-			$("#userInfo").hide();
-		}
-	}else{
-		$(".lastTimeTitle").html("&nbsp;&nbsp;");
-		$("#lastTime").html('本次服务已结束');
+	if (<#if body.goodsName != "吉凶占卜">orderExtraInfo && </#if>"${body.isServiceEnd}" != "Y" && "${body.isWaitMasterService}" != "Y") {
+		$("#lastTime").html(lastTime && lastTime!='0'?commonUtils.getTimeFix(lastTime):'0');
+		var time = setInterval(function() {
+		  $("#lastTime").html(lastTime  && lastTime!='0'?commonUtils.getTimeFix(lastTime--):'0');
+		},1000);
+		setInterval(function(){
+			paramsMana();
+			loadAjax(function(dom){
+				$("#list").append(dom);
+			},'next')
+		}, secondUpadte);
 	}
 
+	if ("${body.isServiceEnd}" != "Y" && "${body.isWaitMasterService}" != "Y") {
+		$("#btnExtend").click(function(e){
+			var domForm = $('<div class="form-hour-extend"></div>');
+			domForm.append($('<div class="title">设置延长时间（小时）</div>'));
+			domForm.append($('<div class="text">设置范围（1~48）</div>'));
+			domForm.append($('<div class="input"><input id="hours" type="tel" value="24"/></div>'));
+			domForm.append($('<div class="errinfo"></div>'));
+
+			var mask = new Bgmsk({
+				buttonTxt:"确认延时",
+				type: "form",
+				formContent: domForm,
+				buttonFn: function() {
+					extendService("${orderId}", "${chatSessionNo}");
+				}
+			});
+			mask.init();
+		})
+	}
 
 
 	loadAjax(function(dom){
@@ -142,6 +146,47 @@ $(function(){
 	$(".user-data-wrapper").on('click', function(e){
 		e.stopPropagation;});
 });
+
+function extendService(orderId, chatSessionNo) {
+	var r = /^[1-9]+[0-9]*]*$/;
+	var hours = parseInt($("#hours").val());
+	if (!r.test(hours) || hours < 0 || hours > 48) {
+		mAlert.addAlert("请输入1-48的整数");
+		return;
+	};
+
+	loading.addLoading('${host.img}/images/ajax-loader.gif');
+	$.ajax({
+		type: "POST",
+		url: "${host.base}/order/extend_chat",
+		data: {
+			orderId: orderId,
+			chatSessionNo: chatSessionNo,
+			hours: hours
+		},
+		dataType: "json",
+		success: function(data) {
+			if (data.head.code == "0000") {
+				mAlert.addAlert("本次服务已延期", 2000);
+				if (orderExtraInfo && "${body.isServiceEnd}" != "Y" && "${body.isWaitMasterService}" != "Y") {
+					lastTime = lastTime+hours*3600;
+					$("#lastTime").html(commonUtils.getTimeFix(lastTime));
+				}
+
+				loading.removeLoading();
+			} else {
+				mAlert.addAlert(data.head.msg);
+				loading.removeLoading();
+			}
+
+		},
+		error: function(res) {
+			loading.removeLoading();
+			mAlert.addAlert("系统暂时异常，请刷新后再试");
+		}
+	})
+}
+
 //展示用户信息
 function showUserInfo(){
 	if(!orderExtraInfo){
@@ -439,11 +484,24 @@ function viewEvaluateSingle(orderId){
 <div class="speak-header">
 	<div class="speak-header-img">
 		<img class="img" src="${body.buyUsrHeadImgUrl}">
-		<div class="time" ><span class="lastTimeTitle">本次服务剩余：</span><b id='lastTime'></b></div>
+		<div class="time" >
+			<#if body.isServiceEnd == "Y">
+			<b id='lastTime'>本次服务已结束</b>
+			<#elseif !(body.orderExtraInfo??) && body.goodsName != "吉凶占卜">
+			<b id='lastTime'>用户信息未提供，可提醒用户</b>
+			<#elseif body.isWaitMasterService == "Y">
+			<b id='lastTime'>请尽快回复用户</b>
+			<#elseif body.isWaitMasterService != "Y">
+			<span class="lastTimeTitle">本次服务剩余：</span><br/><b id='lastTime'></b>
+			</#if>
+		</div>
 	</div>
-	<div class="speak-header-btn" id='userInfo'>
-		用户信息
-	</div>
+	<#if (body.orderExtraInfo??)&& body.goodsName != "吉凶占卜">
+	<div class="speak-header-btn" id='userInfo'>用户信息</div>
+	</#if>
+	<#if body.isWaitMasterService != "Y" && body.isServiceEnd != "Y">
+	<div class="speak-header-btn btn-service" id='btnExtend'>延长服务</div>
+	</#if>
 </div>
 <div class="speak-window">
 <div class="speak-box" id ="chatListDiv">

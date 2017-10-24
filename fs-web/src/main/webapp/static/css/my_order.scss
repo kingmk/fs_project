@@ -55,7 +55,7 @@
                 }
             }
             .right {
-                min-width: px2rem(130);
+                min-width: px2rem(150);
                 align-items: center;
                 .top-time {
                     text-align: right;
@@ -67,39 +67,34 @@
                     color: #fff;
                     text-align: center;
                     font-size: px2rem(20);
+                    height: px2rem(30);
+                    width: px2rem(100);
+                    line-height: px2rem(30);
+                    border-radius: px2rem(4);
                     &.num{
                     	width:px2rem(36);
                     	height:px2rem(36);
                     	background: #f42d47;
                     	border-radius: 50%;
                     	line-height: px2rem(36);
-                    	 float: right;
+                    	float: right;
                     }
-
-
-                    &.completed,&.settlementing, &.settlemented, &.settlement_fail,&.pay_succ{
-                        height: px2rem(30);
-                        width: px2rem(100);
+                    &.pay_succ{
                         background: #13c75f;
                         float: right;
-                        line-height: px2rem(30);
-                        border-radius: px2rem(4);
+                    }
+                    &.completed,&.settlementing, &.settlemented, &.settlement_fail{
+                        background: #ccc;
+                        float: right;
                     }
                     &.pay_succ.waitY{
-                        height: px2rem(30);
-                        width: px2rem(100);
                         background: #d88c3a;
                         float: right;
-                        line-height: px2rem(30);
-                        border-radius: px2rem(4);
                     }
-                    &.refunded,&.refund_fail,&.refund_applied, &.refunding, &.refund_fail{
-                    	height: px2rem(30);
+                    &.refunded,&.refund_fail,&.refund_applied, &.refunding{
                         width: px2rem(120);
                         background: $link-color;
                         float: right;
-                        line-height: px2rem(30);
-                        border-radius: px2rem(4);
                     }
                 }
             }

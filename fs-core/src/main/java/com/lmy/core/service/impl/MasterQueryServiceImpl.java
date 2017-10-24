@@ -1,4 +1,5 @@
 package com.lmy.core.service.impl;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,7 +67,7 @@ public class MasterQueryServiceImpl {
 	 * @return
 	 */
 	public List<MasterServiceCateDto> findForConfigServerStep1(Long usrId){
-		List<FsZxCate>  zxCateList = fsZxCateDao.findZxCate2( 2l, "N", "EFFECT", usrId);
+		List<FsZxCate>  zxCateList = fsZxCateDao.findZxCate1(null, null, 2L, null, "EFFECT"); //fsZxCateDao.findZxCate2( 2l, "N", "EFFECT", usrId);
 		List<FsMasterServiceCate>  masterServiceCateList = fsMasterServiceCateDao.findByUsrIdAndStatus(usrId, Arrays.asList("ON"));
 		List<FsMasterInfo> masterInfoList = this.findBtCondition1(null, usrId, null, Arrays.asList("ing", "approved"), null);
 		if(CollectionUtils.isEmpty(masterInfoList) || masterInfoList.size()!=1){
@@ -274,6 +276,7 @@ public class MasterQueryServiceImpl {
 			logger.info( "masterInfoId="+masterInfoId+"  , cateId="+cateId+",数据错误"  );
 			return JsonUtils.commonJsonReturn("0002", "数据错误");
 		}
+		
 		//build result 
 		JSONObject body = new JSONObject(true);
 		body.put("masterUsrId", masterInfo.getUsrId()) ;
@@ -351,6 +354,34 @@ public class MasterQueryServiceImpl {
 		body.put("currServiceCateNum", CollectionUtils.isNotEmpty(serviceCateList) ? serviceCateList.size(): 0) ; 				//我的服务项目
 		body.put("isSetServiceList", CollectionUtils.isNotEmpty(serviceCateList) ? "Y": "N") ; 											// 是否设置了服务项目
 		body.put("isPerfectPersonalData", UsrAidUtil.isPerfectPersonalData(masterInfo) ? "Y":"N") ; 											//是否完善了个人资料
+		
+		if (masterInfo.getServiceStatus().equals("FORBID")) {
+			String forbidStr = "";
+			if (masterInfo.getForbidTime() == null) {
+				forbidStr = "你已被强制下线，请联系客服";
+			} else {
+				long forbidDiff = (masterInfo.getForbidTime().getTime()-(new Date()).getTime())/1000;
+				if (forbidDiff > 3600*24) {
+					int days = (int)(forbidDiff/(3600*24));
+					forbidStr = "你已被强制下线，"+days+"天后将恢复接单";
+				} else if (forbidDiff > 3600) {
+					int hours = (int)(forbidDiff/(3600));
+					forbidStr = "你已被强制下线，"+hours+"小时后将恢复接单";
+				} else {
+					int minutes = (int) (forbidDiff/60);
+					forbidStr = "你已被强制下线，"+minutes+"分钟后将恢复接单";
+				}
+			}
+			body.put("forbidTimeStr", forbidStr);
+			String forbidReason = masterInfo.getForbidReason();
+			if(forbidReason == null || forbidReason.length() == 0) {
+				forbidReason = "您的言行违反了平台相关规定，在此期间内您无法接单，如果您还有未完成订单，为避免客户投诉，还请您完成好服务。如有疑问请咨询平台客服。";
+			} else {
+				forbidReason += "<br/>在下线期间内您无法接单，如果您还有未完成订单，为避免客户投诉，还请您完成好服务。如有疑问请咨询平台客服。";
+			}
+			body.put("forbidReason", forbidReason);
+		}
+		
 		
 		FsMasterCard fsMasterCard = fsMasterCardDao.findByMasterId(masterUsrId);
 		body.put("hasCard", Boolean.toString(fsMasterCard != null));

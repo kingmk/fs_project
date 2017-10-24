@@ -42,17 +42,20 @@
 </update>
 
 <select id="findByUsrIdAndStatus" parameterType="hashmap"  resultMap="fs_master_service_cate">
-    select * from fs_master_service_cate  a
+    select a.*, b.sort from fs_master_service_cate  a
+    inner join fs_zx_cate b
+    on a.fs_zx_cate_id = b.id
     <where>
-        <if test="		usrId!=null	">usr_id =#{usrId}</if>
-         <if test="	statusList!=null		">
-             and status in 
-            <foreach collection="	statusList"  item="item"  open="(" separator="," close=")" >
-				#{item}
+        <if test="usrId!=null">a.usr_id =#{usrId}</if>
+        <if test="	statusList!=null">
+            and a.status in 
+           	<foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+			#{item}
 			</foreach>     
-         </if>
+        </if>
+        and b.status='EFFECT'
     </where>
-    order by fs_zx_cate_id asc
+    order by b.sort desc
 </select>
 
 <select id="statServiceRecordNum" parameterType="hashmap"  resultType="long">
@@ -105,7 +108,7 @@
 		</if>
       </where>
          and b.audit_status = 'approved'
-         <!-- and b.service_status = 'ING' -->
+         and b.service_status != 'FORBID'
       	order by a.amt asc
       ) c
      GROUP BY c.usr_id

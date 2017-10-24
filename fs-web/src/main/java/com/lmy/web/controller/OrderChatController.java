@@ -129,4 +129,36 @@ public class OrderChatController {
 		}
 		return this.orderChatQueryServiceImpl.queryUnReadNum(chatSessionNo, isMaster,loginUsrId ).toJSONString();
 	}
+
+	/** 提前结束订单  **/
+	@RequestMapping(value="/order/pre_end_chat" , method={RequestMethod.POST})
+	@ResponseBody
+	@com.lmy.common.annotation.PreventDoubleClickAnnotation
+	public String pre_end_chat(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+									,@RequestParam(value = "chatSessionNo" , required = true) String chatSessionNo
+									,@RequestParam(value = "orderId" , required = true) long orderId
+									
+									
+			) {
+		Long loginUsrId = WebUtil.getUserId(request);
+		JSONObject result = this.orderChatServiceImpl.endOrderByBuyer(orderId, chatSessionNo, loginUsrId);
+		return result.toJSONString();
+	}
+
+	/** 老师延长订单  **/
+	@RequestMapping(value="/order/extend_chat" , method={RequestMethod.POST})
+	@ResponseBody
+	@com.lmy.common.annotation.PreventDoubleClickAnnotation
+	public String extend_chat(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+									,@RequestParam(value = "chatSessionNo" , required = true) String chatSessionNo
+									,@RequestParam(value = "orderId" , required = true) long orderId
+									,@RequestParam(value = "hours" , required = true) int hours
+									
+									
+			) {
+		Long loginUsrId = WebUtil.getUserId(request);
+		JSONObject result = this.orderChatServiceImpl.extendOrderByMaster(orderId, chatSessionNo, loginUsrId, hours);
+		return result.toJSONString();
+	}
+	
 }

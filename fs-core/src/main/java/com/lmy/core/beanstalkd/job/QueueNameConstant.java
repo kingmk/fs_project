@@ -7,6 +7,8 @@ public class QueueNameConstant {
 	/**订单相关的消息处理**/
 	public static final String QUEUE_ORDER = "QUEUE_ORDER";
 	
+	public static final String QUEUE_ADMIN = "QUEUE_ADMIN";
+	
 	/**用户端 新订单 master 超过24小时未回复 系统自动退款 -- 需要整合到QUEUE_ORDER中**/
 	public static final String masterNoReply24HoursAutoRefund = "masterNoReply24HoursAutoRefund";
 	
@@ -24,4 +26,7 @@ public class QueueNameConstant {
 	public static final String MSG_ORDER_USER_UNREAD_CHECK = "MSG_ORDER_USER_UNREAD_CHECK";
 	/**检查用户回复老师后，老师是否已读**/
 	public static final String MSG_ORDER_MASTER_UNREAD_CHECK = "MSG_ORDER_MASTER_UNREAD_CHECK";
+	
+	
+	public static final String MSG_ADMIN_UNFORBID_MASTER = "MSG_ADMIN_UNFORBID_MASTER";
 }
