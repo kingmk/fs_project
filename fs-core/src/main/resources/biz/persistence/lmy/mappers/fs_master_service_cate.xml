@@ -41,6 +41,14 @@
 	where id=#{id}
 </update>
 
+<update id="offlineMasterCateService" parameterType="hashmap">
+	update fs_master_service_cate
+<set>
+    status='Off', update_time=#{updateTime}
+</set>
+	where fs_master_info_id=#{masterInfoId} and fs_zx_cate_id=#{cateId}
+</update>
+
 <select id="findByUsrIdAndStatus" parameterType="hashmap"  resultMap="fs_master_service_cate">
     select a.*, b.sort from fs_master_service_cate  a
     inner join fs_zx_cate b
@@ -61,9 +69,9 @@
 <select id="statServiceRecordNum" parameterType="hashmap"  resultType="long">
     select count(*) from fs_master_service_cate
     <where>
-        <if test="		usrId!=null	">usr_id =#{usrId}</if>
-        <if test="		masterInfoId!=null	">and fs_master_info_id =#{masterInfoId}</if>
-         <if test="	statusList!=null		">
+        <if test="usrId!=null">usr_id =#{usrId}</if>
+        <if test="masterInfoId!=null">and fs_master_info_id =#{masterInfoId}</if>
+         <if test="statusList!=null">
              and status in 
             <foreach collection="	statusList"  item="item"  open="(" separator="," close=")" >
 				#{item}
@@ -76,9 +84,9 @@
      <where>
          <if test="	masterInfoId!=null ">fs_master_info_id =#{masterInfoId}</if>
          <if test="	cateId!=null ">and fs_zx_cate_id = #{cateId}</if>
-         <if test="	statusList!=null	">
+         <if test="	statusList!=null">
              and status in 
-            <foreach collection="	statusList"  item="item"  open="(" separator="," close=")" >
+            <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
 				#{item}
 			</foreach>    
          </if>

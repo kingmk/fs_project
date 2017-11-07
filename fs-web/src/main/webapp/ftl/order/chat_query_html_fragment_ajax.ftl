@@ -7,9 +7,7 @@
 			<#if item.msgType="text">
 				<div class="speak-text"><p>${item.content}</p></div>
 			<#elseif item.msgType="img">
-			<div class="speak-text">
-				<img onclick="showImg('${item.content}')" src="${item.content}" style="max-width: 24rem;  float: right;" class='speak-img' data-h="${item.height}" data-w="${item.width}">
-			</div>
+			<div class="speak-text"><img onclick="showImg('${item.content}')" src="${item.content}" class='speak-img' data-h="${item.height}" data-w="${item.width}"></div>
 			</#if>
 		</div>
 		<#else>
@@ -19,7 +17,7 @@
 				<div class="speak-text"><p>${item.content}</p></div>
 			<#elseif item.msgType="img">
 			<div class="speak-text">
-				<img onclick="showImg('${item.content}')" src="${item.content}" style="max-width: 24rem; " class='speak-img' data-h="${item.height}" data-w="${item.width}">
+				<img onclick="showImg('${item.content}')" src="${item.content}" class='speak-img' data-h="${item.height}" data-w="${item.width}">
 			</div>
 			</#if>
 		</div>

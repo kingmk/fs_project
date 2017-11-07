@@ -1,5 +1,31 @@
 @import "./style";
 @import './_footer_nav';
+.master-contact {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: px2rem(100);
+    background-color: #20b075;
+    padding: 0 px2rem(30);
+    color: #fff;
+    line-height: px2rem(100);
+    .icon-contact {
+        width: px2rem(30);
+        height: px2rem(30);
+        background: url("../images/icon_contact.png");
+        background-size: 100% 100%;
+        vertical-align: middle;
+        display: inline-block;
+    }
+    .contact-info {
+        font-size: px2rem(24);
+        margin-left: px2rem(10);
+        display: inline-block;
+    }
+}
+.headempty {
+    height: px2rem(100);
+}
 .content {
     width: 100%;
     padding-bottom:px2rem(120);
@@ -10,7 +36,7 @@
         border-width: 1px 0;
         height: px2rem(270);
         background: #fff;
-        padding: 0 px2rem(30);
+        padding-left: px2rem(30);
         box-sizing: border-box;
         display: block;
         color: $text-color!important;
@@ -24,6 +50,7 @@
             height: px2rem(190);
             line-height: 1;
             border-bottom: 1px solid $border-color-base;
+            padding-right: px2rem(30);
             .left {
                 float: left;
                 img {
@@ -108,6 +135,7 @@
         -webkit-justify-content: space-between;
             align-items: center;
         -webkit-align-items: center;
+        padding-right: px2rem(30);
     	.bottom-time{
     		font-size: px2rem(20);
     		color:$text-color-secondary;

@@ -82,23 +82,23 @@
 </resultMap>
 
 <select id="findChatRecord" parameterType="hashmap" resultMap="fs_chat_record_dto">
-    select id, session_no, client_unique_no,sent_usr_id, rece_usr_id,sent_is_master, order_id, msg_type, is_escape, content, file_store_id, size, suffix_name, height, width,is_read,read_time,create_time
+    select id, session_no, client_unique_no, sent_usr_id, rece_usr_id, sent_is_master, order_id, msg_type, is_escape, content, file_store_id, size, suffix_name, height, width,is_read,read_time,create_time
     from fs_chat_record
     <where>
-        <if test="   chatSessionNo !=null  "> session_no  =#{chatSessionNo}</if>
-        <if test="   gtChatId  !=null  ">and  id  &gt; #{gtChatId}</if>
-        <if test="   ltChatId  !=null  ">and  id  &lt; #{ltChatId}</if>
-        <if test="  excludeChatIds !=null ">
+        <if test="chatSessionNo != null"> session_no = #{chatSessionNo}</if>
+        <if test="gtChatId != null">and id &gt; #{gtChatId}</if>
+        <if test="ltChatId != null">and id &lt; #{ltChatId}</if>
+        <if test="excludeChatIds != null">
             and id not in
-        	  <foreach collection="excludeChatIds"  item="item"  open="(" separator="," close=")" >
+        	  <foreach collection="excludeChatIds" item="item" open="(" separator="," close=")">
 				#{item}
 			</foreach>                 
         </if>
-        <if test="   orderId !=null  ">and  order_id =  #{orderId}</if>
-        <if test="   status !=null  ">and  status =  #{status}</if>
+        <if test="orderId !=null">and order_id = #{orderId}</if>
+        <if test="status !=null">and status = #{status}</if>
     </where>
    order by id desc
-    limit #{limitBegin} , #{limitEnd}
+    limit #{limitBegin}, #{limitEnd}
 </select>
 
 <select id="statUnReadNum1" parameterType="hashmap"  resultType="long" >

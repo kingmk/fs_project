@@ -88,6 +88,9 @@
 					.small {
 						font-size: 1.4rem; 
 					}
+					.busy {
+						margin-right: px2rem(150);
+					}
 				}
 				.incoming-box {
 					display: flex;
@@ -128,6 +131,26 @@
 					-webkit-line-clamp: 3;
 					-webkit-box-orient: vertical;
 					overflow: hidden;
+				}
+			}
+
+			.btn-reserve {
+				position: absolute;
+				top: px2rem(45);
+				right: px2rem(30);
+				line-height: px2rem(48);
+				height: px2rem(48);
+				width: px2rem(130);
+				font-size: px2rem(24);
+				display: inline-block;
+				background-color: #d58c38;
+				color: #fff;
+				text-align: center;
+				vertical-align: middle;
+				border-radius: px2rem(6);
+				&.disabled {
+					background-color: #ccc;
+					color: #fff;
 				}
 			}
 		}
@@ -281,4 +304,9 @@
 			}
 		}
 	}
+}
+
+.bgmask .bgmask-wrap .bgmask-body .text{
+	padding-left: px2rem(50);
+	padding-right: px2rem(50);
 }

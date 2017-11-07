@@ -41,11 +41,12 @@ public class OrderEvaluateController {
 								,@RequestParam(value = "majorLevel" , required = false) Long majorLevel  //专业水平
 								,@RequestParam(value = "serviceAttitude" , required = false) Long serviceAttitude  //服务态度
 								,@RequestParam(value = "evaluateWord" , required = false) String evaluateWord // 评论语
+								,@RequestParam(value = "isAnonymous" , required = false) Integer isAnonymous // 评论语
 								){
 		return  this.orderEvaluateServiceImpl.buyUsrCommentOrder(WebUtil.getUserId(request), orderId, 
 								respSpeed !=null ? respSpeed :0l, 
 								majorLevel !=null ? majorLevel :0l, 
 								serviceAttitude !=null ? serviceAttitude : 0l, 
-								evaluateWord).toJSONString();
+								evaluateWord, isAnonymous != null ?isAnonymous: 0).toJSONString();
 	}
 }

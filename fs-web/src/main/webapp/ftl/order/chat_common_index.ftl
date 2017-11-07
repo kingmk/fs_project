@@ -6,7 +6,7 @@
 	<script src="${host.js}/js/jquery-1.11.3.min.js"></script>
 	<script src="${host.js}/js/iscroll-probe.js?${host.version}"></script>
 	<script src="${host.js}/js/common.js?${host.version}"></script>
-	<link rel="stylesheet" href="${host.css}/css/liaotian.css?${host.version}">
+	<link rel="stylesheet" href="${host.css}/css/liaotian.css?${host.version}1">
 	<link rel="stylesheet" href="${host.css}/css/bgmask.css?${host.version}">
  	<script type="text/javascript" src="${host.js}/js/Math.uuid.js?${host.version}"></script>
 <style>
@@ -221,8 +221,11 @@ function handAfterChatSubmit(data, clientUniqueNo) {
     dom.attr("id", data.body.id);
     dom.find(".right").removeClass("submitStautJudge");
   } else {
-    var dom = $("#chatListDiv").find("div[clientUniqueNo='+clientUniqueNo+']");
+    var dom = $("#chatListDiv").find("div[clientUniqueNo='"+clientUniqueNo+"']");
     console.log(dom); <#--TODO发送失败-->
+    dom.find(".speak-text p").addClass("disabled");
+    dom.attr("id", (new Date()).getTime());
+    mAlert.addAlert(data.head.msg, 3500);
   }
 }
 //滚动初始化

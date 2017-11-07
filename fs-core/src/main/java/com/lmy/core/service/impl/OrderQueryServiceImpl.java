@@ -121,17 +121,23 @@ public class OrderQueryServiceImpl {
 	}
 	/**
 	 * @param sellerUsrId
+	 * @param buyUsrId TODO
 	 * @param currentPage   当前页 从0开始
 	 * @param perPageNum  每页显示条数
 	 * @param orderBy          排序方式 0 最近聊天时间 ; def is 0
 	 * @param statusList
 	 * @return
 	 */
-	public JSONObject findMasterUsrOrderList(long sellerUsrId , int currentPage,int perPageNum,int orderBy , List<String> statusList){
+	public JSONObject findMasterUsrOrderList(Long sellerUsrId, Long buyUsrId, Long excludeOrderId, int currentPage, int perPageNum , int orderBy, List<String> statusList){
 		if(CollectionUtils.isEmpty(statusList)){
 			statusList =OrderAidUtil.getMasterLeiJitatus();
 		}
-		List<FsOrder> orderList = this.fsOrderDao.findOrder1(null,null, sellerUsrId, currentPage, perPageNum, orderBy, statusList);
+		List<FsOrder> orderList = null;
+		if (buyUsrId == null) {
+			orderList = this.fsOrderDao.findOrder1(null, null, sellerUsrId, currentPage, perPageNum, orderBy, statusList);
+		} else {
+			orderList = this.fsOrderDao.findContactOrders(sellerUsrId, buyUsrId, excludeOrderId, currentPage, perPageNum);
+		}
 		if(CollectionUtils.isEmpty(orderList)){
 			return JsonUtils.commonJsonReturn("1000", "查无数据");
 		}
@@ -179,6 +185,17 @@ public class OrderQueryServiceImpl {
 		}
 		JSONObject result = JsonUtils.commonJsonReturn();
 		JsonUtils.setBody(result, "data", dataList);
+		return result;
+	}
+	
+	public JSONObject contactUsrOrderInfo(long masterUsrId, long contactUsrId) {
+		JSONObject result = JsonUtils.commonJsonReturn();
+		FsUsr buyUsr = this.fsUsrDao.findById(contactUsrId);
+		JSONObject cacheBuyUsrWxInfo = UsrAidUtil.getCacheWeiXinInfo(buyUsr);
+		JsonUtils.setBody(result, "contactUsrId", buyUsr.getId());
+		JsonUtils.setBody(result, "contactUsrName", UsrAidUtil.getNickName2(buyUsr, cacheBuyUsrWxInfo, "") );
+		long contactCnt = fsOrderDao.countContactOrders(masterUsrId, contactUsrId);
+		JsonUtils.setBody(result, "contactCnt", contactCnt);
 		return result;
 	}
 	

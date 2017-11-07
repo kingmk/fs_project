@@ -7,6 +7,7 @@ import org.springframework.util.Assert;
 
 import com.lmy.common.component.CommonUtils;
 import com.lmy.core.dao.FsUsrDao;
+import com.lmy.core.model.FsUsr;
 
 @Service
 public class UsrQueryImpl {
@@ -20,5 +21,9 @@ public class UsrQueryImpl {
 		Assert.isTrue( CommonUtils.checkForMobile(mobile) );
 		Long num = this.fsUsrDao.statNumByMobile(mobile);
 		return num>0;
+	}
+	
+	public FsUsr getUserById(long usrId) {
+		return fsUsrDao.findById(usrId);
 	}
 }

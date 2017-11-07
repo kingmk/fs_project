@@ -258,6 +258,7 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .teacher-content .content-list .content-item .right, .content .content-list .content-item .right { margin-left: 2rem; display: flex; display: -webkit-flex; flex-direction: column; -webkit-flex-direction: column; align-items: flex-end; -webkit-align-items: flex-end; }
 .teacher-content .content-list .content-item .right .price, .content .content-list .content-item .right .price { font-weight: bold; font-size: 1.8rem; line-height: 1; padding-bottom: 1.4rem; }
 .teacher-content .content-list .content-item .right .price .small, .content .content-list .content-item .right .price .small { font-size: 1.4rem; }
+.teacher-content .content-list .content-item .right .price .busy, .content .content-list .content-item .right .price .busy { margin-right: 7.5rem; }
 .teacher-content .content-list .content-item .right .incoming-box, .content .content-list .content-item .right .incoming-box { display: flex; display: -webkit-flex; justify-content: flex-end; -webkit-justify-content: flex-end; }
 .teacher-content .content-list .content-item .right .incoming-box li, .content .content-list .content-item .right .incoming-box li { width: 5.3rem; height: 1.7rem; line-height: 1.7rem; text-align: center; color: #fff; font-size: 1.1rem; margin-left: 0.5rem; margin-bottom: 1.2rem; }
 .teacher-content .content-list .content-item .right .incoming-box li.green, .content .content-list .content-item .right .incoming-box li.green { background: #18a2c0; }
@@ -265,6 +266,8 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .teacher-content .content-list .content-item .right .incoming-box li.yellow, .content .content-list .content-item .right .incoming-box li.yellow { background: #d8b12a; }
 .teacher-content .content-list .content-item .right .incoming-box li.blue, .content .content-list .content-item .right .incoming-box li.blue { background: #19c097; }
 .teacher-content .content-list .content-item .right .info, .content .content-list .content-item .right .info { line-height: 1.7rem; max-height: 5.1rem; font-size: 1.2rem; color: #999; height: 5.1rem; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.teacher-content .content-list .content-item .btn-reserve, .content .content-list .content-item .btn-reserve { position: absolute; top: 2.25rem; right: 1.5rem; line-height: 2.4rem; height: 2.4rem; width: 6.5rem; font-size: 1.2rem; display: inline-block; background-color: #d58c38; color: #fff; text-align: center; vertical-align: middle; border-radius: 0.3rem; }
+.teacher-content .content-list .content-item .btn-reserve.disabled, .content .content-list .content-item .btn-reserve.disabled { background-color: #ccc; color: #fff; }
 
 #consultation { padding-top: 6rem; }
 
@@ -291,3 +294,5 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .select-mask .select-mask-wrap .select-mask-footer .footer-item { text-align: center; line-height: 5rem; font-size: 1.6rem; color: #fff; width: 50%; float: left; }
 .select-mask .select-mask-wrap .select-mask-footer .footer-item:last-of-type { background: #d88c39; }
 .select-mask .select-mask-wrap .select-mask-footer .footer-item:first-of-type { background: #999; }
+
+.bgmask .bgmask-wrap .bgmask-body .text { padding-left: 2.5rem; padding-right: 2.5rem; }

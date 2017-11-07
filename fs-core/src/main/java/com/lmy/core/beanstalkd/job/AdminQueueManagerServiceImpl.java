@@ -26,15 +26,11 @@ public class AdminQueueManagerServiceImpl extends QueueHandler {
 	@Override
 	public Object handle(JSONObject data) throws Exception {
 		try{
-			if(data == null || data.isEmpty() || !data.containsKey("orderId") || !data.containsKey("msgType")){
+			if(data == null || data.isEmpty() || !data.containsKey("msgType")){
 				logger.warn("参数格式错误data:{}", data);
 				return null;
 			}
 			String msgType = data.getString("msgType");
-			if(msgType == null){
-				logger.warn("参数格式错误data:{}", data);
-				return null;
-			}
 			if (msgType.equals(QueueNameConstant.MSG_ADMIN_UNFORBID_MASTER)) {
 				unforbidMaster(data);
 			}

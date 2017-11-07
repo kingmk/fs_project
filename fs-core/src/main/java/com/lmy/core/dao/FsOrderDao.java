@@ -315,14 +315,13 @@ public class FsOrderDao extends GenericDAOImpl<FsOrder> {
 		return this.getSqlSession().selectList(this.getNameSpace()+".findShortOrderInfoForSettlement2", parameter);
 	}
 	
-
-	
 	public int updateForSettlementBeforCallWeiXin(long sellerUsrId, List<Long>orderIds ){
 		JSONObject parameter = new JSONObject();
 		parameter.put("sellerUsrId", sellerUsrId);	
 		parameter.put("orderIds", orderIds);	
 		return this.getSqlSession().update(this.getNameSpace()+".updateForSettlementBeforCallWeiXin", parameter);
 	}
+	
 	public int updateForSettlementAfterCallWeiXin(String status,long sellerUsrId, List<Long> orderIds ){
 		JSONObject parameter = new JSONObject();
 		parameter.put("sellerUsrId", sellerUsrId);	
@@ -331,6 +330,24 @@ public class FsOrderDao extends GenericDAOImpl<FsOrder> {
 		return this.getSqlSession().update(this.getNameSpace()+".updateForSettlementAfterCallWeiXin", parameter);
 	}
 	
+	public long countContactOrders(long sellerUsrId, long buyUsrId) {
+		JSONObject parameter = new JSONObject();
+		parameter.put("sellerUsrId", sellerUsrId);
+		parameter.put("buyUsrId", buyUsrId);
+		
+		Map<String, Long> rlt = this.getSqlSession().selectOne(this.getNameSpace()+".countContactOrders", parameter);
+		long count = rlt.get("count");
+		return count;
+	}
 	
+	public List<FsOrder> findContactOrders(Long sellerUsrId, Long buyUsrId, Long excludeOrderId, int currentPage,int perPageNum) {
+		JSONObject map = new JSONObject();
+		map.put("sellerUsrId", sellerUsrId);
+		map.put("buyUsrId", buyUsrId);
+		map.put("excludeOrderId", excludeOrderId);
+		map.put("limitBegin", perPageNum * currentPage);
+		map.put("limitEnd", perPageNum);
+		return this.getSqlSession().selectList(this.getNameSpace()+".findContactOrders", map);
+	}
 	
 }

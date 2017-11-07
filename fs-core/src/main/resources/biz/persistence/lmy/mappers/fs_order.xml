@@ -123,23 +123,38 @@
  where id=#{id} and status &lt;&gt; #{status}
 </update>
 
+<select id="countContactOrders" parameterType="hashmap"  resultType="hashmap">
+    select count(*) as count from fs_order
+    where buy_usr_id = #{buyUsrId} and seller_usr_id = #{sellerUsrId}
+    	and status in ("pay_succ", "refund_applied", "refunding", "refunded", "refund_fail", "completed", "settlementing", "settlemented", "settlement_fail")
+</select>
 
-
+<select id="findContactOrders" parameterType="hashmap" resultMap="fs_order">
+    select * from fs_order
+    <where>
+        <if test="buyUsrId !=null">buy_usr_id=#{buyUsrId}</if>
+        <if test="sellerUsrId !=null">and seller_usr_id=#{sellerUsrId}</if>
+        <if test="excludeOrderId !=null">and id != #{excludeOrderId}</if>
+        and status in ("pay_succ", "refund_applied", "refunding", "refunded", "refund_fail", "completed", "settlementing", "settlemented", "settlement_fail")
+    </where>
+    order by create_time desc
+    limit #{limitBegin} , #{limitEnd}
+</select>
 
 <select id="findOrder1" parameterType="hashmap" resultMap="fs_order">
     select * from fs_order
     <where>
-        <if test="   buyUsrId !=null  ">buy_usr_id  =#{buyUsrId}</if>
-        <if test="   gtId !=null  ">and id  &gt;#{gtId}</if>
-         <if test="   sellerUsrId !=null  ">and seller_usr_id  =#{sellerUsrId}</if>
-         <if test="  statusList !=null " >
-             and status in 
-               <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+        <if test="buyUsrId !=null">buy_usr_id=#{buyUsrId}</if>
+        <if test="gtId !=null">and id  &gt;#{gtId}</if>
+        <if test="sellerUsrId !=null">and seller_usr_id=#{sellerUsrId}</if>
+        <if test="statusList !=null" >
+            and status in 
+            <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
 				#{item}
-			</foreach>     
+			</foreach>
          </if>
     </where>
-    <if test="  orderBy ==0">
+    <if test="orderBy ==0">
         order by last_chat_time desc
     </if>
      limit #{limitBegin} , #{limitEnd}
@@ -148,8 +163,8 @@
 <select id="statSuccNumBySellerUsrIdWithGroupByCateIds" parameterType="hashmap" resultType="hashmap">
     select zx_cate_id as cateId , count(zx_cate_id) as num from fs_order 
     <where>
-        <if  test="  sellerUsrId!=null ">seller_usr_id = #{sellerUsrId}</if>
-        <if test="  cateIds!=null">
+        <if test="sellerUsrId!=null ">seller_usr_id = #{sellerUsrId}</if>
+        <if test="cateIds!=null">
              and zx_cate_id in 
              <foreach collection="cateIds"  item="item"  open="(" separator="," close=")" >
 				#{item}
@@ -164,13 +179,13 @@
     select sum(pay_rmb_amt) as totalFee , status 
     from fs_order
     <where>
-          <if test="  sellerUsrId!=null ">seller_usr_id = #{sellerUsrId}    </if>
-          <if test="  lastTime !=null ">and settlement_time  &gt; #{lastTime}   </if>
-           <if test="  statusList!=null">
-             and status in 
-             <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
-				#{item}
-			</foreach>    
+        <if test="sellerUsrId!=null ">seller_usr_id = #{sellerUsrId}</if>
+        <if test="lastTime !=null ">and settlement_time  &gt; #{lastTime}</if>
+        <if test="statusList!=null">
+           	and status in 
+           	<foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+			#{item}
+			</foreach>
         </if>
     </where> 
     group by status

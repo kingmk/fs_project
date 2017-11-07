@@ -273,7 +273,7 @@ var EmptyBox = function(ele,opts){
 	}
 }
 //查询未读数目
-function chartUnreadNum(hostbase) {
+function chatUnreadNum(hostbase) {
 	var unReadNum = 0;
 	$.ajax({
 		type: "POST",
@@ -294,6 +294,51 @@ function chartUnreadNum(hostbase) {
 		error: function(res) {}
 	});
 	return unReadNum;
+}
+
+function appendChats(data, domParent) {
+	var chatList = data.chatList;
+	var loginUsrId = data.loginUsrId;
+	if (chatList) {
+		for (var i = 0; i < chatList.length; i++) {
+			var chat = chatList[i];
+			if (domParent.find("div[clientUniqueNo='"+chat.clientUniqueNo+"']")) {
+				continue;
+			};
+			var domChat = $('<div id="'+chat.id+'" clientUniqueNo="'+chat.clientUniqueNo+'"></div>');
+			var domSpeak = $('<div class="clearfix"></div>');
+			if (loginUsrId == chat.sentUsrId) {
+				domSpeak.addClass("speak-right");
+			} else {
+				domSpeak.addClass("speak-left");
+			}
+			domSpeak.append('<div class="heard-img"><img src="'+chat.sendtUsrHeadImgUrl+'"/></div>');
+			if (chat.msgType=="text") {
+				domSpeak.append('<div class="speak-text"><p>'+chat.content+'</p></div>');
+			} else {
+				var w = chat.width;
+				var h = chat.height;
+				var sizeReal = adjustImageSize({w:w, h:h});
+
+				domSpeak.append('<div class="speak-text"><img onclick="showImg(\''+chat.content+'\')" src="'+chat.content+'" class="speak-img" data-h="'+chat.height+'" data-w="'+chat.width+'" style="width:'+sizeReal.w+'rem; height: '+sizeReal.h+'"></div>');
+			}
+			domChat.append(domSpeak);
+			domParent.append(domChat);
+		};
+	}
+	var domHide = $('<div id = "temporaryHidediv" style="display:none"><input type="hidden" id="_curMaxId" value = "'+data.curMaxId+'"/><input type="hidden" id="_curMinId" value = "'+data.curMinId+'"/><input type="hidden" id="_curSize" value = "'+data.size+'"/></div>');
+	domParent.append(domHide);
+}
+
+function adjustImageSize(size) {
+	var max_w = 24;
+	var wreal = size.w;
+	var hreal = size.h;
+	if (size.w > max_w) {
+		wreal = max_w;
+		hreal = wreal * size.h / size.w;
+	}
+	return {w: wreal, h: hreal}
 }
 
 var InitLoading = function(opts){

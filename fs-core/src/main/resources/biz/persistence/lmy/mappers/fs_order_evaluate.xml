@@ -14,19 +14,22 @@
 	<result column="service_attitude" property="serviceAttitude"/>
 	<result column="evaluate_word" property="evaluateWord"/>
 	<result column="create_time" property="createTime"/>
+	<result column="is_anonymous" property="isAnonymous"/>
+	<result column="master_reply_word" property="masterReplyWord"/>
+	<result column="master_reply_time" property="masterReplyTime"/>
 </resultMap>
 <select id="findById" parameterType="long"  resultMap="fs_order_evaluate">
-	select * 	from fs_order_evaluate where id=#{id}  
+	select * from fs_order_evaluate where id=#{id}  
 </select>  
 <insert id="insert"  parameterType="com.lmy.core.model.FsOrderEvaluate"  useGeneratedKeys="true" keyProperty="id">
-	insert into fs_order_evaluate(id ,order_id ,goods_id ,seller_usr_id ,buy_usr_id ,is_auto_evaluate ,status ,resp_speed ,major_level ,service_attitude ,evaluate_word ,create_time)
-   values(#{id,jdbcType=INTEGER} ,#{orderId,jdbcType=INTEGER} ,#{goodsId,jdbcType=INTEGER} ,#{sellerUsrId,jdbcType=INTEGER} ,#{buyUsrId,jdbcType=INTEGER} ,#{isAutoEvaluate,jdbcType=VARCHAR} ,#{status,jdbcType=VARCHAR} ,#{respSpeed,jdbcType=INTEGER} ,#{majorLevel,jdbcType=INTEGER} ,#{serviceAttitude,jdbcType=INTEGER} ,#{evaluateWord,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP}) 
+	insert into fs_order_evaluate(id ,order_id ,goods_id ,seller_usr_id ,buy_usr_id ,is_auto_evaluate ,status ,resp_speed ,major_level ,service_attitude ,evaluate_word ,create_time, is_anonymous, master_reply_word, master_reply_time)
+   values(#{id,jdbcType=INTEGER} ,#{orderId,jdbcType=INTEGER} ,#{goodsId,jdbcType=INTEGER} ,#{sellerUsrId,jdbcType=INTEGER} ,#{buyUsrId,jdbcType=INTEGER} ,#{isAutoEvaluate,jdbcType=VARCHAR} ,#{status,jdbcType=VARCHAR} ,#{respSpeed,jdbcType=INTEGER} ,#{majorLevel,jdbcType=INTEGER} ,#{serviceAttitude,jdbcType=INTEGER} ,#{evaluateWord,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP}, #{isAnonymous,jdbcType=INTEGER} ,#{masterReplyWord,jdbcType=VARCHAR} ,#{masterReplyTime,jdbcType=TIMESTAMP}) 
 </insert>
 <insert id="batchInsert"  parameterType="list">
-	insert into fs_order_evaluate(id ,order_id ,goods_id ,seller_usr_id ,buy_usr_id ,is_auto_evaluate ,status ,resp_speed ,major_level ,service_attitude ,evaluate_word ,create_time)
+	insert into fs_order_evaluate(id ,order_id ,goods_id ,seller_usr_id ,buy_usr_id ,is_auto_evaluate ,status ,resp_speed ,major_level ,service_attitude ,evaluate_word ,create_time, is_anonymous, master_reply_word, master_reply_time)
    values
 	<foreach collection="list" item="item" index="index"   separator=","> 
-    (#{item.id,jdbcType=INTEGER} ,#{item.orderId,jdbcType=INTEGER} ,#{item.goodsId,jdbcType=INTEGER} ,#{item.sellerUsrId,jdbcType=INTEGER} ,#{item.buyUsrId,jdbcType=INTEGER} ,#{item.isAutoEvaluate,jdbcType=VARCHAR} ,#{item.status,jdbcType=VARCHAR} ,#{item.respSpeed,jdbcType=INTEGER} ,#{item.majorLevel,jdbcType=INTEGER} ,#{item.serviceAttitude,jdbcType=INTEGER} ,#{item.evaluateWord,jdbcType=VARCHAR} ,#{item.createTime,jdbcType=TIMESTAMP})
+    (#{item.id,jdbcType=INTEGER} ,#{item.orderId,jdbcType=INTEGER} ,#{item.goodsId,jdbcType=INTEGER} ,#{item.sellerUsrId,jdbcType=INTEGER} ,#{item.buyUsrId,jdbcType=INTEGER} ,#{item.isAutoEvaluate,jdbcType=VARCHAR} ,#{item.status,jdbcType=VARCHAR} ,#{item.respSpeed,jdbcType=INTEGER} ,#{item.majorLevel,jdbcType=INTEGER} ,#{item.serviceAttitude,jdbcType=INTEGER} ,#{item.evaluateWord,jdbcType=VARCHAR} ,#{item.createTime,jdbcType=TIMESTAMP}, #{item.isAnonymous,jdbcType=INTEGER} ,#{item.masterReplyWord,jdbcType=VARCHAR} ,#{item.masterReplyTime,jdbcType=TIMESTAMP})
 	</foreach> 
 </insert>
 <update id="update"	parameterType="com.lmy.core.model.FsOrderEvaluate">
@@ -38,7 +41,10 @@
 	<if test="respSpeed != null">resp_speed=#{respSpeed},</if>
 	<if test="majorLevel != null">major_level=#{majorLevel},</if>
 	<if test="serviceAttitude != null">service_attitude=#{serviceAttitude},</if>
-	<if test="evaluateWord != null">evaluate_word=#{evaluateWord}</if>
+	<if test="evaluateWord != null">evaluate_word=#{evaluateWord},</if>
+	<if test="isAnonymous != null">is_anonymous=#{isAnonymous},</if>
+	<if test="masterReplyWord != null">master_reply_word=#{masterReplyWord},</if>
+	<if test="masterReplyTime != null">master_reply_time=#{masterReplyTime}</if>
 </set>
 	where id=#{id}
 </update>
@@ -46,26 +52,26 @@
 <select id="findByContion1" parameterType="hashmap" resultMap="fs_order_evaluate">
     select * 	from fs_order_evaluate 
    <where>
-		<if test="		orderId!=null  "	>order_id = #{orderId}</if>       
-		<if test="		sellerUsrId!=null  "	>and seller_usr_id = #{sellerUsrId}</if>       
-		<if test="		buyUsrId!=null  "	>and buy_usr_id = #{buyUsrId}</if>       
+		<if test="orderId!=null">order_id = #{orderId}</if>
+		<if test="sellerUsrId!=null">and seller_usr_id = #{sellerUsrId}</if>
+		<if test="buyUsrId!=null">and buy_usr_id = #{buyUsrId}</if>
    </where>
 </select>
 <select id="statEvaluateNum" parameterType="hashmap" resultType="long">
     select count(*)	from fs_order_evaluate 
    <where>
-		<if test="		orderId!=null  "	>order_id = #{orderId}</if>       
-		<if test="		sellerUsrId!=null  "	>and seller_usr_id = #{sellerUsrId}</if>       
-		<if test="		buyUsrId!=null  "	>and buy_usr_id = #{buyUsrId}</if>       
+		<if test="orderId!=null">order_id = #{orderId}</if>
+		<if test="sellerUsrId!=null">and seller_usr_id = #{sellerUsrId}</if>
+		<if test="buyUsrId!=null">and buy_usr_id = #{buyUsrId}</if>
    </where>
 </select>
 <select id="statMasterAvgScore" parameterType="hashmap" resultType="hashmap">
     select avg(resp_speed *2) as resp_speed , avg(major_level * 2) as major_level , avg(service_attitude * 2) as service_attitude	
     from fs_order_evaluate 
    <where>
-		<if test="		orderId!=null  "	>order_id = #{orderId}</if>       
-		<if test="		sellerUsrId!=null  "	>and seller_usr_id = #{sellerUsrId}</if>       
-		<if test="		buyUsrId!=null  "	>and buy_usr_id = #{buyUsrId}</if>       
+		<if test="orderId!=null">order_id = #{orderId}</if>
+		<if test="sellerUsrId!=null">and seller_usr_id = #{sellerUsrId}</if>
+		<if test="buyUsrId!=null">and buy_usr_id = #{buyUsrId}</if>
    </where>
 </select>
 
@@ -73,7 +79,7 @@
     select avg(resp_speed *2 + major_level * 2+service_attitude * 2 )  /3
     from fs_order_evaluate 
    <where>
-		<if test="		sellerUsrId!=null  "	>and seller_usr_id = #{sellerUsrId}</if>       
+		<if test="sellerUsrId!=null">and seller_usr_id = #{sellerUsrId}</if>
    </where>
 </select>
 
@@ -104,8 +110,8 @@
 	left join fs_master_service_cate b
 	on a.goods_id = b.id
 	<where>
-		<if test="  zxCateId!=null ">and b.fs_zx_cate_id=#{zxCateId}  </if>
-		<if test="  isPlatRecomm!=null ">b.is_plat_recomm=#{isPlatRecomm}  </if>	
+		<if test="zxCateId!=null">and b.fs_zx_cate_id=#{zxCateId}  </if>
+		<if test="isPlatRecomm!=null">b.is_plat_recomm=#{isPlatRecomm}  </if>	
 	</where>
 		 group by a.seller_usr_id
 </select>

@@ -41,10 +41,10 @@ public class UsrAidUtil {
 	public static String getNickName( FsUsr usr , String defValue){
 		if( usr !=null  ){
 			if( StringUtils.isNotEmpty( usr.getNickName() ) ){
-				return StringEscapeUtils.escapeHtml4(   usr.getNickName()   );
+				return StringEscapeUtils.escapeHtml4(usr.getNickName());
 			}
 			else if( StringUtils.isNotEmpty( usr.getEnglishName() ) ){
-				return StringEscapeUtils.escapeHtml4(   usr.getEnglishName()   );
+				return StringEscapeUtils.escapeHtml4(usr.getEnglishName());
 			}
 			else if(   StringUtils.isNotEmpty( usr.getRealName() ) ) {
 				return StringEscapeUtils.escapeHtml4(  SecretConvert.convertUserName(usr.getRealName() )  );

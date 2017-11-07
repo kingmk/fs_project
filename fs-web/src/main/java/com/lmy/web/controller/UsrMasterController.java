@@ -1,6 +1,4 @@
 package com.lmy.web.controller;
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,9 +16,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.lmy.common.component.JsonUtils;
 import com.lmy.core.model.FsMasterCard;
+import com.lmy.core.model.FsUsr;
 import com.lmy.core.service.impl.MasterQueryServiceImpl;
 import com.lmy.core.service.impl.OrderEvaluateServiceImpl;
 import com.lmy.core.service.impl.OrderQueryServiceImpl;
+import com.lmy.core.service.impl.UsrAidUtil;
+import com.lmy.core.service.impl.UsrQueryImpl;
 import com.lmy.web.common.WebUtil;
 
 @Controller
@@ -32,6 +33,9 @@ public class UsrMasterController {
 	private OrderQueryServiceImpl orderQueryServiceImpl;
 	@Autowired
 	private OrderEvaluateServiceImpl orderEvaluateServiceImpl;
+	@Autowired
+	private UsrQueryImpl userQueryImpl;
+	
 	/**
 	 * 大师端 我的账号
 	 */
@@ -124,7 +128,18 @@ public class UsrMasterController {
 	 * 大师端 我的订单
 	 */
 	@RequestMapping(value="/usr/master/order_list_nav")
-	public String order_list(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response){
+	public String order_list(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+			,@RequestParam(value = "contactUsrId" , required = false) Long contactUsrId
+			,@RequestParam(value = "excludeOrderId" , required = false) Long excludeOrderId
+			){
+		modelMap.put("contactUsrId", contactUsrId);
+		modelMap.put("excludeOrderId", excludeOrderId);
+		if (contactUsrId != null && contactUsrId > 0) {
+			Long loginUsrId = WebUtil.getUserId(request);
+			JSONObject rlt = orderQueryServiceImpl.contactUsrOrderInfo(loginUsrId, contactUsrId);
+			modelMap.put("contactUsrName", JsonUtils.getBodyValue(rlt, "contactUsrName"));
+			modelMap.put("contactCnt", JsonUtils.getBodyValue(rlt, "contactCnt"));
+		}
 		return "/usr/master/order_list_nav";
 	}
 	/**
@@ -135,9 +150,11 @@ public class UsrMasterController {
 	public String order_list_ajax_query(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 			,@RequestParam(value = "currentPage" , required = true) int currentPage   //从 0 开始
 			,@RequestParam(value = "perPageNum" , required = true) int perPageNum //每页显示条数 默认 20
+			,@RequestParam(value = "buyUsrId" , required = false) Long buyUsrId
+			,@RequestParam(value = "excludeOrderId" , required = false) Long excludeOrderId
 			){
 		Long loginUsrId = WebUtil.getUserId(request);
-		JSONObject result = orderQueryServiceImpl.findMasterUsrOrderList(loginUsrId, currentPage, perPageNum, 0, null);
+		JSONObject result = orderQueryServiceImpl.findMasterUsrOrderList(loginUsrId, buyUsrId, excludeOrderId, currentPage, perPageNum, 0, null);
 		return JSON.toJSONString(result,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue);
 	}
 	
@@ -186,6 +203,33 @@ public class UsrMasterController {
 		modelMap.put("resultStr", result.toJSONString());
 		return "/usr/master/evaluate_single_detail";
 	}
+	
+	/** master 用户前往点评页|查看点评 **/
+	@RequestMapping(value="/usr/master/evaluate_reply_nav")
+	public String evaluate_reply_nav(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+			,@RequestParam(value = "orderId" , required = true) long orderId
+			){
+		Long loginUsrId = WebUtil.getUserId(request);
+		JSONObject result =orderEvaluateServiceImpl.masterViewSingleEvaluateDetail(loginUsrId, orderId);
+		if(!JsonUtils.equalDefSuccCode(result)){
+			logger.warn("result"+result+", 响应空白页面");
+			WebUtil.failedResponse(response, "");
+		}
+		modelMap.put("result", result);
+		return "/usr/master/evaluate_reply_nav";
+	}
+
+	@RequestMapping(value="/usr/master/evaluate_reply_ajax",method={RequestMethod.POST})
+	@ResponseBody
+	public String evaluate_reply_ajax(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+			,@RequestParam(value = "orderId" , required = true) long orderId
+			,@RequestParam(value = "replyWord" , required = true) String replyWord
+			){
+		Long loginUsrId = WebUtil.getUserId(request);
+		JSONObject result = orderEvaluateServiceImpl.masterReplyEvaluate(loginUsrId, orderId, replyWord);
+		return JSON.toJSONString(result,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue);
+	}
+	
 	/**
 	 * 大师端  大师个人主页
 	 */

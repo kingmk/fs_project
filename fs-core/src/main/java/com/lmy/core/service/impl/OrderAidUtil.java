@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -27,6 +27,9 @@ import com.lmy.core.model.enums.OrderStatus;
 
 public class OrderAidUtil {
 	private static final Logger logger = Logger.getLogger(OrderAidUtil.class);
+	
+	private static final List<String> forbidWords = Arrays.asList("毒品","冰毒","摇头丸","海洛因","大麻","K粉","枪","中共","共产党","习近平","李克强","栗战书","汪洋","王沪宁","赵乐际","张德江","俞正声","刘云山","王岐山","张高丽","江泽民","朱镕基","邓小平","韩正","陈良宇","李鹏","胡锦涛","温家宝","文革","64","六四","学生运动","暴动","暴乱","法轮功","李洪志","十九大","天安门","台独","港独","土共","共匪","赤匪","文化大革命","政治","民主","三民主义","蛮夷","中纪委","中央","党中央","中央政治局","国家级","日本鬼子","战斗民族","国家领导人","国家主席","习大大","真主","周总理","绿茶婊","周恩来","权势狗","毛泽东","毛主席","国家领导人","国家机关","恐怖事件","屌炸天","屌丝","分裂","撕逼","武装斗争","反腐","性交","银行账号","身份证号码","电话","QQ","四人帮","装逼","草泥马","特么的","撕逼","玛拉戈壁","爆菊","JB","呆逼","本屌","齐B短裙","法克鱿","丢你老母","达菲鸡","装13","逼格","蛋疼","傻逼","你妈的","表砸","屌爆了","买了个婊","已撸","吉跋猫","妈蛋","逗比","我靠","碧莲","碧池","然并卵","日了狗","屁民","吃翔","XX狗","淫家","你妹","浮尸国","滚粗","中华民国","台湾政府","台联","台联党","荷治","大陆","大陆政府","白手套","台语","原住民","TMD");
+	
 	/**  所有支付成功过的 **/
 	public  static List<String> getCommAllOrderStatus(){
 		return Arrays.asList(OrderStatus.pay_succ.getStrValue()  ,OrderStatus.completed.getStrValue(), 
@@ -58,9 +61,9 @@ public class OrderAidUtil {
 	
 	/** 订单是否可以(普通)发起退款申请 **/
 	public static boolean isOrderCanApplyRefund(FsOrder order , Date now){
-		return  ( Arrays.asList(OrderStatus.pay_succ.getStrValue(), OrderStatus.completed.getStrValue()).contains( order.getStatus() )  )
-										&& (order.getSellerFirstReplyTime()!=null &&   CommonUtils.calculateDiffSeconds(order.getSellerFirstReplyTime(), now) > 3600 * 24 )
-										&& order.getSettlementTime().getTime() > now.getTime();
+		return order.getStatus().equals(OrderStatus.completed.getStrValue())
+			&& order.getSellerFirstReplyTime()!=null && order.getCompletedTime().getTime() < now.getTime()
+			&& order.getSettlementTime().getTime() > now.getTime();
 	}
 	
 	
@@ -399,6 +402,15 @@ public class OrderAidUtil {
         BigDecimal b1 = new BigDecimal(v1.toString());
         BigDecimal b2 = new BigDecimal(v2.toString());
         return b1.multiply(b2).doubleValue();
+    }
+    
+    public static String containForbiddenWord(String s) {
+    	for (String forbidWord : forbidWords) {
+			if (s.contains(forbidWord)) {
+				return forbidWord;
+			}
+		}
+    	return null;
     }
 	
    public static void main(String[] args) {

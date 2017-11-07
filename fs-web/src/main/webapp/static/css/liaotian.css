@@ -186,6 +186,12 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .m-alert { position: fixed; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.6); z-index: 99999; }
 .m-alert .alert-msg { background: #3a3a3a; color: #fff; font-size: 1.4rem; border-radius: 0.3rem; padding: 0.5rem 1.5rem; display: inline-block; box-sizing: border-box; }
 
+.clearfix:before, .clearfix:after { content: " "; display: table; }
+
+.clearfix:after { clear: both; }
+
+.clearfix { *zoom: 1; }
+
 .button { color: #fff !important; background: #3f3f3f; display: inline-block; width: 100%; font-size: 1.6rem; height: 5rem; line-height: 5rem; text-align: center; }
 .button.fix { position: fixed; bottom: 0; }
 
@@ -193,32 +199,52 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 
 .button-box { width: 100%; padding: 0 1.5rem; box-sizing: border-box; }
 
+.checkbox { width: 1.5rem; height: 1.5rem; border-radius: 0.4rem; border: 1px solid #999; position: relative; padding: 0.25rem; }
+.checkbox.on:before { content: ''; display: block; width: 100%; height: 100%; background: #c09318; border-radius: 0.25rem; }
+
+.master-contact { height: 5rem; background-color: #20b075; padding: 0 1.5rem; color: #fff; line-height: 5rem; }
+.master-contact .icon-contact { width: 1.5rem; height: 1.5rem; background: url("../images/icon_contact.png"); background-size: 100% 100%; vertical-align: middle; display: inline-block; }
+.master-contact .contact-info { font-size: 1.2rem; margin-left: 0.5rem; display: inline-block; }
+.master-contact .icon-arrow { width: 0.9rem; height: 1.5rem; background: url("../images/icon_arrow_right.png"); background-size: 100% 100%; vertical-align: middle; float: right; display: inline-block; margin-top: 1.75rem; }
+
 .speak-header { width: 100%; height: 5rem; background: #fff; display: flex; display: -webkit-flex; padding: 0 1.5rem; box-sizing: border-box; justify-content: space-between; -webkit-justify-content: space-between; align-items: center; -webkit-align-items: center; z-index: 99; }
 .speak-header:after { bottom: -0.1rem; left: 0; }
 .speak-header .speak-header-img { height: 3.2rem; flex-grow: 1; -webkit-flex-grow: 1; display: flex; display: -webkit-flex; align-items: center; -webkit-align-items: center; }
 .speak-header .speak-header-img .img { width: 3.2rem; height: 3.2rem; border-radius: 50%; float: left; margin-right: 0.5rem; }
 .speak-header .speak-header-img .time { margin-left: 0.5rem; font-size: 1.2rem; color: #999; }
 .speak-header .speak-header-img .time b { color: #000; }
-.speak-header .speak-header-btn { background: #c09318; color: #fff; width: 8rem; height: 3rem; line-height: 3rem; text-align: center; font-size: 1.2rem; }
+.speak-header .speak-header-btn { background: #c09318; color: #fff; width: 6.5rem; height: 3rem; line-height: 3rem; text-align: center; font-size: 1.2rem; }
 .speak-header .speak-header-btn.btn-service { background: #3f3f3f; margin-left: 0.5rem; }
 
-.speak-window { bottom: 6rem; overflow: hidden; width: 100%; position: fixed; top: 5rem; left: 0; }
+.speak-window { bottom: 8rem; overflow: hidden; width: 100%; position: fixed; top: 5rem; left: 0; }
+.speak-window.pos2 { top: 10rem; }
+.speak-window.service-end { bottom: 12rem; }
 
-.speak-box { width: 100%; padding: 2rem 1rem 1rem; }
+.speak-box { position: absolute; width: 100%; padding: 2rem 1rem 1rem; }
+.speak-box .pullinfo { height: 2rem; line-height: 2rem; text-align: center; font-size: 1.2rem; position: absolute; width: 100%; }
+.speak-box .pullinfo#pulldown { top: -2rem; }
+.speak-box .pullinfo#pullup { bottom: -2rem; }
+.speak-box #list { position: relative; }
+.speak-box #list .tmphdr { position: absolute; opacity: 0; top: 0; width: 100%; }
 .speak-box .heard-img { width: 4.5rem; height: 4.5rem; }
 .speak-box .heard-img img { width: 100%; height: 100%; border-radius: 50%; border: 0.05rem solid #999; }
-.speak-box .speak-text { font-size: 1.6rem; line-height: 2.2rem; color: #3f3f3f; display: table-cell; position: relative; max-width: 31rem; }
+.speak-box .speak-text { font-size: 1.6rem; line-height: 2.2rem; color: #3f3f3f; word-wrap: break-word; display: block; position: relative; max-width: 31rem; }
 .speak-box .speak-text p { padding: 0.9rem 1.1rem; border-radius: 0.75rem; word-break: break-all; }
 
 .speak-left, .speak-right { margin-bottom: 2rem; }
 
 .speak-left .heard-img { float: left; }
-.speak-left .speak-text { padding-left: 1.5rem; padding-right: 5.5rem; }
-.speak-left .speak-text p { background: #fff; color: #3f3f3f; border: 0.05rem solid #ddd; }
+.speak-left .speak-text { margin-left: 6rem; padding-right: 5.5rem; }
+.speak-left .speak-text p { float: left; background: #fff; color: #3f3f3f; border: 0.05rem solid #ddd; }
+.speak-left .speak-text p:after { content: ''; position: absolute; display: block; top: 1rem; left: -0.9rem; width: 1rem; height: 1rem; background: url("../images/icon_chat_left.png") no-repeat; background-size: 100% 100%; }
+.speak-left .speak-text img { max-width: 24rem; }
 
 .speak-right .heard-img { float: right; }
-.speak-right .speak-text { float: right; padding-left: 5.5rem; padding-right: 1.5rem; }
-.speak-right .speak-text p { background: #c09318; color: #fff; border: 0.05rem solid #a18332; }
+.speak-right .speak-text { padding-left: 5.5rem; margin-right: 6rem; }
+.speak-right .speak-text p { float: right; background: #c09318; color: #fff; border: 0.05rem solid #a18332; }
+.speak-right .speak-text p.disabled { background-color: #aaa; text-decoration: line-through; }
+.speak-right .speak-text p:after { content: ''; position: absolute; display: block; top: 1rem; right: -0.9rem; width: 1rem; height: 1rem; background: url("../images/icon_chat_right.png") no-repeat; background-size: 100% 100%; }
+.speak-right .speak-text img { max-width: 24rem; float: right; }
 
 .wenwe-footer { z-index: 99; width: 100%; position: fixed; bottom: 0; left: 0; background: #fff; padding: 0.8rem 1.5rem; display: flex; display: -webkit-flex; justify-content: space-between; -webkit-justify-content: space-between; align-items: stretch; -webkit-align-items: stretch; }
 .wenwe-footer .wenwen-btn { width: 3.5rem; height: 3.5rem; background: url("../images/wenwen_imgbtn.png"); background-size: 100% 100%; position: relative; max-width: 3.5rem; min-width: 3.5rem; }
@@ -226,7 +252,9 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .wenwe-footer .wenwen-text { flex-grow: 1; -webkit-flex-grow: 1; margin: 0 1.5rem; max-height: 10rem; position: relative; }
 .wenwe-footer .wenwen-text:after { content: ""; display: block; position: absolute; bottom: -0.1rem; left: 0; right: 0; height: 0.1rem; transform: scale(1, 0.5); background: #c09318; }
 .wenwe-footer .wenwen-text .write-box { width: 100%; padding: 0 0.8rem; border: none; outline: none; overflow-y: auto; word-break: break-all; font-size: 1.4rem; line-height: 2.2rem; height: 100%; resize: none; }
+.wenwe-footer .wenwen-text .write-box.focus { height: 7rem; margin-bottom: 2rem; margin-top: 1rem; }
 .wenwe-footer .wenwen-send { min-width: 7rem; width: 7rem; height: 3.5rem; background: #3f3f3f; color: #fff; line-height: 3.5rem; font-size: 1.4rem; text-align: center; }
+.wenwe-footer .wenwen-send.disabled { background: #ccc; }
 
 .left { float: left; }
 
@@ -234,6 +262,7 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .order-completed .title { font-size: 1.6rem; font-weight: bold; padding-top: 2rem; }
 .order-completed .time { font-size: 1.2rem; color: #999; padding: 0.7rem 0 1.5rem; }
 .order-completed .btn { width: 14.5rem; height: 3.5rem; line-height: 3.5rem; background: #3f3f3f; color: #fff; font-size: 1.2rem; display: inline-block; }
+.order-completed .btn.wait-evaluate { background: #ccc !important; color: #fff !important; border: 0.05rem solid #ddd; }
 
 .user-info-mask { position: fixed; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.6); }
 .user-info-mask .user-info-wrapper { width: 30rem; height: 45rem; background: #fff; margin: auto; position: relative; top: 5rem; left: 0; right: 0; }
@@ -259,5 +288,5 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .user-data-bgk .txt { font-size: 1.4rem; color: #3f3f3f; font-weight: bold; }
 
 .form-hour-extend .text { font-size: 1.2rem; color: #888; }
-.form-hour-extend .input { width: 52%; margin: 0.75rem auto 0; border: 1px solid #ddd; height: 3.5rem; }
+.form-hour-extend .input { width: 52%; margin: 0.75rem auto 0; border: 1px solid #ddd; height: 3.6rem; }
 .form-hour-extend .input input { border: none; height: 3.4rem; line-height: 3.4rem; font-size: 2rem; width: 100%; text-align: center; color: #3f3f3f; }

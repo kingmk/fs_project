@@ -1,7 +1,6 @@
 package com.lmy.web.controller;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,13 +16,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.lmy.common.component.JsonUtils;
+import com.lmy.core.model.FsUsr;
 import com.lmy.core.model.dto.LoginCookieDto;
 import com.lmy.core.service.impl.MasterQueryServiceImpl;
 import com.lmy.core.service.impl.OrderEvaluateServiceImpl;
 import com.lmy.core.service.impl.SearchMasterServiceImpl;
+import com.lmy.core.service.impl.UsrQueryImpl;
 import com.lmy.core.service.impl.WeiXinInterServiceImpl;
 import com.lmy.web.common.WebUtil;
 /**
@@ -35,6 +37,8 @@ public class SearchMasterController {
 	private static final Logger logger = LoggerFactory.getLogger(SearchMasterController.class);
 	@Autowired
 	private MasterQueryServiceImpl masterQueryServiceImpl;
+	@Autowired
+	private UsrQueryImpl usrQueryImpl;
 	@Autowired
 	private OrderEvaluateServiceImpl orderEvaluateServiceImpl;
 	@Autowired
@@ -52,6 +56,12 @@ public class SearchMasterController {
 			modelMap.put("orderBy", orderBy);
 			modelMap.put("currentPage", currentPage !=null ? currentPage : 0);
 			modelMap.put("perPageNum", perPageNum !=null ? perPageNum : 10);
+
+			LoginCookieDto loginDto = WebUtil.getLoginDto(request);
+			FsUsr user = usrQueryImpl.getUserById(loginDto.getUserId());
+			modelMap.put("isRegistered", (user.getRegisterMobile()==null?"N":"Y"));
+			
+			loginDto.getUserId();
 			return "/usr/search/master_nav";
 	}
 	@RequestMapping(value="/usr/search/master_ajax_query" )
@@ -63,8 +73,11 @@ public class SearchMasterController {
 			,@RequestParam(value = "currentPage" , required = true) int currentPage   				//当前页 从 0 开始
 			,@RequestParam(value = "perPageNum" , required = true) int perPageNum   			//每页显示条数
 			){
+		LoginCookieDto loginDto = WebUtil.getLoginDto(request);
 		JSONObject result =  searchMasterServiceImpl.search(isPlatRecomm, zxCateId, orderBy, currentPage, perPageNum);
-		 return JSON.toJSONString(result,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue) ;
+		JSONObject reserveMap = searchMasterServiceImpl.findReservedMasterId(loginDto.getUserId());
+		JsonUtils.setBody(result, "reserveMap", reserveMap);
+		return JSON.toJSONString(result,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue) ;
 	}
 	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
 	@RequestMapping(value="/usr/search/master_detail" )
@@ -116,5 +129,14 @@ public class SearchMasterController {
 		modelMap.put("result", result);
 		return "/usr/search/master_detail_evaluate_list_ajax_html_fragment";
 	}
-	
+
+	@RequestMapping(value="/usr/search/reserve_master" )
+	@ResponseBody
+	public String reserve_master(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+			,@RequestParam(value = "masterInfoId" , required = true) Long masterInfoId			               //筛选出类别id
+			){
+		LoginCookieDto loginDto = WebUtil.getLoginDto(request);
+		JSONObject result =  searchMasterServiceImpl.reserveMaster(loginDto.getUserId(), masterInfoId);
+		return JSON.toJSONString(result,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue) ;
+	}
 }

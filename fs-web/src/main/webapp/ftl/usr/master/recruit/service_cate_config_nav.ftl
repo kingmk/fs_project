@@ -11,7 +11,7 @@
 </script>
 <script src="${host.js}/js/common.js?${host.version}"></script>
 <link rel="stylesheet" href="${host.css}/css/select_service.css">
-<script src="${host.js}/js/select_service.js"></script>
+<script src="${host.js}/js/select_service.js?${host.version}"></script>
 <style>
 .hide {display: none;}
 .select {position: initial!important;}

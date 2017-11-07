@@ -747,6 +747,8 @@ a {
     background-position: 0 -300%; }
   .list-icon.icon-agreement {
     background-position: 0 -500%; }
+  .list-icon.icon-service {
+    background-position: 0 -600%; }
 
 .header {
   width: 100%;

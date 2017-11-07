@@ -1,5 +1,5 @@
- <#import "/common/host.ftl" as host>
- <#import "/common/funUtils.ftl" as funUtils>
+<#import "/common/host.ftl" as host>
+<#import "/common/funUtils.ftl" as funUtils>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,8 +9,9 @@
 <script src="${host.js}/js/jquery-1.11.3.min.js"></script>
 <script src="${host.js}/js/common.js?${host.version}"></script>
 <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
-<link rel="stylesheet" href="${host.css}/css/teacher_home.css?${host.version}">
 <link rel="stylesheet" href="${host.css}/css/star.css?${host.version}">
+<link rel="stylesheet" href="${host.css}/css/user_rating.css?${host.version}2">
+<link rel="stylesheet" href="${host.css}/css/teacher_home.css?${host.version}4">
 <script src="${host.js}/js/components.js?${host.version}"></script>
 <style>
 .fixed{position:fixed;top:0;left:0;right:0}
@@ -28,21 +29,10 @@ var isFollowed  = '${result.body.isFollowed}';
 var isZxCateId = '${zxCateId}';
 var a = ${resultStr};
 var wxconfig = ${wxconfig};
+var isRegistered = "${result.body.isRegistered}";
 $(function(){
 	window.scrollTo(0,0);
-	$(".button.service").click(function(){
-		if ($(this).hasClass("disabled")) {
-			return;
-		};
-		if(!isZxCateId){
-			$("#service-intros").click();
-		}
-		<#if zxCateId ??>
-			location.href = "${host.base}/order/confirm_nav?masterServiceCateId=${result.body.curServiceCateInfo.id}&masterInfoId=${result.body.masterInfoId}";
-		<#elseif enterType=="sourceSearchList">
-			 mAlert.addAlert("请选择服务");
-		</#if>
-	});
+	$(".button.service").click(clickBtnService);
 
 	$(".button.share").click(function() {
 		var domMask = $('<div class="m-alert" id="share_bg"><img src="${host.img}/images/bg_share.png" style="width:100%;"></div>');
@@ -68,6 +58,72 @@ $(function(){
 
 	initWxShare();
 });
+
+function clickBtnService() {
+	var domBtn = $(".button.service");
+	if (domBtn.hasClass("disabled")) {
+		return;
+	} else if (domBtn.hasClass("reserve")){
+		var masterInfoId = "${result.body.masterInfoId}";
+
+		if (isRegistered == "N") {
+			$.bgmask({
+				title: "请先注册",
+				text: "只有注册后才可以预约老师",
+				type: "normal",
+				buttonTxt: "去注册",
+				buttonFn: function() {
+					location.href = "${host.base}/usr/register/mobile_nav?backUrl="+encodeURIComponent(location.href);
+				}
+			})
+		} else {
+			$.bgmask({
+				title: "确认预约${result.body.masterNickName}老师？",
+				text: "预约成功后，系统会通过短信方式通知您何时可以去咨询老师",
+				type: "normal",
+				buttonTxt: "确认预约",
+				buttonFn: function() {
+					reserveMaster(masterInfoId);
+				}
+			})
+		}
+
+	} else {
+	<#if zxCateId ??>
+		location.href = "${host.base}/order/confirm_nav?masterServiceCateId=${result.body.curServiceCateInfo.id}&masterInfoId=${result.body.masterInfoId}";
+	<#else>
+		$("#service-intros").click();
+		mAlert.addAlert("请选择服务");
+	</#if>
+	}
+
+}
+
+function reserveMaster(masterInfoId) {
+	var domBtn = $(".button.service");
+	$.ajax({
+		url: "${host.base}/usr/search/reserve_master",
+		method : 'POST',
+		data: {
+			masterInfoId : masterInfoId,
+		} ,
+		dataType: "json",
+		success: function(data){
+			console.log(data);
+			if (data.head.code != "0000") {
+				mAlert.addAlert(data.head.msg);
+			} else {
+				mAlert.addAlert("预约成功，老师恢复服务时会通过短信告知您", 3000);
+				domBtn.removeClass("reserve");
+				domBtn.addClass("disabled");
+				domBtn.html("已预约，请耐心等待");
+			}
+		},
+		error: function(res){
+		}
+	})
+}
+
 
 window.onscroll = function(e){
 	var navHeight = $('.center-nav').height();
@@ -318,7 +374,7 @@ function initWxShare() {
 		<#--TODO-->
 		<div id="evaluate_list">
 		</div>
-		<div class="user-comments-tit" id='linkTo'>查看全部的评价 (${result.body.evaluateTotal})<i class="tit-arr"></i></div>
+		<div class="user-comments-tit more" id='linkTo'>查看全部的评价 (${result.body.evaluateTotal})<i class="tit-arr"></i></div>
 	</div>
 </div>
 <#--用户评价 end -->
@@ -326,17 +382,24 @@ function initWxShare() {
 	因风水老师擅长术数及风格各有特点，故所有观点仅作参考。
 </div>
 <div class="button fix share"><img src="${host.img}/images/icon_share.png">分享</div>
-<div class="button service fix <#if result.body.serviceStatus!='ING'>disabled</#if>">
-<#if zxCateId ??>
+<#if result.body.serviceStatus=="ING">
+<div class="button service fix">
+	<#if zxCateId ??>
 	咨询&nbsp;${result.body.curServiceCateInfo.name}&nbsp;¥ ${funUtils.formatNumber(result.body.curServiceCateInfo.amt/100,"###,##0.00","--")}
-<#elseif result.body.serviceStatus=="ING">
+	<#else>
 	请选择服务
-<#elseif result.body.serviceStatus=="NOTING">
-	老师太忙了，等会儿再接单
-<#else>
-	老师暂时无法接单
-</#if>
+	</#if>
 </div>
+<#elseif result.body.serviceStatus=="NOTING">
+	<#if result.body.hasReserved=="Y">
+<div class="button service fix disabled">已预约，请耐心等待</div>
+	<#else>
+<div class="button service fix reserve">老师比较忙，点此预约</div>
+	</#if>
+<#else>
+<div class="button service fix disabled">老师暂时无法接单</div>
+</#if>
+
 <script>
 	$("#responseSpeed").star({type: 'show', tip: '${result.body.respSpeedAvgScore}'})
 	$("#professionalLevel").star({type: 'show', tip: '${result.body.majorLevelAvgScore}'})

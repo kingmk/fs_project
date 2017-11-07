@@ -248,7 +248,7 @@ public class OrderRefundServiceImpl {
 			else if(JsonUtils.equalDefSuccCode(weixinRefundResult)){
 				//系统自动退款 需要自动评价， 推送微信消息
 				if(isAutoRefund){
-					this.orderEvaluateServiceImpl.commentOrder2(order.getBuyUsrId(), order.getSellerUsrId(), order.getId(), order.getGoodsId(), 1l, 1l,1l, refundReason, "N");
+					this.orderEvaluateServiceImpl.evaluateOrder(order.getBuyUsrId(), order.getSellerUsrId(), order.getId(), order.getGoodsId(), 1l, 1l,1l, refundReason, "N", 1);
 				}
 				_pushRefundConfirmWxRefundMsgInQueue(refundBean.getId(), "CFT".equals(orgPaySuccBean.getBankType()));
 			}

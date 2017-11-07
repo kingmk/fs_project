@@ -185,6 +185,12 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .m-alert { position: fixed; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.6); z-index: 99999; }
 .m-alert .alert-msg { background: #3a3a3a; color: #fff; font-size: 1.4rem; border-radius: 0.3rem; padding: 0.5rem 1.5rem; display: inline-block; box-sizing: border-box; }
 
+.clearfix:before, .clearfix:after { content: " "; display: table; }
+
+.clearfix:after { clear: both; }
+
+.clearfix { *zoom: 1; }
+
 .footer { position: fixed; bottom: 0; width: 100%; height: 5rem; background: #fff; display: flex; display: -webkit-flex; justify-content: space-between; -webkit-justify-content: space-between; border-top: 1px solid #ddd; z-index: 100; }
 .footer .footer-nav { flex-grow: 1; -webkit-flex-grow: 1; text-align: center; padding-top: 0.5rem; position: relative; text-decoration: none; }
 .footer .footer-nav.actived .title { color: #3f3f3f !important; }
@@ -202,9 +208,15 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .actived .icon.account { background-position: 0 0%; }
 .actived .icon.order { background-position: 0 -100%; }
 
+.master-contact { position: fixed; top: 0; width: 100%; height: 5rem; background-color: #20b075; padding: 0 1.5rem; color: #fff; line-height: 5rem; }
+.master-contact .icon-contact { width: 1.5rem; height: 1.5rem; background: url("../images/icon_contact.png"); background-size: 100% 100%; vertical-align: middle; display: inline-block; }
+.master-contact .contact-info { font-size: 1.2rem; margin-left: 0.5rem; display: inline-block; }
+
+.headempty { height: 5rem; }
+
 .content { width: 100%; padding-bottom: 6rem; }
-.content .item { width: 100%; margin-top: 1rem; border: 1px solid #ddd; border-width: 1px 0; height: 13.5rem; background: #fff; padding: 0 1.5rem; box-sizing: border-box; display: block; color: #3f3f3f !important; }
-.content .item .top { display: flex; display: -webkit-flex; justify-content: space-between; -webkit-justify-content: space-between; align-items: center; -webkit-align-items: center; height: 9.5rem; line-height: 1; border-bottom: 1px solid #ddd; }
+.content .item { width: 100%; margin-top: 1rem; border: 1px solid #ddd; border-width: 1px 0; height: 13.5rem; background: #fff; padding-left: 1.5rem; box-sizing: border-box; display: block; color: #3f3f3f !important; }
+.content .item .top { display: flex; display: -webkit-flex; justify-content: space-between; -webkit-justify-content: space-between; align-items: center; -webkit-align-items: center; height: 9.5rem; line-height: 1; border-bottom: 1px solid #ddd; padding-right: 1.5rem; }
 .content .item .top .left { float: left; }
 .content .item .top .left img { width: 6rem; height: 6rem; border-radius: 50%; }
 .content .item .top .center { margin-left: 7rem; }
@@ -219,7 +231,7 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .content .item .top .right .bubbel.completed, .content .item .top .right .bubbel.settlementing, .content .item .top .right .bubbel.settlemented, .content .item .top .right .bubbel.settlement_fail { background: #ccc; float: right; }
 .content .item .top .right .bubbel.pay_succ.waitY { background: #d88c3a; float: right; }
 .content .item .top .right .bubbel.refunded, .content .item .top .right .bubbel.refund_fail, .content .item .top .right .bubbel.refund_applied, .content .item .top .right .bubbel.refunding { width: 6rem; background: #c09318; float: right; }
-.content .bottom { line-height: 4rem; display: flex; display: -webkit-flex; justify-content: space-between; -webkit-justify-content: space-between; align-items: center; -webkit-align-items: center; }
+.content .bottom { line-height: 4rem; display: flex; display: -webkit-flex; justify-content: space-between; -webkit-justify-content: space-between; align-items: center; -webkit-align-items: center; padding-right: 1.5rem; }
 .content .bottom .bottom-time { font-size: 1rem; color: #999; }
 .content .bottom .bottom-button { width: 6.5rem; height: 2.5rem; text-align: center; line-height: 2.5rem; font-size: 1.2rem; }
 .content .bottom .bottom-button.go-evaluate { color: #3f3f3f; background: #fff; border: 0.05rem solid #ccc; }

@@ -1,6 +1,7 @@
 package com.lmy.core.service.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,13 @@ import com.lmy.core.constant.CacheConstant;
 import com.lmy.core.dao.FsMasterInfoDao;
 import com.lmy.core.dao.FsOrderDao;
 import com.lmy.core.dao.FsOrderEvaluateDao;
+import com.lmy.core.dao.FsReserveDao;
+import com.lmy.core.dao.FsUsrDao;
+import com.lmy.core.manage.impl.WxNoticeManagerImpl;
 import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsMasterServiceCate;
+import com.lmy.core.model.FsReserve;
+import com.lmy.core.model.FsUsr;
 import com.lmy.core.model.dto.MasterShortDto1;
 /**
  * 寻老师
@@ -43,24 +49,28 @@ public class SearchMasterServiceImpl {
 	private FsOrderEvaluateDao fsOrderEvaluateDao;
 	@Autowired
 	private FsOrderDao fsOrderDao;
+	@Autowired
+	private FsReserveDao fsReserveDao;
+	@Autowired
+	private FsUsrDao fsUsrDao;
+	@Autowired
+	private WxNoticeManagerImpl wxNoticeManagerImpl;
 	
 	public JSONObject search(String isPlatRecomm,Long zxCateId,String orderBy,int currentPage,int perPageNum){
 		String cacheKey = CacheConstant.FS_SEARCH_MASTER +"isPlatRecomm:"+isPlatRecomm+",zxCateId:"+zxCateId+",orderBy:"+orderBy+",currentPage:"+currentPage+",perPageNum:"+perPageNum;
 		long begin = System.currentTimeMillis();
 		JSONObject result = (JSONObject)  RedisClient.get(cacheKey);
-		if(result!=null){
-			//long end = System.currentTimeMillis();
-			//logger.info("缓存命中 查询条件:"+cacheKey+",耗时:" + (end - begin)+"毫秒");
-			return result;
+		if(result==null){
+			result = search2(isPlatRecomm, zxCateId, orderBy, currentPage, perPageNum);
+			long end = System.currentTimeMillis();
+			if( (end - begin) > 2 * 1000 ){
+				logger.warn("缓存未命中 db 查询条件:"+cacheKey+",耗时:" + (end - begin)+"毫秒");
+			}
+			if(!JsonUtils.codeEqual(result, "9999")){
+				 RedisClient.set(cacheKey, result, 10 * 60);
+			}
 		}
-		result = search2(isPlatRecomm, zxCateId, orderBy, currentPage, perPageNum);
-		long end = System.currentTimeMillis();
-		if( (end - begin) > 2 * 1000 ){
-			logger.warn("缓存未命中 db 查询条件:"+cacheKey+",耗时:" + (end - begin)+"毫秒");
-		}
-		if(!JsonUtils.codeEqual(result, "9999")){
-			 RedisClient.set(cacheKey, result, 10 * 60);
-		}
+		
 		return result;
 	}
 	
@@ -74,7 +84,7 @@ public class SearchMasterServiceImpl {
 	 JSONObject search2(String isPlatRecomm,Long zxCateId,String orderBy,int currentPage,int perPageNum){
 		//logger.info("isPlatRecomm:{},zxCateId:{},orderBy:{},currentPage:{},perPageNum:{}", isPlatRecomm , zxCateId , orderBy , currentPage ,perPageNum );
 		try{
-			if(	StringUtils.isEmpty(orderBy) || 	StringUtils.equals("priceDesc", orderBy)  ||   StringUtils.equals("priceAsc", orderBy)   ){
+			if(	StringUtils.isEmpty(orderBy) || StringUtils.equals("priceDesc", orderBy) || StringUtils.equals("priceAsc", orderBy)){
 				if(StringUtils.isEmpty(orderBy)){
 					orderBy = "priceAsc";
 				}
@@ -115,7 +125,7 @@ public class SearchMasterServiceImpl {
 				List<FsMasterServiceCate> list  = this.fsMasterServiceCateDao.findOneOrderByPriceGroupByUsrId(usrIds,Arrays.asList("ON"), (StringUtils.equals("Y", isPlatRecomm)  ?"Y":null ), zxCateId, "priceAsc", 0, perPageNum);
 				return buildResut1(usrIds, list);
 			}
-			else if(  StringUtils.equals("evaluateScoreDesc", orderBy)  ||   StringUtils.equals("evaluateScoreAsc", orderBy)   ){
+			else if(StringUtils.equals("evaluateScoreDesc", orderBy) || StringUtils.equals("evaluateScoreAsc", orderBy)   ){
 				//logger.info("isPlatRecomm:{},zxCateId:{},orderBy:{},currentPage:{},perPageNum:{}", isPlatRecomm , zxCateId , orderBy , currentPage ,perPageNum );
 				//查询到所有的老师
 				List<MasterShortDto1> masterShortDtoList =  this.fsMasterInfoDao.findShortInfo1("approved", "ON",StringUtils.equals("Y", isPlatRecomm) ?"Y":null  ,zxCateId);
@@ -148,6 +158,52 @@ public class SearchMasterServiceImpl {
 			logger.error("查询错误", e);
 			return JsonUtils.commonJsonReturn("9999", "系统错误");			
 		}
+	}
+	
+	public JSONObject findReservedMasterId(long reserveUsrId) {
+		List<FsReserve> reserveList = fsReserveDao.findByReserveUsrId(reserveUsrId);
+		JSONObject result = new JSONObject();
+		
+		for (FsReserve reserve : reserveList) {
+			result.put(""+reserve.getMasterUsrId(), "Y");
+		}
+		return result;
+	}
+	 
+	public JSONObject reserveMaster(long reserveUsrId, long masterInfoId) {
+		FsMasterInfo master = fsMasterInfoDao.findById(masterInfoId);
+		FsUsr user = fsUsrDao.findById(reserveUsrId);
+		if (master == null || user == null) {
+			return JsonUtils.commonJsonReturn("0001", "参数错误，请刷新重试");
+		}
+		if (master.getServiceStatus().equals("ING")) {
+			return JsonUtils.commonJsonReturn("0002", "该老师已恢复服务，请刷新后立即咨询");
+		}
+		if (master.getUsrId() == reserveUsrId) {
+			return JsonUtils.commonJsonReturn("0003", "请不要自己预约自己的服务哦");
+		}
+		if (user.getRegisterMobile() == null) {
+			return JsonUtils.commonJsonReturn("0010", "请先注册");
+		}
+		
+		FsReserve reserve = fsReserveDao.findReserve(reserveUsrId, master.getUsrId());
+		if (reserve != null) {
+			return JsonUtils.commonJsonReturn("0020", "已预约，请勿重复预约");
+		}
+		
+		FsReserve beanInsert= new FsReserve();
+		beanInsert.setReserveUsrId(reserveUsrId);
+		beanInsert.setMasterUsrId(master.getUsrId());
+		beanInsert.setMobile(user.getRegisterMobile());
+		beanInsert.setStatus(FsReserve.RESERVE_STATUS_VALID);
+		beanInsert.setCreateTime(new Date());
+		if (fsReserveDao.insert(beanInsert) <= 0) {
+			return JsonUtils.commonJsonReturn("9999", "系统异常，请稍后再试");
+		}
+		// need to notice the master by weixin
+		// to do
+		wxNoticeManagerImpl.reserveMaster(UsrAidUtil.getNickName2(user, "匿名用户"), master.getUsrId(), master.getWxOpenId());
+		return JsonUtils.commonJsonReturn();
 	}
 	
 	private List<Long> _getUsrIdsFromSubList(List<MasterShortDto1> masterShortDtoSubList){

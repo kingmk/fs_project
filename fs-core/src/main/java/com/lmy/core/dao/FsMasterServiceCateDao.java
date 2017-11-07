@@ -96,4 +96,11 @@ public class FsMasterServiceCateDao extends GenericDAOImpl<FsMasterServiceCate> 
 		return this.getSqlSession().selectList(this.getNameSpace()+".findByIds", parameter);
 	}
 	
+	public int offlineMasterCateService(Long masterInfoId, Long cateId) {
+		JSONObject parameter = new JSONObject();
+		parameter.put("masterInfoId", masterInfoId);
+		parameter.put("cateId", cateId);
+		
+		return this.getSqlSession().update(this.getNameSpace()+".offlineMasterCateService", parameter);
+	}
 }

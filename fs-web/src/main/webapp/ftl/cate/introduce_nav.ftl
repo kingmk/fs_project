@@ -20,7 +20,7 @@
 <script>
 $(function(){
     $.initUserFooter({activedIndex:0,bubbleNum:0 });
-    chartUnreadNum('${host.base}');
+    chatUnreadNum('${host.base}');
 })
 
 function showOfflineNote() {

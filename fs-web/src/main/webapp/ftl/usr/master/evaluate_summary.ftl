@@ -1,22 +1,22 @@
  <#import "/common/host.ftl" as host>
 <html>
 <head>
- <meta charset="UTF-8">
-    <script src="${host.js}/js/rem.js?${host.version}"></script>
-    <script src="${host.js}/js/jquery-1.11.3.min.js"></script>
-    <script src="${host.js}/js/jquery.tmpl.min.js"></script>
-    <script src="${host.js}/js/dropload.min.js"></script>
-    <script src="${host.js}/js/common.js?${host.version}"></script>
-    <script src="${host.js}/js/components.js?${host.version}"></script>
-    <link rel="stylesheet" href="${host.css}/css/dropload.css">
-    <link rel="stylesheet" href="${host.css}/css/star.css?${host.version}">
-    <link rel="stylesheet" href="${host.css}/css/user_rating.css?${host.version}">
-    <title>用户评价</title>
-    <style>
-      .empty-icon{display: none;}
-      .empty{padding-top: 0;}
-      .empty-title{padding-top: 3.5rem!important;}
-    </style>
+<meta charset="UTF-8">
+<script src="${host.js}/js/rem.js?${host.version}"></script>
+<script src="${host.js}/js/jquery-1.11.3.min.js"></script>
+<script src="${host.js}/js/jquery.tmpl.min.js"></script>
+<script src="${host.js}/js/dropload.min.js"></script>
+<script src="${host.js}/js/common.js?${host.version}"></script>
+<script src="${host.js}/js/components.js?${host.version}"></script>
+<link rel="stylesheet" href="${host.css}/css/dropload.css">
+<link rel="stylesheet" href="${host.css}/css/star.css?${host.version}">
+<link rel="stylesheet" href="${host.css}/css/user_rating.css?${host.version}1">
+<title>用户评价</title>
+<style>
+.empty-icon{display: none;}
+.empty{padding-top: 0;}
+.empty-title{padding-top: 3.5rem!important;}
+</style>
 
 </head>
 <body>
@@ -40,31 +40,34 @@
     </div>
 </div>
 <div class="content" id='contaner'>
-	<div class="rating-content">
-		<div class="rating-content-tit">全部评价（<span id='totalSize'>${result.body.evaluateTotal}</span>）<i class="tit-arr"></i></div>
-			<div class="rating-content-list">
-			<#noparse>
-			<script id='incomelist' type="text/x-jquery-tmpl">
-			<div class="list-item">
-			    <div class="img-box">
-			        <img src="${buyUsrHeadImgUrl}" class="img">
-			    </div>
-			    <div class="list-item-content">
-			        <div class="name">${buyUsrName}</div>
-			        <div class="rating">${evaluateWord}</div>
-			        <div class="time">${evaluateTime}  ${goodsName} </div>
-			    </div>
-			</div>
-			</script>
-			</#noparse>
-		</div>
-	</div>
+  <div class="rating-content">
+    <div class="rating-content-tit">全部评价（<span id='totalSize'>${result.body.evaluateTotal}</span>）<i class="tit-arr"></i></div>
+  	<div class="rating-content-list">
+      <#noparse>
+      <script id='incomelist' type="text/x-jquery-tmpl">
+      <div class="list-item">
+        <div class="img-box"><img src="${buyUsrHeadImgUrl}" class="img"></div>
+        <div class="list-item-content">
+          <div class="name">${buyUsrName}</div>
+          <div class="rating">${evaluateWord}</div>
+          <div class="time">${evaluateTime}  ${goodsName} </div>
+          {{if masterReplyWord}}
+          <div class="reply-box">
+            <div class="reply-content"><div class="reply-arrow"></div>老师回复：${masterReplyWord}</div>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+      </script>
+      </#noparse>
+    </div>
+  </div>
 </div>
- <script>
+<script>
 <#if result.body.evaluateTotal == 0>
- 	$(".dropload-down").hide();
-    $(".rating-content-tit").hide();
- </#if>
+  $(".dropload-down").hide();
+  $(".rating-content-tit").hide();
+</#if>
 var page = 0;
 var size = 10;
 $(function() {
@@ -111,20 +114,20 @@ function loadFn(me) {
         $(".dropload-down").hide();
         $(".rating-content-tit").hide();
         $("body").emptyBox({iconImg:'${host.img}/images/no_rating.png',title:'暂无用户评价'})
-      }else if (data.head.code == "1000" && page !=1) {
+      } else if (data.head.code == "1000" && page !=1) {
           me.lock();
           me.noData();
           me.resetload();
-      } //系统错误
-      else if (data.head.code == "9999") {
+      } else if (data.head.code == "9999") {
+        //系统错误
         mAlert.addAlert(data.head.msg);
       } else {
       	if(data.body.data.length < size){
-		  	// 锁定
-		    me.lock();
-		    // 无数据
-		    me.noData();
-		    me.resetload();
+          // 锁定
+          me.lock();
+          // 无数据
+          me.noData();
+          me.resetload();
       	}
 
         $("#incomelist").tmpl(data.body.data).appendTo(".rating-content-list");
@@ -138,7 +141,6 @@ function loadFn(me) {
       me.resetload();
     }
   })
-
 }
 </script>
 </body>

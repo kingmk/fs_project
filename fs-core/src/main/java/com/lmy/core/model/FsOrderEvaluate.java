@@ -1,4 +1,6 @@
 package com.lmy.core.model ;
+import java.util.Date;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.lmy.common.model.base.BaseObject;
@@ -24,6 +26,12 @@ public class FsOrderEvaluate  extends BaseObject {
   private  Long  serviceAttitude;
   /** 评论语 */
   private  String  evaluateWord;
+  
+  private Integer isAnonymous;
+  
+  private String masterReplyWord;
+  
+  private Date masterReplyTime;
   /**  */
 	public Long getOrderId(){
 		return this.orderId;
@@ -114,6 +122,28 @@ public class FsOrderEvaluate  extends BaseObject {
 		 this.evaluateWord=evaluateWord;
 		 return this;
 	}
+	public Integer getIsAnonymous() {
+		return isAnonymous;
+	}
+	public FsOrderEvaluate setIsAnonymous(Integer isAnonymous) {
+		this.isAnonymous = isAnonymous;
+		return this;
+	}
+	public String getMasterReplyWord() {
+		return masterReplyWord;
+	}
+	public FsOrderEvaluate setMasterReplyWord(String masterReplyWord) {
+		this.masterReplyWord = masterReplyWord;
+		return this;
+	}
+	public Date getMasterReplyTime() {
+		return masterReplyTime;
+	}
+	public FsOrderEvaluate setMasterReplyTime(Date masterReplyTime) {
+		this.masterReplyTime = masterReplyTime;
+		return this;
+	}
+
 	public String toString(){
 	    return JSON.toJSONString(this,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue);
 	}

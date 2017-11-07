@@ -39,7 +39,11 @@ public class UsrServiceImpl {
 		final FsUsr usrForUpdate = new FsUsr();
 		usrForUpdate.setId(usrId);
 		//setRegisterTime(now) add by fidel at 2017/06/02 20:37 bugfix 
-		usrForUpdate.setRegisterMobile(mobile).setUpdateTime(now).setRegisterTime(now).setRegisterSrc(source);
+		usrForUpdate.setRegisterMobile(mobile).setUpdateTime(now).setRegisterTime(now);
+		if (source != null && source.length() > 0) {
+			usrForUpdate.setRegisterSrc(source);
+		}
+		
 		try{
 			 fsTransactionTemplate.execute(new TransactionCallback<Integer>() {
 				@Override

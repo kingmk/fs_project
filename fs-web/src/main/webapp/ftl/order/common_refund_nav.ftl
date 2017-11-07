@@ -15,14 +15,14 @@
     </style>
     <script>
       $(function(){
-        $("#edite").on('input propertychange', function() {
+        $("#editWord").on('input propertychange', function() {
           if ($(this).val().length > 200) {
               $(this).val( $(this).val().substring(0,200));
           }
           $(this).siblings('.tips').html('还可填写' + (200 - $(this).val().length) + '字');
         })
         $("#submit").on("click", function(){
-          if($("#edite").val().length==0){
+          if($("#editWord").val().length==0){
             mAlert.addAlert('请填写退款原因');
             return;
           }
@@ -31,7 +31,7 @@
             type: 'POST',
             dataType: 'JSON',
             data: {
-              refundReason: $("#edite").val(),
+              refundReason: $("#editWord").val(),
               orderId: '${result.body.orderId}'
             },
           })
@@ -60,7 +60,7 @@
   </div>
   <div class="edit-text-box">
 	  <div class="edit-text">
-	  <textarea id='edite' placeholder='希望一切都是误会，请填写您的退款原因：'></textarea>
+	  <textarea id='editWord' placeholder='希望一切都是误会，请填写您的退款原因：'></textarea>
 	  <span class="tips">还可填写200字</span>
 	</div>
 	<div class="button-box">

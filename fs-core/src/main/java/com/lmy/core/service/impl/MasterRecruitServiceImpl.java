@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.taskdefs.Sleep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -19,18 +20,23 @@ import com.alibaba.fastjson.JSONObject;
 import com.lmy.common.component.JsonUtils;
 import com.lmy.core.dao.FsMasterInfoDao;
 import com.lmy.core.dao.FsMasterServiceCateDao;
+import com.lmy.core.dao.FsReserveDao;
 import com.lmy.core.dao.FsUsrDao;
 import com.lmy.core.dao.FsZxCateDao;
 import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsMasterServiceCate;
+import com.lmy.core.model.FsReserve;
 import com.lmy.core.model.FsUsr;
 import com.lmy.core.model.FsZxCate;
+import com.lmy.core.utils.FsExecutorUtil;
 
 @Service
 public class MasterRecruitServiceImpl {
 	private static final Logger logger = Logger.getLogger(MasterRecruitServiceImpl.class);
 	@Autowired
 	private FsMasterInfoDao fsMasterInfoDao;
+	@Autowired
+	private FsReserveDao  fsReserveDao;
 	@Autowired
 	private FsUsrDao fsUsrDao;
 	@Autowired
@@ -125,8 +131,12 @@ public class MasterRecruitServiceImpl {
 	private void do_configServiceInfo(final JSONArray data ,final  Long usrId){
 		Date now = new Date();
 		Map<Long,FsZxCate> idFsZxCateMap = new HashMap<Long,FsZxCate>();
+		
+		logger.info("====== ##update master service## "+data.toJSONString()+"======");
 		for(int i=0; i< data.size() ; i++){
 			JSONObject dataOne = data.getJSONObject(i);
+			long zxCateId = dataOne.getLong( "fsZxCateId" );
+			long masterInfoId = dataOne.getLong("fsMasterInfoId");
 			if(dataOne.getLong( "id" ) !=null){
 				Long id  = dataOne.getLongValue("id");
 				FsMasterServiceCate beanForUpdate = new FsMasterServiceCate();
@@ -143,6 +153,7 @@ public class MasterRecruitServiceImpl {
 				int effectNum = this.fsMasterServiceCateDao.update(beanForUpdate);
 				Assert.isTrue( effectNum ==1 );
 			}else{
+				this.fsMasterServiceCateDao.offlineMasterCateService(masterInfoId, zxCateId);
 				FsMasterServiceCate beanForInsert = new FsMasterServiceCate();
 				beanForInsert.setAmt( dataOne.getLongValue( "amt" ) );
 				beanForInsert.setCreateTime(now);
@@ -185,11 +196,21 @@ public class MasterRecruitServiceImpl {
 			logger.warn("current status is forbid, for "+fsMasterInfoId+", usrId="+usrId);
 			return JsonUtils.commonJsonReturn("0001","您已经被强制下线，请联系客服");
 		}
+		final long masterUsrId = masterInfo.getUsrId();
+		final String masterNickName = masterInfo.getNickName();
 		try{
 			this.fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
 				@Override
 				public Boolean doInTransaction(TransactionStatus status) {
 					int effectNum = fsMasterInfoDao.updateServiceStatus(fsMasterInfoId, usrId, serviceStatus);
+					
+					if(serviceStatus.equals("ING")) {
+						Date now = new Date();
+						List<FsReserve> reserveList = fsReserveDao.findByMasterUsrId(masterUsrId);
+						fsReserveDao.noticeReserveUsrByMaster(masterUsrId, now);
+						asynReserveNote(masterUsrId, masterNickName, reserveList);
+					}
+					
 					Assert.isTrue( effectNum>0 );
 					return true;
 				}
@@ -200,5 +221,26 @@ public class MasterRecruitServiceImpl {
 		}
 		return JsonUtils.commonJsonReturn();
 	}
-	
+
+	private void asynReserveNote(final Long masterUsrId, final String masterNickName, final List<FsReserve> reserveList){
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				try{
+					JSONArray params = new JSONArray();
+					params.add(masterNickName);
+					for (FsReserve reserve: reserveList) {
+						String mobile = reserve.getMobile();
+						if (mobile != null && mobile.length() == 11) {
+							logger.info("======向用户发送上线通知短信："+mobile+"======");
+							TencentSmsFacadeImpl.sendSms(52087, params, mobile);
+						}
+					}
+				}catch(Exception  e){
+					logger.error("======向用户发送老师上线提醒短信失败======", e);
+				}				
+			}
+		};
+		FsExecutorUtil.getExecutor().execute(r);
+	}
 }

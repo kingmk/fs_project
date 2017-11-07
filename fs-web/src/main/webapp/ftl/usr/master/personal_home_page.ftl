@@ -140,9 +140,11 @@ window.onscroll = function(e){
 						<div class="item-center">
 							<div class="item-center-top">
 								<span class="item-center-title">${item.cateName}</span>
+							</div>
+							<div class="item-center-bottom">
 								<span class="item-center-price">¥${funUtils.formatNumber(item.amt/100,"###,##0.00","--")} </span>
 							</div>
-							<div class="item-center-bottom">已售<span>${item.serllerNum}</span>份</div>
+							<!-- <div class="item-center-bottom">已售<span>${item.serllerNum}</span>份</div> -->
 						</div>
 					</li>
 				</#list>

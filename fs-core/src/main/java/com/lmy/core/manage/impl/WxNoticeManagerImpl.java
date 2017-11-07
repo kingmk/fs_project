@@ -1,5 +1,12 @@
 package com.lmy.core.manage.impl;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+
+import javax.swing.border.TitledBorder;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +44,7 @@ public class WxNoticeManagerImpl {
 		String clickUrl = fsServiceBaseHost+"/order/chat_index?chatSessionNo="+order.getChatSessionNo()+"&orderId="+order.getId();
 		String title = "您有新订单";
 		String remarkValue = buyUsrName+"于"+CommonUtils.dateToString(new Date(), "HH:mm", "")+"咨询问题";
-		JSONObject pushToWxdata =  buildWxJsonData2(title, buyUsrName, order.getGoodsName(), remarkValue);
+		JSONObject pushToWxdata =  buildWxJsonData2(title, Arrays.asList(buyUsrName, order.getGoodsName()), remarkValue);
 		asynHand(order.getId(), order.getSellerUsrId(), null, sellerUsrOpenId, template_id, title,  clickUrl, pushToWxdata);
 	}
 	
@@ -46,7 +53,7 @@ public class WxNoticeManagerImpl {
 		String clickUrl = fsServiceBaseHost+"/order/chat_index?chatSessionNo="+order.getChatSessionNo()+"&orderId="+order.getId();
 		String title = "请尽快接单";
 		String remarkValue = buyUsrName+"于"+CommonUtils.dateToString(order.getPayConfirmTime(), "HH:mm", "")+"咨询问题，您还未接单，请尽快回复客户";
-		JSONObject pushToWxdata =  buildWxJsonData2(title, buyUsrName, order.getGoodsName(), remarkValue);
+		JSONObject pushToWxdata =  buildWxJsonData2(title, Arrays.asList(buyUsrName, order.getGoodsName()), remarkValue);
 		asynHand(order.getId(), order.getSellerUsrId(), null, sellerUsrOpenId, template_id, title,  clickUrl, pushToWxdata);
 	}
 
@@ -67,7 +74,7 @@ public class WxNoticeManagerImpl {
 			buyUsrName = "匿名";
 		}
 		String remarkValue = buyUsrName+"于"+CommonUtils.dateToString(unReadChatRecord.getCreateTime(), "HH:mm", "")+"发新消息";
-		JSONObject pushToWxdata =  buildWxJsonData2(title, order.getGoodsName(), keyword2Value, remarkValue);
+		JSONObject pushToWxdata =  buildWxJsonData2(title, Arrays.asList(order.getGoodsName(), keyword2Value), remarkValue);
 		asynHand(order.getId(), order.getSellerUsrId(), unReadChatRecord.getId(), sellerUsrOpenId, template_id, title, clickUrl, pushToWxdata);
 	}
 	
@@ -93,7 +100,7 @@ public class WxNoticeManagerImpl {
 			buyUsrName = "匿名";
 		}
 		String remarkValue = buyUsrName+"于"+CommonUtils.dateToString(unReadChatRecord.getCreateTime(), "HH:mm", "")+"发的消息，您还没有回复哦，请尽快回复用户，以免被投诉";
-		JSONObject pushToWxdata =  buildWxJsonData2(title, order.getGoodsName(), keyword2Value, remarkValue);
+		JSONObject pushToWxdata =  buildWxJsonData2(title, Arrays.asList(order.getGoodsName(), keyword2Value), remarkValue);
 		asynHand(order.getId(), order.getSellerUsrId(), unReadChatRecord.getId(), sellerUsrOpenId, template_id, title, clickUrl, pushToWxdata);
 	}
 	
@@ -129,7 +136,7 @@ public class WxNoticeManagerImpl {
 		String clickUrl =  fsServiceBaseHost+"/order/chat_index?chatSessionNo="+chatSessionNo+"&orderId="+orderId;
 		String title = "老师已接单";
 		String remarkValue = masterName + "于" +CommonUtils.dateToString(new Date(), "HH:mm", "") + "接了您的订单，点击查看详情" ;
-		JSONObject pushToWxdata = buildWxJsonData2(title, goodsName, replyContent, remarkValue);
+		JSONObject pushToWxdata = buildWxJsonData2(title, Arrays.asList(goodsName, replyContent), remarkValue);
 		asynHand(orderId, buyUsrId, null, buyUsrOpenId, template_id, title, clickUrl, pushToWxdata);
 	}
 	
@@ -139,7 +146,8 @@ public class WxNoticeManagerImpl {
 		String clickUrl = fsServiceBaseHost+"/order/chat_index?chatSessionNo="+chatSessionNo+"&orderId="+orderId;
 		String title = "老师有新回复";
 		String remarkValue = masterName + "于" +CommonUtils.dateToString(new Date(), "HH:mm", "") + "发了新消息，点击查看详情" ;
-		JSONObject pushToWxdata = buildWxJsonData2(title, goodsName, replyContent, remarkValue);
+		
+		JSONObject pushToWxdata = buildWxJsonData2(title, Arrays.asList(goodsName, replyContent), remarkValue);
 		asynHand(orderId, buyUsrId, null, buyUsrOpenId, template_id, title, clickUrl, pushToWxdata);
 	}
 	
@@ -164,25 +172,24 @@ public class WxNoticeManagerImpl {
 		String template_id = "uXeW9lQXxZLMFPP1LMNaSUh_C63F4pr1sM-0lP9csRQ";
 		String clickUrl = fsServiceBaseHost+"/usr/master/account";
 		String title = "强制下线通知";
-		JSONObject wxData = new JSONObject();
-		JSONObject first = new JSONObject();
-		first.put("value", title);
-		first.put("color", "#ff0000");
-		JSONObject keyword1 = new JSONObject();
-		keyword1.put("value", CommonUtils.dateToString(new Date(forbidStartTime), CommonUtils.dateFormat4, null));		
-		JSONObject keyword2 = new JSONObject();
-		keyword2.put("value", CommonUtils.dateToString(new Date(forbidEndTime), CommonUtils.dateFormat4, null));
-		JSONObject keyword3 = new JSONObject();
-		keyword3.put("value", reason);
-		JSONObject remark = new JSONObject();
-		remark.put("value", "在下线期间内您无法接单，如果您还有未完成订单，为避免客户投诉，还请您完成好服务。如有疑问请咨询平台客服。");		
-		wxData.put("first", first);
-		wxData.put("keyword1", keyword1);
-		wxData.put("keyword2", keyword2);
-		wxData.put("keyword3", keyword3);
-		wxData.put("remark", remark);
+		String str1 = CommonUtils.dateToString(new Date(forbidStartTime), CommonUtils.dateFormat4, null);
+		String str2 = CommonUtils.dateToString(new Date(forbidEndTime), CommonUtils.dateFormat4, null);
+		String strRemark = "在下线期间内您无法接单，如果您还有未完成订单，为避免客户投诉，还请您完成好服务。如有疑问请咨询平台客服。";
 		
-		asynHand(null, masterUsrId, null, masterOpenId, template_id, title, clickUrl, wxData);
+		JSONObject pushToWxdata = buildWxJsonData2(title, Arrays.asList(str1, str2, reason), strRemark);
+		asynHand(null, masterUsrId, null, masterOpenId, template_id, title, clickUrl, pushToWxdata);
+	}
+	
+	public void reserveMaster(String userName, long masterUsrId, String masterOpenId) {
+		String template_id = "_P84yYXNZOwm3o9nnE5ZuT0COIP5ppsJNEjDLIkNA6U";
+		String clickUrl = fsServiceBaseHost+"/usr/master/account";
+		String title = "用户预约通知";
+		String str1 = "有用户预约了您的服务";
+		String str2 = "已预约";
+		String strRemark = "您一旦开启接单后系统会自动通知该用户到测算平台上向您咨询运势";
+		
+		JSONObject pushToWxdata = buildWxJsonData2(title, Arrays.asList(str1, str2), strRemark);
+		asynHand(null, masterUsrId, null, masterOpenId, template_id, title, clickUrl, pushToWxdata);
 	}
 	
 	// 退款、评价消息
@@ -208,20 +215,20 @@ public class WxNoticeManagerImpl {
 	}
 
 	// 新订单、老师接单、老师回复、用户回复消息
-	private JSONObject buildWxJsonData2(String firstValue , String keyword1Value , String keyword2Value ,String remarkValue){
+//	private JSONObject buildWxJsonData2(String firstValue , String keyword1Value , String keyword2Value ,String remarkValue){
+	private JSONObject buildWxJsonData2(String firstValue , List<String> keywordList, String remarkValue){
 		JSONObject data = new JSONObject();
 		JSONObject first = new JSONObject();
 		first.put("value", firstValue);
 		first.put("color", "#ff0000");
-		JSONObject keyword1 = new JSONObject();
-		keyword1.put("value", keyword1Value);		
-		JSONObject keyword2 = new JSONObject();
-		keyword2.put("value", keyword2Value);		
-		JSONObject remark = new JSONObject();
-		remark.put("value", remarkValue);		
 		data.put("first", first);
-		data.put("keyword1", keyword1);
-		data.put("keyword2", keyword2);
+		for (int i = 0; i < keywordList.size(); i++) {
+			JSONObject jKeyword = new JSONObject();
+			jKeyword.put("value", keywordList.get(i));
+			data.put("keyword"+(i+1), jKeyword);
+		}
+		JSONObject remark = new JSONObject();
+		remark.put("value", remarkValue);
 		data.put("remark", remark);
 		return data;
 	}

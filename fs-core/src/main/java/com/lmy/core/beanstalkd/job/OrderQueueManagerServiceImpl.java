@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lmy.common.queue.beanstalkd.QueueHandler;
 import com.lmy.core.dao.FsOrderDao;
@@ -18,6 +19,7 @@ import com.lmy.core.model.FsOrder;
 import com.lmy.core.model.FsUsr;
 import com.lmy.core.model.enums.OrderStatus;
 import com.lmy.core.service.impl.AlidayuSmsFacadeImpl;
+import com.lmy.core.service.impl.TencentSmsFacadeImpl;
 import com.lmy.core.service.impl.UsrAidUtil;
 
 @Service
@@ -73,11 +75,16 @@ public class OrderQueueManagerServiceImpl extends QueueHandler {
 			// no extra info inputed, should notify the customer
 			Long buyerId = order.getBuyUsrId();
 			FsUsr user = fsUsrDao.findById(buyerId);
-			SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-			JSONObject smsParamJson = new JSONObject();
-			smsParamJson.put("time", formatter.format(order.getCreateTime()));
-			smsParamJson.put("category",order.getGoodsName());
-			AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, user.getRegisterMobile(), "SMS_101155069", null);
+//			SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+//			JSONObject smsParamJson = new JSONObject();
+//			smsParamJson.put("time", formatter.format(order.getCreateTime()));
+//			smsParamJson.put("category",order.getGoodsName());
+			
+			JSONArray smsParam = new JSONArray();
+			smsParam.add(order.getGoodsName());
+			
+			TencentSmsFacadeImpl.sendSms(51910, smsParam, user.getRegisterMobile());
+//			AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, user.getRegisterMobile(), "SMS_101155069", null);
 		}
 	}
 	

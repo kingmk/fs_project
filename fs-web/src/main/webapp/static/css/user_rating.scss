@@ -1,5 +1,9 @@
 @import "style";
 
+body {
+  height: initial;
+}
+
 .user-comments-content {
   background: #fff;
   text-align: center;
@@ -92,6 +96,26 @@
         .time{
           font-size: px2rem(24);
           color: $text-color-secondary;
+        }
+        .reply-box {
+          .reply-content {
+            position: relative;
+            margin-top: px2rem(12);
+            padding: px2rem(16);
+            background-color: #e2af73;
+            border-radius: px2rem(6);
+            line-height: px2rem(36);
+            color: #fff;
+            .reply-arrow{
+              position: absolute;
+              background: url("../images/arrow_up.png");
+              background-size: 100% auto;
+              width: px2rem(12);
+              height: px2rem(6);
+              top: px2rem(-6);
+              left: px2rem(30);
+            }
+          }
         }
       }
     }

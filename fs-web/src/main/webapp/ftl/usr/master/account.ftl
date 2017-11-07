@@ -152,7 +152,7 @@ function changeServiceStatus(serviceStatus,dom){
 		},
 		success: function(data){
 			isClick = false;
-			if (data.head != "0000") {
+			if (data.head.code != "0000") {
 				mAlert.addAlert(data.head.msg);
 				return;
 			}

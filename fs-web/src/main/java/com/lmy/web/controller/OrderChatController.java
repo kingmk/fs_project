@@ -39,7 +39,7 @@ public class OrderChatController {
 									,@RequestParam(value = "afterCommUsrSupplyInfo" , required = false) Boolean afterCommUsrSupplyInfo
 			) {
 		FsUsr usr = SessionUtil.getFsUsr(request);
-		JSONObject result =   orderChatQueryServiceImpl.queryForChatIndex(orderId, usr.getId() , chatSessionNo,afterCommUsrSupplyInfo);
+		JSONObject result = orderChatQueryServiceImpl.queryForChatIndex(orderId, usr.getId() , chatSessionNo,afterCommUsrSupplyInfo);
 		if( ! JsonUtils.equalDefSuccCode(result)){
 			//咨询人待补充数据
 			if( JsonUtils.codeEqual(result, "1000") ){
@@ -58,37 +58,36 @@ public class OrderChatController {
 		modelMap.put("loginUsr", usr);
 		modelMap.put("chatSessionNo", chatSessionNo);
 		modelMap.put("orderId", orderId);
-		boolean currUsrIsMaster = (Boolean)JsonUtils.getBodyValue(result, "currUsrIsMaster");
-		if(!currUsrIsMaster){
+		boolean isMaster = (Boolean)JsonUtils.getBodyValue(result, "isMaster");
+		if(!isMaster){
 			modelMap.put("usrImgUrl",  UsrAidUtil.getUsrHeadImgUrl2(usr, "") );
-			//logger.info("currUsrIsMaster:"+currUsrIsMaster+",请问buyUsr page");
-			return "/order/chat_common_index";	
+//			return "/order/chat_common_index";
 		}else{
 			modelMap.put("usrImgUrl",  UsrAidUtil.getUsrHeadImgUrl(usr, "") );
-			//logger.info("currUsrIsMaster:"+currUsrIsMaster+",请问sellerUsr page");
 			//前往老师端聊天
-			return "/order/chat_master_index";
+//			return "/order/chat_master_index";
 		}
+		return "/order/chat_index";
 	}
 	
 	/** 聊天记录异步加载  **/
 	@RequestMapping(value="/order/chat_query_html_fragment_ajax" , method={RequestMethod.POST})
+	@ResponseBody
 	public String chat_query_ajax(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 									,@RequestParam(value = "chatSessionNo" , required = true) String chatSessionNo
 									,@RequestParam(value = "orderId" , required = true) long orderId
 									,@RequestParam(value = "gtChatId" , required = false) Long gtChatId              				//需要大于的 id
 									,@RequestParam(value = "ltChatId" , required = false) Long ltChatId              					 //需要小于的id 
-									//,@RequestParam(value = "currentPage" , required = false) Integer currentPage   //当 提供了参数 gtId 则该参数无需提供;否则为必填项 从 0 开始
-									//,@RequestParam(value = "perPageNum" , required = false) Integer perPageNum //每页显示条数 默认 20
 									,@RequestParam(value = "excludeChatIds" , required = false) List<Long>  excludeChatIds
 			) {
 		Long loginUsrId = WebUtil.getUserId(request);
 		if(logger.isDebugEnabled())	logger.debug("excludeChatIds:"+excludeChatIds);
 		if(logger.isDebugEnabled())	logger.debug("req:"+WebUtil.getRequestParams(request));
 		JSONObject result  =  orderChatQueryServiceImpl.queryAjax(gtChatId,  ltChatId, excludeChatIds, loginUsrId , orderId, chatSessionNo, 0, 50);
+		JsonUtils.setBody(result, "loginUsrId", loginUsrId);
 		modelMap.put("body", result.getJSONObject("body"));
 		modelMap.put("loginUsrId", loginUsrId);
-		return "/order/chat_query_html_fragment_ajax";
+		return result.getJSONObject("body").toJSONString();
 	}
 	
 	/** 提交聊天记录异步加载  **/

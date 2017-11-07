@@ -4,7 +4,7 @@
 .bgmask .bgmask-wrap .bgmask-header { position: absolute; text-align: center; width: 100%; height: 5rem; line-height: 5rem; font-size: 1.6rem; }
 .bgmask .bgmask-wrap .bgmask-body { padding-top: 5rem; width: 100%;}
 .bgmask .bgmask-wrap .bgmask-body .title { font-size: 1.6rem; color: #d68b38; text-align: center; line-height: 1; padding-bottom: 1.4rem; font-weight: bold; }
-.bgmask .bgmask-wrap .bgmask-body .text { font-size: 1.3rem; color: #999; text-align: center; line-height: 2.2rem; padding-bottom: 0.3rem; }
+.bgmask .bgmask-wrap .bgmask-body .text { font-size: 1.3rem; color: #999; text-align: center; line-height: 2.2rem; padding-bottom: 0.3rem; padding-left: 2.5rem; padding-right: 2.5rem;}
 .bgmask .bgmask-wrap .bgmask-body .form { width: 100%; padding: 0 2rem; box-sizing: border-box; margin-top: 1.5rem; }
 .bgmask .bgmask-wrap .bgmask-body .form .form-item { display: flex; display: -webkit-flex; width: 100%; border-bottom: 1px solid #ddd; padding: 0.5rem 0; }
 .bgmask .bgmask-wrap .bgmask-body .form .form-item.code {height: 4.5rem; padding: 1.5rem 0 0; box-sizing: border-box; }

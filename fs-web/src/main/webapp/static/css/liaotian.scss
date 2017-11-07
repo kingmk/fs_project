@@ -1,5 +1,36 @@
 @import "style";
 @import "button";
+.master-contact {
+  height: px2rem(100);
+  background-color: #20b075;
+  padding: 0 px2rem(30);
+  color: #fff;
+  line-height: px2rem(100);
+  .icon-contact {
+    width: px2rem(30);
+    height: px2rem(30);
+    background: url("../images/icon_contact.png");
+    background-size: 100% 100%;
+    vertical-align: middle;
+    display: inline-block;
+  }
+  .contact-info {
+    font-size: px2rem(24);
+    margin-left: px2rem(10);
+    display: inline-block;
+  }
+  .icon-arrow {
+    width: px2rem(18);
+    height: px2rem(30);
+    background: url("../images/icon_arrow_right.png");
+    background-size: 100% 100%;
+    vertical-align: middle;
+    float: right;
+    display: inline-block;
+    margin-top: px2rem(35);
+  }
+}
+
 .speak-header{
   width: 100%;
   height: px2rem(100);
@@ -15,7 +46,7 @@
   z-index: 99;
   &:after{
 	@extend .border;
-	bottom : - px2rem(2);
+	bottom: - px2rem(2);
 	left: 0;
   }
   .speak-header-img{
@@ -58,150 +89,220 @@
 
 }
 .speak-window {
-  bottom: px2rem(120);
+  bottom: px2rem(160);
   overflow: hidden;
-  width      : 100%;
-  position   : fixed;
-  top        : px2rem(100);
-  left       : 0;
+  width: 100%;
+  position: fixed;
+  top: px2rem(100);
+  left: 0;
+  &.pos2 {
+    top: px2rem(200);
+  }
+  &.service-end {
+    bottom: px2rem(240);
+  }
 }
 .speak-box {
-  width   : 100%;
-  padding : px2rem(40) px2rem(20) px2rem(20);
+  position: absolute; 
+  width: 100%;
+  padding: px2rem(40) px2rem(20) px2rem(20);
+  .pullinfo {
+    height: px2rem(40);
+    line-height: px2rem(40);
+    text-align: center;
+    font-size: px2rem(24);
+    position: absolute;
+    width: 100%;
+    &#pulldown{
+      top: px2rem(-40);
+    }
+    &#pullup{
+      bottom: px2rem(-40);
+    }
+  }
+  #list {
+    position: relative;
+    .tmphdr {
+      position: absolute; opacity: 0; top: 0; width: 100%;
+    }
+  }
   .heard-img {
-	width  : px2rem(90);
-	height : px2rem(90);
-	img {
-	  width         : 100%;
-    height: 100%;
-	  border-radius : 50%;
-	  border        : px2rem(1) solid #999;
-	}
+  	width: px2rem(90);
+  	height: px2rem(90);
+  	img {
+  	  width: 100%;
+      height: 100%;
+  	  border-radius: 50%;
+  	  border: px2rem(1) solid #999;
+  	}
   }
   .speak-text {
-	font-size   : px2rem(32);
-	line-height : px2rem(44);
-	color       : $text-color;
-	display     : table-cell;
-	position    : relative;
-  max-width: px2rem(620);
-	p {
-	  padding       : px2rem(18) px2rem(22);
-	  border-radius : px2rem(15);
-	  word-break    : break-all;
-	}
+  	font-size: px2rem(32);
+  	line-height: px2rem(44);
+  	color: $text-color;
+    word-wrap: break-word;
+  	display: block;
+  	position: relative;
+    max-width: px2rem(620);
+  	p {
+  	  padding: px2rem(18) px2rem(22);
+  	  border-radius: px2rem(15);
+  	  word-break: break-all;
+  	}
   }
 }
 .speak-left, .speak-right {
-  margin-bottom : px2rem(40);
+  margin-bottom: px2rem(40);
 }
 .speak-left {
   .heard-img {
-	float : left;
+	float: left;
   }
   .speak-text {
-	padding-left  : px2rem(30);
-	padding-right : px2rem(110);
-	p {
-	  background : #fff;
-	  color      : $text-color;
-	  border        : px2rem(1) solid #ddd;
-	}
+    margin-left: px2rem(120);
+  	padding-right: px2rem(110);
+  	p {
+      float: left;
+  	  background: #fff;
+  	  color: $text-color;
+  	  border: px2rem(1) solid #ddd;
+      &:after {
+        content: ''; 
+        position: absolute; 
+        display: block; 
+        top: px2rem(20); 
+        left: px2rem(-18);
+        width: px2rem(20); 
+        height: px2rem(20); 
+        background: url('../images/icon_chat_left.png') no-repeat; 
+        background-size: 100% 100%;
+      };
+  	};
+    img {
+      max-width: px2rem(480);
+    }
   }
 }
 .speak-right {
   .heard-img {
-	 float : right;
+	 float: right;
   }
   .speak-text {
-    float : right;
-  	padding-left  : px2rem(110);
-  	padding-right : px2rem(30);
+  	padding-left: px2rem(110);
+    margin-right: px2rem(120);
   	p {
-  	  background : $link-color;
-  	  color      : #fff;
-  	  border        : px2rem(1) solid #a18332;
-  	}
+      float: right;
+  	  background: $link-color;
+  	  color: #fff;
+  	  border: px2rem(1) solid #a18332;
+      &.disabled {
+        background-color: #aaa;
+        text-decoration: line-through;
+      }
+      &:after {
+        content: ''; 
+        position: absolute; 
+        display: block; 
+        top: px2rem(20); 
+        right: px2rem(-18);
+        width: px2rem(20); 
+        height: px2rem(20); 
+        background: url('../images/icon_chat_right.png') no-repeat; 
+        background-size: 100% 100%;
+      };
+  	};
+    img {
+      max-width: px2rem(480);
+      float: right;
+    }
   }
 }
 .wenwe-footer {
   z-index: 99;
-  width           : 100%;
-  position        : fixed;
-  bottom          : 0;
-  left            : 0;
-  background      : #fff;
-  padding         : px2rem(16) px2rem(30);
-  display         : flex;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: #fff;
+  padding: px2rem(16) px2rem(30);
+  display: flex;
   display: -webkit-flex;
-  justify-content : space-between;
-  -webkit-justify-content : space-between;
-  align-items     : stretch;
-  -webkit-align-items     : stretch;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  align-items: stretch;
+  -webkit-align-items: stretch;
 
   .wenwen-btn {
-  	width           : px2rem(70);
-  	height          : px2rem(70);
-  	background      : url("../images/wenwen_imgbtn.png");
-  	background-size : 100% 100%;
+  	width: px2rem(70);
+  	height: px2rem(70);
+  	background: url("../images/wenwen_imgbtn.png");
+  	background-size: 100% 100%;
     position: relative;
     max-width: px2rem(70);
     min-width: px2rem(70);
-  .wenwen-imginput{
-    opacity: 0;
-    position: absolute;
-    height: px2rem(70);
-    width:  px2rem(70);
-    top: 0;
-    left:0;
-    max-width: px2rem(70);
-    min-width: px2rem(70);
-  }
+    .wenwen-imginput{
+      opacity: 0;
+      position: absolute;
+      height: px2rem(70);
+      width:  px2rem(70);
+      top: 0;
+      left:0;
+      max-width: px2rem(70);
+      min-width: px2rem(70);
+    }
   }
 
   .wenwen-text {
-	flex-grow  : 1;
-  -webkit-flex-grow  : 1;
-	margin     : 0 px2rem(30);
-	max-height : px2rem(200);
-	position   : relative;
-	&:after {
-	  content    : "";
-	  display    : block;
-	  position   : absolute;
-	  bottom     : - px2rem(2);
-	  left       : 0;
-	  right      : 0;
-	  height     : px2rem(2);
-	  transform  : scale(1, 0.5);
-	  background : $link-color;
-	}
-	.write-box {
-	  width       : 100%;
-	  padding     : 0 px2rem(16);
-	  border      : none;
-	  outline     : none;
-	  overflow-y  : auto;
-	  word-break  : break-all;
-	  font-size   : px2rem(28);
-	  line-height : px2rem(44);
-	  height      : 100%;
-    resize: none;
-	}
+    flex-grow: 1;
+    -webkit-flex-grow: 1;
+    margin: 0 px2rem(30);
+    max-height: px2rem(200);
+    position: relative;
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      bottom: - px2rem(2);
+      left: 0;
+      right: 0;
+      height: px2rem(2);
+      transform: scale(1, 0.5);
+      background: $link-color;
+    }
+    .write-box {
+      width: 100%;
+      padding: 0 px2rem(16);
+      border: none;
+      outline: none;
+      overflow-y: auto;
+      word-break: break-all;
+      font-size: px2rem(28);
+      line-height: px2rem(44);
+      height: 100%;
+      resize: none;
+      &.focus {
+        height: px2rem(140); 
+        margin-bottom: px2rem(40); 
+        margin-top: px2rem(20);
+      }
+    }
   }
   .wenwen-send {
-	min-width   : px2rem(140);
-	width       : px2rem(140);
-	height      : px2rem(70);
-	background  : $btn-default-bg;
-	color       : $btn-default-color;
-	line-height : px2rem(70);
-	font-size   : px2rem(28);
-	text-align  : center;
+    min-width: px2rem(140);
+    width: px2rem(140);
+    height: px2rem(70);
+    background: $btn-default-bg;
+    color: $btn-default-color;
+    line-height: px2rem(70);
+    font-size: px2rem(28);
+    text-align: center;
+    &.disabled {
+      background: #ccc;
+    }
   }
 }
 .left {
-  float : left;
+  float: left;
 }
 
 .order-completed{
@@ -230,10 +331,13 @@
     line-height: px2rem(70);
     background: $text-color;
     color: #fff;
-
     font-size: px2rem(24);
     display: inline-block;
-
+    &.wait-evaluate {
+      background: #ccc!important;
+      color: #fff!important; 
+      border: px2rem(1) solid #ddd;
+    }
   }
 }
 
@@ -249,18 +353,18 @@
     width: px2rem(600);
     height: px2rem(900);
     background: #fff;
-    margin     : auto;
-    position   : relative;
-    top        : px2rem(100);
-    left       : 0;
-    right      : 0;
+    margin: auto;
+    position: relative;
+    top: px2rem(100);
+    left: 0;
+    right: 0;
     .close{
       position: absolute;
       width: px2rem(80);
       height: px2rem(80);
       background: url('../images/mask_close.png');
       left: 0;
-      top :0;
+      top:0;
     }
     .header{
       height: px2rem(130);

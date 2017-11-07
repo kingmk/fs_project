@@ -145,7 +145,7 @@ public class AdminAuditServiceImpl {
 		JSONObject beanstalkMsg = new JSONObject();
 		beanstalkMsg.put("masterInfoId", masterInfoId);
 		beanstalkMsg.put("msgType", QueueNameConstant.MSG_ADMIN_UNFORBID_MASTER);
-		BeanstalkClient.put(QueueNameConstant.QUEUE_ADMIN, null, (int)(forbidEndTime-timeNow)+3, null, beanstalkMsg);
+		BeanstalkClient.put(QueueNameConstant.QUEUE_ADMIN, null, (int)((forbidEndTime-timeNow)/1000+3), null, beanstalkMsg);
 		return JsonUtils.commonJsonReturn();
 	}
 	

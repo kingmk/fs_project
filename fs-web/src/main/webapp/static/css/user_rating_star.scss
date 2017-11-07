@@ -1,0 +1,165 @@
+@import "style";
+@import "button";
+
+.user-comments-content {
+	background: #fff;
+	text-align: center;
+	padding-bottom: 1.5rem;
+	.header {
+		padding: 3.5rem 0 2rem;
+		text-align: center;
+		img {
+			width: 6rem;
+			height: 6rem;
+			border-radius: 50%;
+			margin-bottom: 1rem;
+		}
+		.title {
+			font-size: 1.5rem;
+			font-weight: bold;
+		}
+		.text {
+			font-size: 1.2rem;
+			color: #999; 
+		}
+	}
+	.score-box {
+		.score-item {
+			margin-bottom: 1.5rem;
+			font-size: 0;
+			display: flex;
+			display: -webkit-flex;
+			justify-content: center;
+			-webkit-justify-content: center;
+			align-items: center;
+			-webkit-align-items: center; 
+			.score-item-tips {
+				font-size: 1.3rem !important;
+				color: #3f3f3f;
+				padding-right: 0.7rem;
+				display: inline-block; 
+			}
+		}
+	}
+}
+
+.edit-text-box {
+	padding: 0 1.5rem;
+	background: #fff; 
+	.edit-text {
+		border: 1px solid #ddd;
+		width: 100%;
+		height: 12.5rem;
+		font-size: 1.4rem;
+		position: relative;
+		overflow: auto;
+		#editWord {
+			width: 100%;
+			height: 9rem;
+			outline: none;
+			border: none;
+			resize: none; 
+			padding: 0.7rem;
+		}
+		.palcehold {
+			color: #ccc;
+			position: absolute;
+			top: 1rem;
+			left: 1rem; 
+		}
+		.tips {
+			position: absolute;
+			bottom: 1rem;
+			right: 1rem;
+			font-size: 0.9rem !important;
+			color: #ccc; 
+		}
+	}
+}
+
+.button-box {
+	width: 100%;
+	padding: 2.5rem 1.5rem 0;
+	box-sizing: border-box; 
+	.button {
+		width: 100%;
+		height: 5rem;
+		text-align: center;
+		line-height: 5rem;
+		color: #fff;
+		font-size: 1.6rem; 
+		color: #fff;
+		background: #3f3f3f;
+    	display: inline-block;
+    	&.disabled {
+			background : $btn-disable-bg;
+    	}
+	}
+}
+
+.rating-content {
+	padding: px2rem(30) 0;
+	text-align: center;
+	.rating-icon {
+		width: px2rem(50);
+		height: px2rem(50);
+		display: inline-block;
+		img {
+			width: 100%
+		}
+	}
+	.text {
+		padding: px2rem(15) px2rem(70) 0;
+		text-align: center;
+		font-size: 1.4rem;
+		line-height: 2.4rem;
+		&.reply {
+			color: #d68b38;
+		}
+	}
+}
+
+.evaluate-reply-tip {
+	margin-top: px2rem(50);
+	font-size: px2rem(24);
+	line-height: px2rem(32);
+	color: #999;
+	padding: 0 px2rem(30);
+	text-align: center;
+}
+
+.anonymous {
+	margin: px2rem(30) 0;
+	padding: 0 px2rem(30);
+	.checkbox {
+		float: left;
+		width: px2rem(40);
+		height: px2rem(40);
+	}
+	.label {
+		font-size: px2rem(28);
+		color: #3f3f3f;
+		line-height: px2rem(40);
+		/*margin-left: px2rem(30);*/
+		padding-left: px2rem(10);
+		display: inline-block;
+	}
+}
+
+.button {
+	&.lft {
+		width: 50%;
+		background-color: #fff;
+		border-top: 1px solid #ddd;
+		color: #3f3f3f!important;
+	}
+	&.rgt {
+		width: 50%;
+		left: 50%;
+	}
+}
+
+body {
+	height: initial;
+	padding-bottom: px2rem(80);
+}

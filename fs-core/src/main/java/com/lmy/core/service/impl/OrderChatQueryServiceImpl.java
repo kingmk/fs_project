@@ -53,85 +53,9 @@ public class OrderChatQueryServiceImpl {
 	private FsChatRecordDao fsChatRecordDao;
 	@Autowired
 	private FsOrderEvaluateDao fsOrderEvaluateDao;
-  
-    private JSONObject queryForChatCommonIndex( FsMasterInfo masterInfo ,FsOrder order){
-		Date now = new Date();
-		boolean isServiceEnd = now.after( order.getEndChatTime() ) || (order.getRefundApplyTime()!=null ||  StringUtils.equals(order.getIsAutoRefund(), "Y"));
-		//本次服务时间剩余时间(秒)**
-		long chatServiceSurplusSec = (isServiceEnd || !OrderStatus.pay_succ.getStrValue().equals(order.getStatus() ) )? 0l : CommonUtils.calculateDiffSeconds(now,  order.getEndChatTime() );
-		boolean isCanRefund =OrderAidUtil.isOrderCanApplyRefund(order, now);
-		//退款剩余秒数
-		long refundSurplusSec = isCanRefund ?  CommonUtils.calculateDiffSeconds(DateUtils.addDays(order.getSellerFirstReplyTime(), 7)   ,  now) : 0l;
-		//是否可以点评
-		boolean isCanEvaluate = ( order.getEvaluateTime() == null && OrderAidUtil.getCanEvaluateStatus().contains(  order.getStatus()) ); 
-		FsChatRecordDto lastReply = null;
-		if(OrderAidUtil.getCommAllOrderStatus().contains(order.getStatus()) ){
-			 lastReply = 	fsChatRecordDao.findUsrReceLastReply(order.getChatSessionNo(), order.getBuyUsrId());
-		}
-		JSONObject result = JsonUtils.commonJsonReturn();
-		JsonUtils.setBody(result, "isWaitMasterService",  ( OrderStatus.pay_succ.getStrValue().equals(order.getStatus() )  && order.getSellerFirstReplyTime()==null ) ? 'Y' :'N' );  	//是否等待老师服务
-		JsonUtils.setBody(result, "goodsName", order.getGoodsName());  	
-		JsonUtils.setBody(result, "payRmbAmt",order.getPayRmbAmt());  //单位分
-		JsonUtils.setBody(result, "payRmbAmtDesc",CommonUtils.numberFormat(order.getPayRmbAmt()/100d , "###,##0.00", "0.0"));
-		JsonUtils.setBody(result, "isCanEvaluate", isCanEvaluate ? 'Y':'N');  	//是否可以点评
-		JsonUtils.setBody(result, "hadReply", lastReply!=null ? 'Y':'N');  			//是否有回复过
-		JsonUtils.setBody(result, "chatWithUsrName", UsrAidUtil.getMasterNickName(masterInfo, null, ""));  //与 谁聊天
-		JsonUtils.setBody(result, "chatWithUsrHeadImgUrl", UsrAidUtil.getMasterHeadImg(masterInfo,null,""));  //与 谁聊天 人的头像
-		JsonUtils.setBody(result, "chatServiceSurplusSec", chatServiceSurplusSec);  //聊天服务剩余秒数
-		JsonUtils.setBody(result, "masterInfoId", masterInfo.getId());
-		JsonUtils.setBody(result, "currUsrIsMaster", false);  //当前用户是否为master 
-		JsonUtils.setBody(result, "orderId", order.getId());
-		JsonUtils.setBody(result, "orderExtraInfo", orderExTraInfo(order.getOrderExtraInfo()));
-		JsonUtils.setBody(result, "orderStatus", order.getStatus());
-		JsonUtils.setBody(result, "isServiceEnd", isServiceEnd ? "Y":"N");  //聊天服务是否已过截止时间
-		JsonUtils.setBody(result, "hadEvaluate", order.getEvaluateTime()!=null ? "Y":"N");  
-		JsonUtils.setBody(result, "isCanRefund", isCanRefund ? "Y":"N");  //是否可发起退款
-		JsonUtils.setBody(result, "hadRefund", (order.getRefundApplyTime()!=null ||  StringUtils.equals(order.getIsAutoRefund(), "Y"))  ? "Y":"N");  //是否发起过投诉
-		JsonUtils.setBody(result, "refundSurplusSec", refundSurplusSec);  //发起退款剩余秒数
-		JsonUtils.setBody(result, "payConfirmTime", CommonUtils.dateToString(order.getPayConfirmTime(), CommonUtils.dateFormat4, "")   );  //支付确认时间
-		JsonUtils.setBody(result, "refundApplyTime", CommonUtils.dateToString(order.getRefundApplyTime(), CommonUtils.dateFormat4, "")   );  //退款申请时间
-		JsonUtils.setBody(result, "refundConfirmTime", CommonUtils.dateToString(order.getRefundConfirmTime(), CommonUtils.dateFormat4, "")   );  //退款确认时间
-		JsonUtils.setBody(result, "completedTime", CommonUtils.dateToString(order.getCompletedTime(), CommonUtils.dateFormat4, "")  );  // 订单服务完成时间
-		//logger.info("普通用户端:"+result  );
-		return result;
-    }
-    
-    private JSONObject queryForChatMasterIndex( FsMasterInfo masterInfo ,FsOrder order) {
-    	Date now  =new Date();
-		//与 ** 的聊天信息
-		FsUsr buyUsr = this.fsUsrDao.findById( order.getBuyUsrId()   );
-		JSONObject cacheBuyUsrWxInfo = UsrAidUtil.getCacheWeiXinInfo(buyUsr);
-		boolean isServiceEnd = now.after( order.getEndChatTime() ) || (order.getRefundApplyTime()!=null ||  StringUtils.equals(order.getIsAutoRefund(), "Y"));
-		//本次服务时间剩余时间(秒)**
-		long chatServiceSurplusSec = (isServiceEnd || !OrderStatus.pay_succ.getStrValue().equals(order.getStatus() ) )? 0l : CommonUtils.calculateDiffSeconds(now, order.getEndChatTime());
-		//是否有评价
-		boolean hadEvaluate = order.getEvaluateTime() !=null ;
-		JSONObject result = JsonUtils.commonJsonReturn();
-		JsonUtils.setBody(result, "buyUsrName", UsrAidUtil.getNickName2(buyUsr, cacheBuyUsrWxInfo, "") );  
-		JsonUtils.setBody(result, "buyUsrHeadImgUrl", UsrAidUtil.getUsrHeadImgUrl2(buyUsr, cacheBuyUsrWxInfo, ""));  
-		JsonUtils.setBody(result, "isWaitMasterService",  ( OrderStatus.pay_succ.getStrValue().equals(order.getStatus() )  && order.getSellerFirstReplyTime()==null ) ? 'Y' :'N' );  	//是否等待老师服务
-		JsonUtils.setBody(result, "goodsName", order.getGoodsName());
-		JsonUtils.setBody(result, "payRmbAmt",order.getPayRmbAmt());  //单位分
-		JsonUtils.setBody(result, "payRmbAmtDesc",CommonUtils.numberFormat(order.getPayRmbAmt()/100d , "###,##0.00", "0.0"));
-		JsonUtils.setBody(result, "chatServiceSurplusSec", chatServiceSurplusSec);  //聊天服务剩余秒数
-		JsonUtils.setBody(result, "masterInfoId", masterInfo.getId());
-		JsonUtils.setBody(result, "currUsrIsMaster", true);  //当前用户是否为master 
-		JsonUtils.setBody(result, "orderId", order.getId());
-		JsonUtils.setBody(result, "orderExtraInfo", orderExTraInfo(order.getOrderExtraInfo())); //用户信息
-		JsonUtils.setBody(result, "payRmbAmt", order.getPayRmbAmt()); //服务价格
-		JsonUtils.setBody(result, "goodsName", order.getGoodsName()); //服务类别名称
-		JsonUtils.setBody(result, "orderStatus", order.getStatus());
-		JsonUtils.setBody(result, "isServiceEnd", isServiceEnd ? "Y":"N");  //聊天服务是否已过截止时间
-		JsonUtils.setBody(result, "hadRefund", (order.getRefundApplyTime()!=null  ) ? "Y":"N");  //是否发起过投诉
-		JsonUtils.setBody(result, "hadEvaluate", hadEvaluate ? "Y":"N");  //是否已评价
-		JsonUtils.setBody(result, "completedTime", CommonUtils.dateToString(order.getCompletedTime(), CommonUtils.dateFormat4, "")  );  // 订单服务完成时间
-		JsonUtils.setBody(result, "payConfirmTime", CommonUtils.dateToString(order.getPayConfirmTime(), CommonUtils.dateFormat4, "")   );  //支付确认时间
-		JsonUtils.setBody(result, "refundApplyTime", CommonUtils.dateToString(order.getRefundApplyTime(), CommonUtils.dateFormat4, "")   );  //退款申请时间
-		JsonUtils.setBody(result, "refundConfirmTime", CommonUtils.dateToString(order.getRefundConfirmTime(), CommonUtils.dateFormat4, "")   );  //退款确认时间
-		//logger.info("master 端:"+result  );
-		return result;
-    }
-    
+	
+	
+
     private JSONArray orderExTraInfo(String orderExtraInfo) {
     	JSONArray orderExtraInfoList = null;
     	try{
@@ -195,21 +119,68 @@ public class OrderChatQueryServiceImpl {
 			//获取 master 信息
 			FsMasterInfo masterInfo = queryForChatIndex_getMaster(order.getSellerUsrId());
 			//当前用户是否为master
-			boolean currUsrIsMaster = masterInfo.getUsrId() .equals(loginUsrId) ;
-			if(!currUsrIsMaster && OrderStatus.pay_succ.getStrValue().equals( order.getStatus() )
+			boolean isMaster = masterInfo.getUsrId() .equals(loginUsrId) ;
+			if(!isMaster && OrderStatus.pay_succ.getStrValue().equals( order.getStatus() )
 					&&   OrderAidUtil.getNeedSupplyOrderInfoZxCateIds().contains( order.getZxCateId()  )  && (StringUtils.isEmpty(order.getOrderExtraInfo())  && !Boolean.TRUE.equals(afterCommUsrSupplyInfo)  ))   {
 				logger.warn("咨询人待补充数据  orderId:"+orderId+",buyUsrId:"+loginUsrId+",chatSessionNo:"+chatSessionNo+",zxCateId:"+order.getZxCateId()+",orderExtraInfo:"+order.getOrderExtraInfo()+",afterCommUsrSupplyInfo:"+afterCommUsrSupplyInfo);
 				return JsonUtils.commonJsonReturn("1000","咨询人待补充数据");
 			}
-			if(!currUsrIsMaster){
-				return queryForChatCommonIndex(masterInfo, order);
-			}else{
-				return queryForChatMasterIndex(masterInfo, order);
-			}
+			return queryForChatIndex(masterInfo, order, isMaster);
 		}catch(Exception e){
 			logger.error("orderId:"+orderId+",loginUsrId:"+loginUsrId+",chatSessionNo:"+chatSessionNo, e);
 			return JsonUtils.commonJsonReturn("9999","系统错误");
 		}
+	}
+
+	private JSONObject queryForChatIndex(FsMasterInfo masterInfo, FsOrder order, Boolean isMaster) {
+		Date now = new Date();
+		boolean isServiceEnd = now.after( order.getEndChatTime() ) || (order.getRefundApplyTime()!=null ||  StringUtils.equals(order.getIsAutoRefund(), "Y"));
+		boolean isWaitMasterService = ( OrderStatus.pay_succ.getStrValue().equals(order.getStatus() )  && order.getSellerFirstReplyTime()==null );
+		//本次服务时间剩余时间(秒)**
+		long chatServiceSurplusSec = (isServiceEnd || !OrderStatus.pay_succ.getStrValue().equals(order.getStatus() ) )? 0l : CommonUtils.calculateDiffSeconds(now, order.getEndChatTime());
+		boolean hadEvaluate = order.getEvaluateTime() !=null ;
+		JSONObject result = JsonUtils.commonJsonReturn();
+		JsonUtils.setBody(result, "isMaster", isMaster);  //当前用户是否为master
+		JsonUtils.setBody(result, "isServiceEnd", isServiceEnd ? "Y":"N"); //聊天服务是否已过截止时间
+		JsonUtils.setBody(result, "isWaitMasterService",  isWaitMasterService ? 'Y' :'N' ); //是否等待老师服务
+		JsonUtils.setBody(result, "goodsName", order.getGoodsName());
+		JsonUtils.setBody(result, "payRmbAmt",order.getPayRmbAmt());  //单位分
+		JsonUtils.setBody(result, "payRmbAmtDesc",CommonUtils.numberFormat(order.getPayRmbAmt()/100d , "###,##0.00", "0.0"));
+		JsonUtils.setBody(result, "orderId", order.getId());
+		JsonUtils.setBody(result, "orderExtraInfo", orderExTraInfo(order.getOrderExtraInfo())); //用户信息
+		JsonUtils.setBody(result, "masterInfoId", masterInfo.getId());
+		JsonUtils.setBody(result, "orderStatus", order.getStatus());
+		JsonUtils.setBody(result, "chatServiceSurplusSec", chatServiceSurplusSec);  //聊天服务剩余秒数
+		JsonUtils.setBody(result, "payConfirmTime", CommonUtils.dateToString(order.getPayConfirmTime(), CommonUtils.dateFormat4, "")   );  //支付确认时间
+		JsonUtils.setBody(result, "completedTime", CommonUtils.dateToString(order.getCompletedTime(), CommonUtils.dateFormat4, "")  );  // 订单服务完成时间
+		JsonUtils.setBody(result, "refundApplyTime", CommonUtils.dateToString(order.getRefundApplyTime(), CommonUtils.dateFormat4, "")   );  //退款申请时间
+		JsonUtils.setBody(result, "refundConfirmTime", CommonUtils.dateToString(order.getRefundConfirmTime(), CommonUtils.dateFormat4, "")   );  //退款确认时间
+		JsonUtils.setBody(result, "hadRefund", (order.getRefundApplyTime()!=null  ) ? "Y":"N");  //是否发起过投诉
+		JsonUtils.setBody(result, "hadEvaluate", hadEvaluate ? "Y":"N");  //是否已评价
+		
+		if (isMaster) {
+			FsUsr buyUsr = this.fsUsrDao.findById(order.getBuyUsrId());
+			JSONObject cacheBuyUsrWxInfo = UsrAidUtil.getCacheWeiXinInfo(buyUsr);
+			JsonUtils.setBody(result, "contactUsrId", buyUsr.getId());
+			JsonUtils.setBody(result, "contactUsrName", UsrAidUtil.getNickName2(buyUsr, cacheBuyUsrWxInfo, "") );  
+			JsonUtils.setBody(result, "contactUsrHeadImgUrl", UsrAidUtil.getUsrHeadImgUrl2(buyUsr, cacheBuyUsrWxInfo, "")); 
+			long contactCnt = fsOrderDao.countContactOrders(order.getSellerUsrId(), order.getBuyUsrId());
+			JsonUtils.setBody(result, "contactCnt", contactCnt);
+		} else {
+			JsonUtils.setBody(result, "contactUsrId", masterInfo.getUsrId());
+			JsonUtils.setBody(result, "contactUsrName", UsrAidUtil.getMasterNickName(masterInfo, null, ""));  //与 谁聊天
+			JsonUtils.setBody(result, "contactUsrHeadImgUrl", UsrAidUtil.getMasterHeadImg(masterInfo,null,""));  //与 谁聊天 人的头像
+			boolean isCanRefund =OrderAidUtil.isOrderCanApplyRefund(order, now);
+			//退款剩余秒数
+			long refundSurplusSec = isCanRefund?CommonUtils.calculateDiffSeconds(DateUtils.addDays(order.getSellerFirstReplyTime(), 7),now) : 0l;
+			//是否可以点评
+			boolean isCanEvaluate = ( order.getEvaluateTime() == null && OrderAidUtil.getCanEvaluateStatus().contains(order.getStatus())); 
+			JsonUtils.setBody(result, "isCanEvaluate", isCanEvaluate ? 'Y':'N'); //是否可以点评
+			JsonUtils.setBody(result, "isCanRefund", isCanRefund ? "Y":"N"); //是否可发起退款
+			JsonUtils.setBody(result, "refundSurplusSec", refundSurplusSec); //发起退款剩余秒数
+		}
+
+		return result;
 	}
 	
     private Long getCurrMaxReplyId(List<FsChatRecordDto> chatList , long loginUsrId){
@@ -223,8 +194,8 @@ public class OrderChatQueryServiceImpl {
     	}
     	return maxId;
     }
-    
-	public JSONObject queryAjax(Long gtChatId ,Long ltChatId ,    List<Long>  excludeChatIds , long loginUsrId,long orderId , String chatSessionNo,int currentPage,int perPageNum){
+
+	public JSONObject queryAjax(Long gtChatId ,Long ltChatId, List<Long> excludeChatIds, long loginUsrId, long orderId, String chatSessionNo, int currentPage, int perPageNum){
 		try{
 			FsOrder order = this.fsOrderDao.findById(orderId);
 			if(order == null  || !StringUtils.equals(order.getChatSessionNo(), chatSessionNo )){
@@ -235,8 +206,8 @@ public class OrderChatQueryServiceImpl {
 			if(CollectionUtils.isNotEmpty(chatList)){
 				Long curMaxReplyId = getCurrMaxReplyId(chatList, loginUsrId);
 				Collections.reverse(chatList);
-				addHeadUrl(chatList,   order );
-				asynSetReadTime(chatList, loginUsrId);				
+				addHeadUrl(chatList, order );
+				asynSetReadTime(chatList, loginUsrId);
 				JsonUtils.setBody(result, "curMaxReplyId",  curMaxReplyId!=null ? curMaxReplyId :"");
 				JsonUtils.setBody(result, "curMaxId", chatList.get(  chatList.size()-1    ).getId());
 				JsonUtils.setBody(result, "curMinId", chatList.get( 0).getId());
@@ -306,12 +277,12 @@ public class OrderChatQueryServiceImpl {
 		}
 	}
 	private void asynSetReadTimeDo(List<FsChatRecordDto> chatList ,long loginUsrId ,Date now){
-		for(FsChatRecordDto  bean :  chatList){
+		for(FsChatRecordDto bean : chatList){
 			try{
 				if((bean.getReadTime()==null || "N".equals( bean.getIsRead()) )&& (bean.getReceUsrId().equals(loginUsrId) || bean.getReceUsrId() == loginUsrId) ){
 					bean.setReadTime(now).setIsRead("Y");
 					final FsChatRecord beanForUpdate = new FsChatRecord();
-					beanForUpdate.setId( bean.getId() );
+					beanForUpdate.setId(bean.getId());
 					beanForUpdate.setIsRead("Y").setReadTime(now).setUpdateTime(now);
 					this.fsChatRecordDao.update(beanForUpdate);
 				}
@@ -322,7 +293,7 @@ public class OrderChatQueryServiceImpl {
 	}
 	/** if not found return null **/
 	private List<com.lmy.core.model.dto.FsChatRecordDto> findChatRecord(Long gtChatId ,Long ltChatId ,List<Long>  excludeChatIds,Long orderId , String chatSessionNo,int currentPage,int perPageNum){
-		return fsChatRecordDao.findChatRecord(gtChatId, ltChatId,excludeChatIds,		orderId, chatSessionNo, currentPage, perPageNum, "effect");
+		return fsChatRecordDao.findChatRecord(gtChatId, ltChatId,excludeChatIds, orderId, chatSessionNo, currentPage, perPageNum, "effect");
 	}
 	private FsMasterInfo queryForChatIndex_getMaster(long masterUsrId){
 		List<FsMasterInfo> list = fsMasterInfoDao.findBtCondition1(null, masterUsrId, null,  Arrays.asList( "approved"), null);

@@ -23,6 +23,7 @@ import com.lmy.common.redis.RedisClient;
 import com.lmy.core.constant.CacheConstant;
 import com.lmy.core.model.FsUsr;
 import com.lmy.core.service.impl.AlidayuSmsFacadeImpl;
+import com.lmy.core.service.impl.TencentSmsFacadeImpl;
 import com.lmy.core.service.impl.UsrQueryImpl;
 import com.lmy.core.service.impl.UsrServiceImpl;
 import com.lmy.core.utils.FsEnvUtil;
@@ -182,20 +183,27 @@ public class UsrRegisterMobileController {
 		curSms.put("mobile", mobile);
 		curSms.put("time", new Date() );
 		jarray.add(curSms);
-		JSONObject smsParamJson = new JSONObject();
-		smsParamJson.put("code",code);
-		smsParamJson.put("product","雷门易");
-		boolean smsSendResult = true;
+//		JSONObject smsParamJson = new JSONObject();
+//		smsParamJson.put("code",code);
+//		smsParamJson.put("product","雷门易");
+
+        JSONArray params = new JSONArray();
+        params.add(code);
+        params.add("雷门易");
+        
+		boolean smsSendResult = false;
 		if(FsEnvUtil.isDev()){
 			//logger.info(FsEnvUtil.getEnv() + "环境模拟发送短信,内容:"+smsParamJson.toJSONString()+"结果:"+smsSendResult);
 		}
 		else if(!FsEnvUtil.isDev()){
 			//smsSendResult = AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, mobile, "SMS_68210019 " , null);
 		}
-		smsSendResult = AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, mobile, "SMS_68210019 " , null);
+		smsSendResult = TencentSmsFacadeImpl.sendSms(51564, params, mobile);
+//		smsSendResult = AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, mobile, "SMS_68210019 " , null);
 		if(smsSendResult){
 			//发送短信验证码 
-			//request.getSession().setAttribute(sendSmsResultSessionKey, jarray);
+//			request.getSession().setAttribute(sendSmsResultSessionKey, jarray);
+			logger.info("=====短信发送成功，"+jarray.toJSONString()+"=====");
 			RedisClient.set(sendSmsResultSessionKey + WebUtil.getUserId(request), jarray, 91);
 		}
 		return smsSendResult;

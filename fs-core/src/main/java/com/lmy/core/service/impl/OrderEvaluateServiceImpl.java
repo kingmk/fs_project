@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lmy.common.component.CommonUtils;
 import com.lmy.common.component.JsonUtils;
+import com.lmy.common.utils.ResourceUtils;
 import com.lmy.core.dao.FsMasterInfoDao;
 import com.lmy.core.dao.FsOrderDao;
 import com.lmy.core.dao.FsOrderEvaluateDao;
@@ -73,13 +76,14 @@ public class OrderEvaluateServiceImpl {
 			JSONObject result = JsonUtils.commonJsonReturn();
 			if( evaluateUsr !=null){
 				JSONObject cacheWeiXinUsrInfo = UsrAidUtil.getCacheWeiXinInfo(evaluateUsr);
+				JsonUtils.setBody(result, "buyUsrId", evaluateUsr.getId());
 				JsonUtils.setBody(result, "buyUsrName", UsrAidUtil.getNickName2(evaluateUsr, cacheWeiXinUsrInfo, "") );
 				JsonUtils.setBody(result, "buyUsrHeadImgUrl",UsrAidUtil.getUsrHeadImgUrl2(evaluateUsr, cacheWeiXinUsrInfo, ""));					
 			}else{
 				if("Y".equals( evaluateBean.getIsAutoEvaluate() )){
 					//
 					JsonUtils.setBody(result, "buyUsrName", "系统评价");
-					JsonUtils.setBody(result, "buyUsrHeadImgUrl", "");					
+					JsonUtils.setBody(result, "buyUsrHeadImgUrl", "");
 				}
 			}
 			JsonUtils.setBody(result, "goodsName", order.getGoodsName());  	
@@ -91,7 +95,8 @@ public class OrderEvaluateServiceImpl {
 			JsonUtils.setBody(result, "respSpeed", evaluateBean.getRespSpeed() * 2 );  	
 			JsonUtils.setBody(result, "serviceAttitude", evaluateBean.getServiceAttitude() * 2 );  	
 			JsonUtils.setBody(result, "evaluateTime",  CommonUtils.dateToString(evaluateBean.getCreateTime(), CommonUtils.dateFormat4, "")  );  	
-			JsonUtils.setBody(result, "isAutoEvaluate",  evaluateBean.getIsAutoEvaluate()  );  	
+			JsonUtils.setBody(result, "isAutoEvaluate",  evaluateBean.getIsAutoEvaluate() );
+			JsonUtils.setBody(result, "masterReplyWord",  evaluateBean.getMasterReplyWord() );
 			JsonUtils.setBody(result, "orderId",  orderId  );  	
 			JsonUtils.setBody(result, "chatSessionNo",  order.getChatSessionNo()  );  	
 			return result;
@@ -146,14 +151,16 @@ public class OrderEvaluateServiceImpl {
 	 * @param serviceAttitude 服务态度 星数
 	 * **/
 	
-	public void commentOrder2(final Long buyUsrId, final Long sellerUsrId,final long orderId, final Long goodsId,  final long respSpeed, final long majorLevel,final long serviceAttitude, final String commentWord,final String isAutoEvaluate) {
+	public void evaluateOrder(final Long buyUsrId, final Long sellerUsrId,final long orderId, final Long goodsId,  final long respSpeed, final long majorLevel,final long serviceAttitude, final String commentWord,final String isAutoEvaluate, final int isAnonymous) {
 		fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction(TransactionStatus status) {
 				Date now = new Date();
 				FsOrderEvaluate beanForInsert = new FsOrderEvaluate();
-				beanForInsert.setBuyUsrId(buyUsrId).setEvaluateWord(commentWord).setMajorLevel(majorLevel).setOrderId(orderId).setGoodsId(goodsId).setRespSpeed(respSpeed).setStatus("effect")
-				.setSellerUsrId(sellerUsrId)	.setIsAutoEvaluate(isAutoEvaluate).setServiceAttitude(serviceAttitude).setCreateTime(now);
+				beanForInsert.setBuyUsrId(buyUsrId).setEvaluateWord(commentWord)
+					.setOrderId(orderId).setGoodsId(goodsId).setStatus("effect").setIsAnonymous(isAnonymous)
+					.setMajorLevel(majorLevel).setRespSpeed(respSpeed).setServiceAttitude(serviceAttitude)
+					.setSellerUsrId(sellerUsrId).setIsAutoEvaluate(isAutoEvaluate).setCreateTime(now);
 				fsOrderEvaluateDao.insert(beanForInsert);
 				FsOrder orderForUpdate = new FsOrder();
 				orderForUpdate.setId(orderId);
@@ -165,7 +172,6 @@ public class OrderEvaluateServiceImpl {
 		//异步推送微信信息
 		doAsynPushWxEvaluateMsg(orderId, respSpeed, majorLevel, serviceAttitude);
 	}
-	
 	
 	private void doAsynPushWxEvaluateMsg(final long orderId,final long respSpeed, final long majorLevel,final long serviceAttitude){
 		Runnable r = new Runnable() {
@@ -192,24 +198,62 @@ public class OrderEvaluateServiceImpl {
 	}
 	
 	
-	public JSONObject buyUsrCommentOrder(long buyUsrId , long orderId , long respSpeed , long majorLevel , long serviceAttitude , String commentWord){
+	public JSONObject buyUsrCommentOrder(long buyUsrId , long orderId , long respSpeed , long majorLevel , long serviceAttitude , String commentWord, int isAnonymous){
 		try{
 			FsOrder order = this.fsOrderDao.findById(orderId);
 			if(order == null || !order.getBuyUsrId().equals(buyUsrId)){
 				logger.warn("loginUsrId:"+buyUsrId+",orderId:"+orderId+",数据错误");
 				return JsonUtils.commonJsonReturn("0001", "数据错误");
 			}
-			List list= this.fsOrderEvaluateDao.findByContion1(order.getId(), order.getSellerUsrId(), order.getBuyUsrId()) ;
+			List<FsOrderEvaluate> list= this.fsOrderEvaluateDao.findByContion1(order.getId(), order.getSellerUsrId(), order.getBuyUsrId()) ;
 			if(CollectionUtils.isNotEmpty(list)){
 				logger.warn("loginUsrId:"+buyUsrId+",orderId:"+orderId+",重复点评,点评记录数:"+CommonUtils.getListSize(list));
 				return JsonUtils.commonJsonReturn("0002", "已点评");
 			}
-			commentOrder2(buyUsrId, order.getSellerUsrId(), orderId,  order.getGoodsId(),respSpeed, majorLevel, serviceAttitude, commentWord,"N");
+			evaluateOrder(buyUsrId, order.getSellerUsrId(), orderId,  order.getGoodsId(),respSpeed, majorLevel, serviceAttitude, commentWord,"N", isAnonymous);
 			return JsonUtils.commonJsonReturn();
 		}catch(Exception e){
 			logger.warn("loginUsrId:"+buyUsrId+",orderId:"+orderId,e);
 			return JsonUtils.commonJsonReturn("9999","系统错误");
 		}
+	}
+
+	
+	public JSONObject masterReplyEvaluate(final long masterId, final long orderId, final String replyWord) {
+		FsOrder order = this.fsOrderDao.findById(orderId);
+		if(order == null || !order.getSellerUsrId().equals(masterId)){
+			logger.warn("loginUsrId:"+masterId+",orderId:"+orderId+",数据错误");
+			return JsonUtils.commonJsonReturn("0001", "当前用户无权回复该评价");
+		}
+		List<FsOrderEvaluate> list= this.fsOrderEvaluateDao.findByContion1(order.getId(), order.getSellerUsrId(), order.getBuyUsrId()) ;
+		if(CollectionUtils.isEmpty(list)){
+			logger.warn("loginUsrId:"+masterId+",orderId:"+orderId+", 用户还未评价");
+			return JsonUtils.commonJsonReturn("0002", "用户还未评价");
+		}
+		
+		FsOrderEvaluate evaluate = list.get(0);
+		if (evaluate.getMasterReplyWord() != null) {
+			logger.warn("loginUsrId:"+masterId+",orderId:"+orderId+", 已回复过本评价");
+			return JsonUtils.commonJsonReturn("0002", "您已回复过，只能回复一次");
+		}
+		final long evaluateId = evaluate.getId();
+		
+		boolean rltDb = fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
+			@Override
+			public Boolean doInTransaction(TransactionStatus status) {
+				Date now = new Date();
+				FsOrderEvaluate beanForUpdate = new FsOrderEvaluate();
+				beanForUpdate.setId(evaluateId);
+				beanForUpdate.setMasterReplyWord(replyWord).setMasterReplyTime(now);
+				fsOrderEvaluateDao.update(beanForUpdate);
+				return true;
+			}
+		});
+		if (!rltDb) {
+			logger.warn("loginUsrId:"+masterId+",orderId:"+orderId+", 数据库保存异常");
+			return JsonUtils.commonJsonReturn("0002", "系统异常");
+		}
+		return JsonUtils.commonJsonReturn();
 	}
 	
 	public JSONObject masterEvaluateSummary(long masterUsrId){
@@ -245,7 +289,7 @@ public class OrderEvaluateServiceImpl {
 		return buyUsrIds;
 	}
 	
-	public JSONObject  masterEvaluateList(long masterUsrId , int currentPage,int perPageNum){
+	public JSONObject masterEvaluateList(long masterUsrId , int currentPage,int perPageNum){
 		try{
 			List<Map>  list = this.fsOrderEvaluateDao.findMasterEvaluateList(masterUsrId, currentPage, perPageNum);
 			if(CollectionUtils.isEmpty(list)){
@@ -261,11 +305,21 @@ public class OrderEvaluateServiceImpl {
 				_usr = idUsrMap.get( _usrId ) ;
 				JSONObject cacheWeiXinUsrInfo = UsrAidUtil.getCacheWeiXinInfo(_usr);
 				JSONObject dataOne = new JSONObject(true);
-				dataOne.put("buyUsrName"	, UsrAidUtil.getNickName2(_usr, cacheWeiXinUsrInfo, "") );
-				dataOne.put("buyUsrHeadImgUrl"	, UsrAidUtil.getUsrHeadImgUrl2(_usr, cacheWeiXinUsrInfo, ""));		
-				dataOne.put("goodsName"	,(String)map.get("goods_name"));
-				dataOne.put("evaluateTime"	, CommonUtils.dateToString((Date) map.get("create_time"), CommonUtils.dateFormat4, "")  );  //评价时间
-				dataOne.put("evaluateWord"	,  (String)map.get("evaluate_word") );
+				String buyUsrHeadImgUrl = ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.service.basehost") + "/static/images/def_headimg.png";
+				Integer isAnonymous = (Integer)map.get("is_anonymous");
+				String userName = "匿名评价";
+				if (isAnonymous == 0) {
+					buyUsrHeadImgUrl = UsrAidUtil.getUsrHeadImgUrl2(_usr, cacheWeiXinUsrInfo, "");
+					userName = UsrAidUtil.getNickName2(_usr, cacheWeiXinUsrInfo, "");
+				}
+				dataOne.put("buyUsrName", userName);
+				dataOne.put("buyUsrHeadImgUrl", buyUsrHeadImgUrl);		
+				dataOne.put("goodsName", (String)map.get("goods_name"));
+				dataOne.put("evaluateTime", CommonUtils.dateToString((Date) map.get("create_time"), CommonUtils.dateFormat4, "")  );  //评价时间
+				dataOne.put("evaluateWord", (String)map.get("evaluate_word") );
+				dataOne.put("isAnonymous", isAnonymous);
+				dataOne.put("masterReplyWord", (String)map.get("master_reply_word"));
+				dataOne.put("masterReplyTime", CommonUtils.dateToString((Date) map.get("master_reply_time"), CommonUtils.dateFormat4, ""));
 				dataList.add(dataOne);
 			}
 			JSONObject result = JsonUtils.commonJsonReturn();

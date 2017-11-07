@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_reserve">
+<resultMap id="fs_reserve" type="com.lmy.core.model.FsReserve">
+	<result column="id" property="id"/>
+	<result column="reserve_usr_id" property="reserveUsrId"/>
+	<result column="master_usr_id" property="masterUsrId"/>
+	<result column="mobile" property="mobile"/>
+	<result column="status" property="status"/>
+	<result column="create_time" property="createTime"/>
+	<result column="notice_time" property="noticeTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_reserve">
+	select * from fs_reserve where id=#{id}  
+</select>
+<insert id="insert"  parameterType="com.lmy.core.model.FsReserve"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_reserve(id, reserve_usr_id, master_usr_id, mobile, status, create_time)
+	values(#{id,jdbcType=INTEGER}, #{reserveUsrId,jdbcType=INTEGER}, #{masterUsrId,jdbcType=INTEGER}, #{mobile,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}) 
+</insert>
+<update id="update" parameterType="com.lmy.core.model.FsReserve">
+	update fs_reserve
+<set>
+	<if test="reserveUsrId != null">reserve_usr_id=#{reserveUsrId},</if>
+	<if test="masterUsrId != null">master_usr_id=#{masterUsrId},</if>
+	<if test="mobile != null">status=#{mobile},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="noticeTime != null">notice_time=#{noticeTime}</if>
+</set>
+	where id=#{id}
+</update>
+
+<select id="findReserve" parameterType="hashmap"  resultMap="fs_reserve">
+	select * from fs_reserve where reserve_usr_id=#{reserveUsrId} and master_usr_id=#{masterUsrId} and status='VALID'
+</select>
+
+<select id="findByMasterUsrId" parameterType="long"  resultMap="fs_reserve">
+	select * from fs_reserve where master_usr_id=#{masterUsrId} and status='VALID'
+</select>
+
+<select id="findByReserveUsrId" parameterType="long"  resultMap="fs_reserve">
+	select * from fs_reserve where reserve_usr_id=#{reserveUsrId} and status='VALID'
+</select>
+
+<update id="noticeReserveUsrByMaster" parameterType="hashmap">
+    update fs_reserve
+<set>
+    status = 'EXPIRED',
+    notice_time=#{noticeTime}
+</set>
+	where master_usr_id=#{masterUsrId}
+</update>
+	
+</mapper>

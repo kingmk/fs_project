@@ -81,6 +81,12 @@ public class OrderChatServiceImpl {
 			}
 			content = files1.getHttpUrl();
 			beanForInsert.setSize( files1.getFileSize() ).setSuffixName( files1.getSuffixName()  ).setWidth( files1.getWidth()  ).setHeight(  files1.getHeight() ) .setFileStoreId( files1.getId() ) ;
+		} else {
+			String forbidWord = OrderAidUtil.containForbiddenWord(content);
+			if (forbidWord != null) {
+				logger.warn("=====including forbidden words: "+forbidWord+"=====");
+				return JsonUtils.commonJsonReturn("0100", "您的内容中含有一些不文明用语，请文明你我他哦");
+			}
 		}
 		Long serviceProviderUsrId = getServiceProviderUsrId(chatSessionList);
 		//当前发送消息人是否为服务提供者(master 风水师)

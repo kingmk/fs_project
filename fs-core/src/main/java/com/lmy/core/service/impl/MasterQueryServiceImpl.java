@@ -1,5 +1,4 @@
 package com.lmy.core.service.impl;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -10,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,11 +24,15 @@ import com.lmy.core.dao.FsMasterServiceCateDao;
 import com.lmy.core.dao.FsOrderDao;
 import com.lmy.core.dao.FsOrderEvaluateDao;
 import com.lmy.core.dao.FsOrderSettlementDao;
+import com.lmy.core.dao.FsReserveDao;
+import com.lmy.core.dao.FsUsrDao;
 import com.lmy.core.dao.FsZxCateDao;
 import com.lmy.core.model.FsMasterCard;
 import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsMasterServiceCate;
 import com.lmy.core.model.FsOrderSettlement;
+import com.lmy.core.model.FsReserve;
+import com.lmy.core.model.FsUsr;
 import com.lmy.core.model.FsZxCate;
 import com.lmy.core.model.dto.MasterServiceCateDto;
 /**
@@ -40,6 +42,8 @@ import com.lmy.core.model.dto.MasterServiceCateDto;
 @Service
 public class MasterQueryServiceImpl {
 	private static final Logger logger = Logger.getLogger(MasterQueryServiceImpl.class);
+	@Autowired
+	private FsUsrDao fsUsrDao;
 	@Autowired
 	private FsMasterInfoDao fsMasterInfoDao;
 	@Autowired
@@ -56,6 +60,8 @@ public class MasterQueryServiceImpl {
 	private FsOrderSettlementDao fsOrderSettlementDao;
 	@Autowired
 	private FsMasterCardDao fsMasterCardDao;
+	@Autowired
+	private FsReserveDao fsReserveDao;
 	
 	public List<FsMasterInfo> findBtCondition1(Long id , Long usrId,  String wxOpenId , List<String> auditStatusList , List<String> serviceStatusList){
 		return fsMasterInfoDao.findBtCondition1(id,usrId, wxOpenId, auditStatusList, serviceStatusList);
@@ -277,6 +283,9 @@ public class MasterQueryServiceImpl {
 			return JsonUtils.commonJsonReturn("0002", "数据错误");
 		}
 		
+		FsReserve reserve = fsReserveDao.findReserve(loginUsrId, masterInfo.getUsrId());
+		FsUsr user = fsUsrDao.findById(loginUsrId);
+		
 		//build result 
 		JSONObject body = new JSONObject(true);
 		body.put("masterUsrId", masterInfo.getUsrId()) ;
@@ -304,7 +313,9 @@ public class MasterQueryServiceImpl {
 		body.put("fansTotalNum", fsMasterFansDao.statEffectFansNum(masterInfo.getUsrId())) ; 											//粉丝数 
 		body.put("evaluateTotal",  this.fsOrderEvaluateDao.statEvaluateNum(null, masterInfo.getUsrId(), null) ); //评价总数
 		body.put("isFollowed",  fsMasterFansDao.isCurrFollowed(loginUsrId, masterInfo.getUsrId()) == true ? 'Y' :'N'  ) ; 	//是否已关注 Y|N
-		body.put("masterInfoId", masterInfoId) ; 		
+		body.put("masterInfoId", masterInfoId) ;
+		body.put("hasReserved", (reserve == null? "N":"Y"));
+		body.put("isRegistered", (user.getRegisterMobile() == null? "N":"Y"));
 		List<MasterServiceCateDto> serviceCateDtoList = build(serviceCateList);
 		if(cateId!=null){
 			body.put("curServiceCateInfo",  getCurrMasterServiceCate(serviceCateDtoList, cateId) ) ;  			//当前服务类别 		

@@ -86,10 +86,15 @@ function submit(){
 		return;
 	};
 	domSubmit.addClass("disabled");
+	var domSource = $(".source-item.selected");
+	var source = null;
+	if (domSource.length > 0) {
+		source = domSource.text();
+	};
 	var data = {
 		mobile: $("#mobile").val(), 
 		code : $("#codeInput").val(),
-		source: $(".source-item.selected").text()
+		source: source
 	};
 	if (!(/^1[0-9]{10}$/.test(data.mobile)) || !(/^[0-9]{6}$/.test(data.code))) {
 		mAlert.addAlert("请输入正确的手机号和验证码");
@@ -106,7 +111,7 @@ function submit(){
 			if(data.head.code == "0000"){
 				mAlert.addAlert('注册成功');
 				if("${backUrl}" !="" ){
-					window.location.href = "${host.base}${backUrl}";
+					window.location.href = "${backUrl}";
 				} else {
 					domSubmit.removeClass("disabled");
 				}
@@ -147,7 +152,7 @@ function submit(){
 		<div class="source-title">您是怎么知道雷门易的？</div>
 		<div class="source-list clearfix">
 			<div class="source-item-outter">
-				<div class="source-item selected">微信公众号</div>
+				<div class="source-item">微信公众号</div>
 			</div>
 			<div class="source-item-outter">
 				<div class="source-item">微信推文</div>

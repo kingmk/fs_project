@@ -7,7 +7,7 @@
 <script src="${host.js}/js/iscroll-probe.js?${host.version}"></script>
 <script src="${host.js}/js/common.js?${host.version}"></script>
 <link rel="stylesheet" href="${host.css}/css/bgmask.css?${host.version}">
-<link rel="stylesheet" href="${host.css}/css/liaotian.css?${host.version}">
+<link rel="stylesheet" href="${host.css}/css/liaotian.css?${host.version}6">
 <script type="text/javascript" src="${host.js}/js/Math.uuid.js?${host.version}"></script>
 <style>
 #bgk-img{z-index:999;}
@@ -145,6 +145,13 @@ $(function(){
 	$("#userForm").hide();$("body").removeClass('hidden');});
 	$(".user-data-wrapper").on('click', function(e){
 		e.stopPropagation;});
+
+
+	<#if (body.contactCnt>1)>
+	$(".master-contact").click(function() {
+		location.href= "${host.base}/usr/master/order_list_nav?contactUsrId=${body.buyUsrId}&excludeOrderId=${body.orderId}";
+	})
+	</#if>
 });
 
 function extendService(orderId, chatSessionNo) {
@@ -270,9 +277,12 @@ function handAfterChatSubmit( data , clientUniqueNo){
 		dom.find(".right").removeClass("submitStautJudge");
 
 	}else{
-		var dom = $("#chatListDiv").find("div[clientUniqueNo='+clientUniqueNo+']")	;
+		var dom = $("#chatListDiv").find("div[clientUniqueNo='"+clientUniqueNo+"']")	;
 		console.log(dom);
 		<#--TODO 发送失败-->
+		dom.find(".speak-text p").addClass("disabled");
+		dom.attr("id", (new Date()).getTime());
+		mAlert.addAlert(data.head.msg, 3500);
 	}
 }
 
@@ -480,7 +490,13 @@ function viewEvaluateSingle(orderId){
 
 </head>
 <body>
-
+<#if (body.contactCnt>1)>
+<div class="master-contact">
+	<span class="icon-arrow"></span>
+	<span class="icon-contact"></span>
+	<span class="contact-info">该客户还向您咨询过${body.contactCnt-1}次</span>
+</div>
+</#if>
 <div class="speak-header">
 	<div class="speak-header-img">
 		<img class="img" src="${body.buyUsrHeadImgUrl}">
@@ -503,7 +519,7 @@ function viewEvaluateSingle(orderId){
 	<div class="speak-header-btn btn-service" id='btnExtend'>延长服务</div>
 	</#if>
 </div>
-<div class="speak-window">
+<div class="speak-window <#if (body.contactCnt>1)>pos2</#if>">
 <div class="speak-box" id ="chatListDiv">
 	<div id="pulldown" class="pullinfo">下拉刷新</div>
 	<div id='list'></div>

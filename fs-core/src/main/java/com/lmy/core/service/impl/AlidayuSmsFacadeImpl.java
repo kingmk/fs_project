@@ -23,7 +23,7 @@ public class AlidayuSmsFacadeImpl {
 		AlibabaAliqinFcSmsNumSendRequest request = new AlibabaAliqinFcSmsNumSendRequest();
 		request.setExtend(extend);
 		request.setSmsType("normal");
-		request.setSmsFreeSignName("雷门易");
+		request.setSmsFreeSignName("变更验证");
 		request.setSmsParamString(smsParamJson!=null ? smsParamJson.toJSONString():"");
 		request.setRecNum(sendMobile);
 		request.setSmsTemplateCode(smsTemplateCode);
@@ -50,6 +50,6 @@ public class AlidayuSmsFacadeImpl {
 		JSONObject smsParamJson = new JSONObject();
 //		smsParamJson.put("time","11:25");
 		smsParamJson.put("category","测试分类");
-		AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, "18667193683", "SMS_101030073" , null);
+		AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, "13681698942", "SMS_101030073" , null);
 	}
 }

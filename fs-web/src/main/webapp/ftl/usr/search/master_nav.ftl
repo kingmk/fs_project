@@ -11,7 +11,7 @@
 <script src="${host.js}/js/dropload.min.js"></script>
 <script src="${host.js}/js/common.js?${host.version}"></script>
 <link rel="stylesheet" type="text/css" href="${host.css}/css/dropload.css">
-<link rel="stylesheet" href="${host.css}/css/find_teacher.css?${host.version}">
+<link rel="stylesheet" href="${host.css}/css/find_teacher.css?${host.version}5">
 <link rel="stylesheet" href="${host.css}/css/star.css?${host.version}">
 <script src="${host.js}/js/components.js?${host.version}"></script>
 <style>
@@ -26,11 +26,12 @@ var isPlatRecomm = '${isPlatRecomm}';
 var orderBy = '${orderBy}';
 var currentPage = '${currentPage}';
 var perPageNum = '${perPageNum}';
+var isRegistered = "${isRegistered}";
 var choseId = '';
 var droploadParams = {};
 $(function(){
     $.initUserFooter({activedIndex:1});
-    chartUnreadNum('${host.base}');
+    chatUnreadNum('${host.base}');
     $("#selectItemTmpl").tmpl(cateData).appendTo(".select-mask-body");
     //判断有没有分类搜索 初始化
     $(".sub-class .select-item-li").map(function(index,item){
@@ -67,13 +68,13 @@ $(function(){
     })
     $("#selectConfirm").on("click", zxCateIdChoose);
     $("#selectClear").on("click",selectClear);
-    // $("#platRecomm").on("click", platRecomm);
     $("#orderNum").on('click',orderNum);
     $("#price").on('click',price);
     $("#evaluateScore").on("click",evaluateScore);
     dropload();
+
 });
- function dropload(){
+function dropload(){
     $('.content').dropload({
         scrollArea: window,
         domDown: {
@@ -113,15 +114,21 @@ $(function(){
         },
         threshold: 50
     })
- }
+}
 
 function checkData(data){
     if(data.body.data &&　data.body.data.length > 0){
+        var reserveMap = data.body.reserveMap;
         data.body.data.map(function(item,index){
             if(!zxCateId){
                 item['isCate'] = true;
             }else{
                 item['isCate'] = false;
+            }
+            if (reserveMap[item.masterUsrId] == "Y") {
+                item.reserved = true;
+            } else {
+                item.reserved = false;
             }
         })
     }
@@ -144,35 +151,12 @@ function loadData(isPlatRecomm, zxCateId, orderBy, currentPage, perPageNum , cal
         } ,
         dataType: "json",
         success: function(data){
-        data = checkData(data);
-        callback(data);
+            data = checkData(data);
+            callback(data);
         },
         error: function(res){
         }
     });
-}
-
-function platRecomm(){
-    if($(this).hasClass('on')){
-        $(this).removeClass('on');
-        isPlatRecomm = 'N';
-    }else{
-         $(this).addClass('on');
-         isPlatRecomm = 'Y';
-    }
-    currentPage = 0;
-    loadData(isPlatRecomm, zxCateId, orderBy,currentPage, perPageNum, function(data){
-        currentPage ++;
-        if(data.head.code == '1000'){
-            $(".dropload-down").hide();
-            $(".content-list").html('');
-            $(".content-list").emptyBox({iconImg:'${host.img}/images/no_search.png',title:'没有找到结果'})
-         }else{
-             var dataList = data.body.data;
-             $(".content-list").html('')
-             $("#listTmpl").tmpl(dataList).appendTo(".content-list");
-         }
-    })
 }
 
 function orderNum(){
@@ -200,7 +184,7 @@ function orderNum(){
             $(".content-list").emptyBox({iconImg:'${host.img}/images/no_search.png',title:'没有找到结果'})
          }else{
              var dataList = data.body.data;
-             $(".content-list").html('')
+
              $("#listTmpl").tmpl(dataList).appendTo(".content-list");
          }
     })
@@ -321,6 +305,57 @@ function selectClear(){
     // $("body").off("touchmove")
 }
 
+function clickReserve(masterInfoId, masterNickName) {
+    event.stopPropagation();
+    if (isRegistered == "N") {
+        $.bgmask({
+            title: "请先注册",
+            text: "只有注册后才可以预约老师",
+            type: "normal",
+            buttonTxt: "去注册",
+            buttonFn: function() {
+                location.href = "${host.base}/usr/register/mobile_nav?backUrl="+encodeURIComponent(location.href);
+            }
+        })
+        return;
+    };
+
+    $.bgmask({
+        title: "确认预约"+masterNickName+"老师？",
+        text: "预约成功后，系统会通过短信方式通知您何时可以去咨询老师",
+        type: "normal",
+        buttonTxt: "确认预约",
+        buttonFn: function() {
+            reserveMaster(masterInfoId);
+        }
+    })
+}
+
+function reserveMaster(masterInfoId) {
+    $.ajax({
+        url: "${host.base}/usr/search/reserve_master",
+        method : 'POST',
+        data: {
+            masterInfoId : masterInfoId,
+        } ,
+        dataType: "json",
+        success: function(data){
+            console.log(data);
+            if (data.head.code != "0000") {
+                mAlert.addAlert(data.head.msg);
+            } else {
+                mAlert.addAlert("预约成功，老师恢复服务时会通过短信告知您", 3000);
+                var domReserveBtn = $('#reserve-'+masterInfoId);
+                domReserveBtn.addClass("disabled");
+                domReserveBtn.html("已预约");
+            }
+        },
+        error: function(res){
+        }
+    })
+
+}
+
 function goToMasterDetail( masterInfoId ){
  	location.href = "${host.base}/usr/search/master_detail?masterInfoId="+masterInfoId+"&zxCateId="+zxCateId;
 }
@@ -375,7 +410,7 @@ function goToMasterDetail( masterInfoId ){
             </div>
         </div>
         <div class="right">
-            <div class="price">{{if serviceStatus=="ING"}}<span class='small'>¥</span> ${amtDesc} {{if isCate}}<span class='small'>起</span>{{/if}}{{else}}<span>繁忙中</span>{{/if}}</div>
+            <div class="price">{{if serviceStatus=="ING"}}<span class='small'>¥</span> ${amtDesc} {{if isCate}}<span class='small'>起</span>{{/if}}{{else}}<span class="busy">繁忙中</span>{{/if}}</div>
             <ul class="incoming-box">
                 {{if isCertificated=='Y'}}
                     <li class="red">实名认证</li>
@@ -391,7 +426,16 @@ function goToMasterDetail( masterInfoId ){
                ${experience}
             </div>
         </div>
-        {{if serviceStatus!="ING"}}<div class="mask"></div>{{/if}}
+    {{if serviceStatus!="ING"}}
+        <div class="mask">
+        {{if reserved == false}}
+            <span class="btn-reserve" onclick="clickReserve(${masterInfoId}, '${masterNickName}')" id="reserve-${masterInfoId}">预约服务</span>
+        {{else}}
+            <span class="btn-reserve disabled">已预约</span>
+        {{/if}}
+        </div>
+    {{/if}}
+
     </div>
     </script>
     </#noparse>

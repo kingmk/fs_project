@@ -71,7 +71,7 @@ var page = 0;
 var size = 10;
 $(function(){
 	$.initUserFooter({activedIndex:2});
-    chartUnreadNum('${host.base}');
+    chatUnreadNum('${host.base}');
 	$('.content').dropload({
 	    scrollArea: window,
 	    domDown: {

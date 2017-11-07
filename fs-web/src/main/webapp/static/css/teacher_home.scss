@@ -1,6 +1,7 @@
 @charset "UTF-8";
 @import "style";
 @import "button";
+@import "bgmask";
 .header {
   width         : 100%;
   background    : #fff;
@@ -246,11 +247,6 @@
 			color         : $text-color;
 			padding-right : px2rem(20);
 		  }
-		  .item-center-price {
-			font-size : px2rem(28);
-			color     : #d88c3a;
-
-		  }
 
 		}
 		.item-center-bottom {
@@ -259,6 +255,11 @@
 		  line-height: 1;
 		  span {
 			padding : 0 px2rem(10);
+		  }
+		  .item-center-price {
+			font-size : px2rem(28);
+			color     : #d88c3a;
+
 		  }
 		}
 	  }
@@ -280,6 +281,7 @@
 	.rating-content {
 	  background: #fff;
 	  position: relative;
+	  border: none;
 	  &:before {
 		content: "";
 		display: block;
@@ -376,17 +378,26 @@
 	  &:after {
 			left : px2rem(30)!important;
 	  }
-	  &:before{
-			content: "";
+/*	  &:before{
+		content: "";
 	    display: block;
 	    position: absolute;
 	    left: px2rem(30);
 	    right: 0;
 	    top: 0;
 	    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-	  }
+	  }*/
 	  &#linkTo:after {
 			left :0!important;
+	  }
+	  &.more:before {
+		content: "";
+	    display: block;
+	    position: absolute;
+	    left: px2rem(30);
+	    right: 0;
+	    top: 0;
+	    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 	  }
 	}
 	.user-comments-content {
@@ -451,13 +462,16 @@
 	&.service {
 		width: 77%;
 		right: 0;
+		&.reserve {
+			background-color: #d68b38;
+		}
 	}
 	&.share {
 		width: 23%;
 		left: 0;
 		background-color: #fff;
 		color: #3f3f3f!important;
-		border-top: 1px solid #3f3f3f;
+		border-top: 1px solid #ddd;
 		img {
 			width: 1.4rem;
 			height: 1.4rem;
