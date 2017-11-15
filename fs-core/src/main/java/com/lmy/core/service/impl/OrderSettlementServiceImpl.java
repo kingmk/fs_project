@@ -123,7 +123,7 @@ public class OrderSettlementServiceImpl {
 			for(Long waitSettleSellerUsrId :   waitSettleSellerUsrIds){
 				settlementOne(waitSettleSellerUsrId, settlementCycleBeginTime, settlementCycleEndTime);
 			}
-			RedisClient.delete(CacheConstant.AUTO_JOB +"_" +redisLockSuffixKey);
+//			RedisClient.delete(CacheConstant.AUTO_JOB +"_" +redisLockSuffixKey);
 		}catch(Exception e){
 			logger.error("autoPaySuccToCompleted 系统错误 now:{}", now);
 			logger.error("autoPaySuccToCompleted 系统错误",e);

@@ -27,6 +27,7 @@ import com.lmy.core.constant.FsConstants;
 import com.lmy.core.dao.FsChatSessionDao;
 import com.lmy.core.dao.FsMasterInfoDao;
 import com.lmy.core.dao.FsMasterServiceCateDao;
+import com.lmy.core.dao.FsMasterStatisticsDao;
 import com.lmy.core.dao.FsOrderDao;
 import com.lmy.core.dao.FsPayRecordDao;
 import com.lmy.core.dao.FsUsrDao;
@@ -55,6 +56,8 @@ public class OrderServiceImpl {
 	private FsMasterInfoDao fsMasterInfoDao;
 	@Autowired
 	private FsOrderDao fsOrderDao;
+	@Autowired
+	private FsMasterStatisticsDao fsMasterStatisticsDao;
 	@Autowired 
 	private FsPayRecordDao fsPayRecordDao;
 	@Autowired 
@@ -351,6 +354,7 @@ public class OrderServiceImpl {
 					Assert.isTrue(effectOrderNum ==1 );
 					int effectPayNum = fsPayRecordDao.updateForPayByResult(payRecord.getId(),bank_type,transaction_id ,paySucc, now);
 					Assert.isTrue(effectPayNum ==1 );
+					fsMasterStatisticsDao.incOrder(order.getSellerUsrId(), order.getZxCateId());
 					return true;
 				}
 			});

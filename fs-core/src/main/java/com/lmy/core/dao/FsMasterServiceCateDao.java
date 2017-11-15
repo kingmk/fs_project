@@ -1,5 +1,6 @@
 package com.lmy.core.dao ;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -102,5 +103,9 @@ public class FsMasterServiceCateDao extends GenericDAOImpl<FsMasterServiceCate> 
 		parameter.put("cateId", cateId);
 		
 		return this.getSqlSession().update(this.getNameSpace()+".offlineMasterCateService", parameter);
+	}
+	
+	public List<Map<String, Object>> findByMasterCate() {
+		return this.getSqlSession().selectList(this.getNameSpace()+".findByMasterCate");
 	}
 }

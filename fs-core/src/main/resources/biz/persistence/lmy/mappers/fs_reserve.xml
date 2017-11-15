@@ -22,7 +22,7 @@
 <set>
 	<if test="reserveUsrId != null">reserve_usr_id=#{reserveUsrId},</if>
 	<if test="masterUsrId != null">master_usr_id=#{masterUsrId},</if>
-	<if test="mobile != null">status=#{mobile},</if>
+	<if test="mobile != null">mobile=#{mobile},</if>
 	<if test="status != null">status=#{status},</if>
 	<if test="noticeTime != null">notice_time=#{noticeTime}</if>
 </set>

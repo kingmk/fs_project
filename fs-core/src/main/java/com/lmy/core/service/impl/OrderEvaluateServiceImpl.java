@@ -20,6 +20,7 @@ import com.lmy.common.component.CommonUtils;
 import com.lmy.common.component.JsonUtils;
 import com.lmy.common.utils.ResourceUtils;
 import com.lmy.core.dao.FsMasterInfoDao;
+import com.lmy.core.dao.FsMasterStatisticsDao;
 import com.lmy.core.dao.FsOrderDao;
 import com.lmy.core.dao.FsOrderEvaluateDao;
 import com.lmy.core.dao.FsUsrDao;
@@ -45,6 +46,8 @@ public class OrderEvaluateServiceImpl {
 	private FsOrderEvaluateDao fsOrderEvaluateDao;
 	@Autowired
 	private FsUsrDao fsUsrDao;
+	@Autowired
+	private FsMasterStatisticsDao fsMasterStatisticsDao;
 	@Autowired
 	private org.springframework.transaction.support.TransactionTemplate fsTransactionTemplate;
 	@Autowired
@@ -152,6 +155,7 @@ public class OrderEvaluateServiceImpl {
 	 * **/
 	
 	public void evaluateOrder(final Long buyUsrId, final Long sellerUsrId,final long orderId, final Long goodsId,  final long respSpeed, final long majorLevel,final long serviceAttitude, final String commentWord,final String isAutoEvaluate, final int isAnonymous) {
+		final FsOrder order = this.fsOrderDao.findById(orderId);
 		fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction(TransactionStatus status) {
@@ -166,6 +170,9 @@ public class OrderEvaluateServiceImpl {
 				orderForUpdate.setId(orderId);
 				orderForUpdate.setEvaluateTime(now).setUpdateTime(now);
 				fsOrderDao.update(orderForUpdate);
+				
+				fsMasterStatisticsDao.incEvaluate(sellerUsrId, order.getZxCateId(), respSpeed, majorLevel, serviceAttitude);
+				
 				return true;
 			}
 		});

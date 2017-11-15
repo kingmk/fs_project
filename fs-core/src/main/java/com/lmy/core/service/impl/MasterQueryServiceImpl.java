@@ -279,7 +279,7 @@ public class MasterQueryServiceImpl {
 		}
 		List<FsMasterServiceCate> serviceCateList = 	this.fsMasterServiceCateDao.findByMasterInfoIdAndCateId(masterInfoId, cateId, Arrays.asList("ON")) ;	
 		if(CollectionUtils.isEmpty(serviceCateList) ){
-			logger.info( "masterInfoId="+masterInfoId+"  , cateId="+cateId+",数据错误"  );
+			logger.info( "masterInfoId="+masterInfoId+", cateId="+cateId+",数据错误"  );
 			return JsonUtils.commonJsonReturn("0002", "数据错误");
 		}
 		
@@ -315,7 +315,7 @@ public class MasterQueryServiceImpl {
 		body.put("isFollowed",  fsMasterFansDao.isCurrFollowed(loginUsrId, masterInfo.getUsrId()) == true ? 'Y' :'N'  ) ; 	//是否已关注 Y|N
 		body.put("masterInfoId", masterInfoId) ;
 		body.put("hasReserved", (reserve == null? "N":"Y"));
-		body.put("isRegistered", (user.getRegisterMobile() == null? "N":"Y"));
+		body.put("isRegistered", ((user != null && user.getRegisterMobile() != null)? "Y":"N"));
 		List<MasterServiceCateDto> serviceCateDtoList = build(serviceCateList);
 		if(cateId!=null){
 			body.put("curServiceCateInfo",  getCurrMasterServiceCate(serviceCateDtoList, cateId) ) ;  			//当前服务类别 		

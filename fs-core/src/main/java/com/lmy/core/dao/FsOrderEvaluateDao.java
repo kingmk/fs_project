@@ -75,5 +75,8 @@ public class FsOrderEvaluateDao extends GenericDAOImpl<FsOrderEvaluate> {
 		return this.getSqlSession().selectList(this.getNameSpace()+".statAllMasterScore1", parameter);
 	}
 	
+	public List<Map<String, Object>> statEvaluateByMasterCate() {
+		return this.getSqlSession().selectList(this.getNameSpace()+".statEvaluateByMasterCate");
+	}
 	
 }

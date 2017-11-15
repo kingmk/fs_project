@@ -41,14 +41,10 @@ $(function(){
             $("#select .select").addClass('on');
         }
     })
-    if(!zxCateId){
-        // isPlatRecomm = 'Y';
-        orderBy = 'orderNumDesc';
-        $("#orderNum").addClass('on');
-         $("#orderNum").find('.arr').addClass('bottom')
-        $("#platRecomm").addClass('on');
+    orderBy = 'orderNumDesc';
+    $("#orderNum").addClass('on');
+    $("#orderNum").find('.arr').addClass('bottom');
 
-    }
     $('.select-item-li').on('click', function(){
         choseId = $(this).data('id');
         $(".select-item-li").removeClass('actived');
@@ -139,8 +135,10 @@ function loadData(isPlatRecomm, zxCateId, orderBy, currentPage, perPageNum , cal
         $(".select-mask").hide();
         // $("body").off("touchmove");
     }
+    var url = "${host.base}/usr/search/master_ajax_query";
+    <#if isNewSearch=='Y'>url = url+"2";</#if>
     $.ajax({
-        url: "${host.base}/usr/search/master_ajax_query",
+        url: url,
         method : 'POST',
         data: {
         	isPlatRecomm:  isPlatRecomm,
@@ -184,7 +182,7 @@ function orderNum(){
             $(".content-list").emptyBox({iconImg:'${host.img}/images/no_search.png',title:'没有找到结果'})
          }else{
              var dataList = data.body.data;
-
+            $(".content-list").html('');
              $("#listTmpl").tmpl(dataList).appendTo(".content-list");
          }
     })
@@ -366,8 +364,7 @@ function goToMasterDetail( masterInfoId ){
 <body id='consultation'>
 <div class="header">
     <div class='header-list'>
-        <#-- <div class="header-item" id='platRecomm'>全部</div> -->
-        <div class="header-item orderby" id='orderNum'>热度<span class='arr'></span></div>
+        <div class="header-item orderby" id='orderNum'>默认<span class='arr'></span></div>
         <div class="header-item orderby" id='price'>价格<span class='arr'></span></div>
         <div class="header-item orderby" id='evaluateScore'>评分<span class='arr'></span></div>
         <div class="header-item" id='select'>筛选<span class='select'></span></div>

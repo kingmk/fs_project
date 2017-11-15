@@ -225,7 +225,7 @@
 	 on a.goods_id = b.id
 	 where a.status IN('pay_succ','completed','refund_applied','refunding','refunded','refund_fail','settlementing','settlemented','settlement_fail')
 	<if test="  zxCateId!=null ">and b.fs_zx_cate_id=#{zxCateId}  </if>
-	 <if test="  isPlatRecomm!=null ">b.is_plat_recomm=#{isPlatRecomm}  </if>
+	 <if test="  isPlatRecomm!=null "> and b.is_plat_recomm=#{isPlatRecomm}  </if>
 	 group by a.seller_usr_id
 </select>
 
@@ -339,6 +339,13 @@
 			and settlement_time &lt;=#{settlementCycleEndTime}
 		</if>
 	</where> 
+</select>
+
+<select id="statOrdersByMasterCate" parameterType="hashmap" resultType="hashmap">
+    select seller_usr_id, zx_cate_id, goods_name, count(*) as count_order from fs_order
+    where status in ("pay_succ", "refund_applied", "refunding", "refunded", "refund_fail", "completed", "settlementing", "settlemented", "settlement_fail")
+    group by seller_usr_id, zx_cate_id
+    order by seller_usr_id, zx_cate_id
 </select>
 
 </mapper>

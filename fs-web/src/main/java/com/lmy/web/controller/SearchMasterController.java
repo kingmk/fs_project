@@ -23,6 +23,7 @@ import com.lmy.common.component.JsonUtils;
 import com.lmy.core.model.FsUsr;
 import com.lmy.core.model.dto.LoginCookieDto;
 import com.lmy.core.service.impl.MasterQueryServiceImpl;
+import com.lmy.core.service.impl.MasterStatisticsServiceImpl;
 import com.lmy.core.service.impl.OrderEvaluateServiceImpl;
 import com.lmy.core.service.impl.SearchMasterServiceImpl;
 import com.lmy.core.service.impl.UsrQueryImpl;
@@ -43,6 +44,9 @@ public class SearchMasterController {
 	private OrderEvaluateServiceImpl orderEvaluateServiceImpl;
 	@Autowired
 	private SearchMasterServiceImpl searchMasterServiceImpl;
+	@Autowired
+	private MasterStatisticsServiceImpl masterStatisticsServiceImpl;
+	
 	@RequestMapping(value="/usr/search/master_nav" )
 	public String search_master_nav(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 			,@RequestParam(value = "isPlatRecomm" , required = false) String isPlatRecomm  	  //Y:N 是否查询平台推荐						
@@ -59,11 +63,34 @@ public class SearchMasterController {
 
 			LoginCookieDto loginDto = WebUtil.getLoginDto(request);
 			FsUsr user = usrQueryImpl.getUserById(loginDto.getUserId());
-			modelMap.put("isRegistered", (user.getRegisterMobile()==null?"N":"Y"));
+			modelMap.put("isRegistered", (user!=null && user.getRegisterMobile()!=null?"Y":"N"));
+			modelMap.put("isNewSearch", "Y");
+			return "/usr/search/master_nav";
+	}
+
+	@RequestMapping(value="/usr/search/master_nav2" )
+	public String search_master_nav2(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+			,@RequestParam(value = "isPlatRecomm" , required = false) String isPlatRecomm  	  //Y:N 是否查询平台推荐						
+			,@RequestParam(value = "zxCateId" , required = false) Long zxCateId			               //筛选出类别id
+			,@RequestParam(value = "orderBy" , required = false) String orderBy  					    //排序方式 orderNumDesc,orderNumAsc; priceDesc,priceAsc, evaluateScoreDesc,evaluateScoreAsc
+			,@RequestParam(value = "currentPage" , required = false) Integer currentPage   				//当前页 从 0 开始 
+			,@RequestParam(value = "perPageNum" , required = false) Integer perPageNum   			//每页显示条数
+			){
+			modelMap.put("isPlatRecomm", isPlatRecomm);
+			modelMap.put("zxCateId", zxCateId);
+			modelMap.put("orderBy", orderBy);
+			modelMap.put("currentPage", currentPage !=null ? currentPage : 0);
+			modelMap.put("perPageNum", perPageNum !=null ? perPageNum : 10);
+
+			LoginCookieDto loginDto = WebUtil.getLoginDto(request);
+			FsUsr user = usrQueryImpl.getUserById(loginDto.getUserId());
+			modelMap.put("isRegistered", (user!=null && user.getRegisterMobile()!=null?"Y":"N"));
+			modelMap.put("isNewSearch", "Y");
 			
 			loginDto.getUserId();
 			return "/usr/search/master_nav";
 	}
+	
 	@RequestMapping(value="/usr/search/master_ajax_query" )
 	@ResponseBody
 	public String search_master_ajax(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
@@ -79,6 +106,23 @@ public class SearchMasterController {
 		JsonUtils.setBody(result, "reserveMap", reserveMap);
 		return JSON.toJSONString(result,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue) ;
 	}
+
+	@RequestMapping(value="/usr/search/master_ajax_query2" )
+	@ResponseBody
+	public String search_master_ajax2(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+			,@RequestParam(value = "isPlatRecomm" , required = false) String isPlatRecomm  	  //Y:N 是否查询平台推荐						
+			,@RequestParam(value = "zxCateId" , required = false) Long zxCateId			               //筛选出类别id
+			,@RequestParam(value = "orderBy" , required = false) String orderBy  					    //排序方式 orderNumDesc,orderNumAsc; priceDesc,priceAsc, evaluateScoreDesc,evaluateScoreAsc
+			,@RequestParam(value = "currentPage" , required = true) int currentPage   				//当前页 从 0 开始
+			,@RequestParam(value = "perPageNum" , required = true) int perPageNum   			//每页显示条数
+			){
+		LoginCookieDto loginDto = WebUtil.getLoginDto(request);
+		JSONObject result = masterStatisticsServiceImpl.searchMasters(zxCateId, orderBy, currentPage, perPageNum);
+		JSONObject reserveMap = searchMasterServiceImpl.findReservedMasterId(loginDto.getUserId());
+		JsonUtils.setBody(result, "reserveMap", reserveMap);
+		return JSON.toJSONString(result,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue) ;
+	}
+	
 	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
 	@RequestMapping(value="/usr/search/master_detail" )
 	public String master_detail(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response,

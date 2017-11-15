@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.taskdefs.Sleep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -20,11 +19,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.lmy.common.component.JsonUtils;
 import com.lmy.core.dao.FsMasterInfoDao;
 import com.lmy.core.dao.FsMasterServiceCateDao;
+import com.lmy.core.dao.FsMasterStatisticsDao;
 import com.lmy.core.dao.FsReserveDao;
 import com.lmy.core.dao.FsUsrDao;
 import com.lmy.core.dao.FsZxCateDao;
 import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsMasterServiceCate;
+import com.lmy.core.model.FsMasterStatistics;
 import com.lmy.core.model.FsReserve;
 import com.lmy.core.model.FsUsr;
 import com.lmy.core.model.FsZxCate;
@@ -41,6 +42,8 @@ public class MasterRecruitServiceImpl {
 	private FsUsrDao fsUsrDao;
 	@Autowired
 	private FsMasterServiceCateDao fsMasterServiceCateDao;
+	@Autowired
+	private FsMasterStatisticsDao fsMasterStatisticsDao;
 	@Autowired
 	private FsZxCateDao  fsZxCateDao;
 	@Autowired
@@ -133,41 +136,95 @@ public class MasterRecruitServiceImpl {
 		Map<Long,FsZxCate> idFsZxCateMap = new HashMap<Long,FsZxCate>();
 		
 		logger.info("====== ##update master service## "+data.toJSONString()+"======");
+		Long masterInfoId = null;
+		Long minPrice = Long.MAX_VALUE;
 		for(int i=0; i< data.size() ; i++){
 			JSONObject dataOne = data.getJSONObject(i);
 			long zxCateId = dataOne.getLong( "fsZxCateId" );
-			long masterInfoId = dataOne.getLong("fsMasterInfoId");
+			if(masterInfoId == null) {
+				masterInfoId = dataOne.getLong("fsMasterInfoId");
+			}
+			
+			Long price = dataOne.getLong( "amt" );
 			if(dataOne.getLong( "id" ) !=null){
 				Long id  = dataOne.getLongValue("id");
 				FsMasterServiceCate beanForUpdate = new FsMasterServiceCate();
 				beanForUpdate.setId(id);
 				beanForUpdate.setUpdateTime(now);
-				beanForUpdate.setStatus( dataOne.getString("status") );
+				String status = dataOne.getString("status");
+				if (status.equals("ON")) {
+					if (price != null && price < minPrice) {
+						minPrice = price;
+					}
+				}
+				beanForUpdate.setStatus( status );
 				Long  _fsZxCateId =    dataOne.getLong( "fsZxCateId" )    ;
 				if(_fsZxCateId !=null){
 					beanForUpdate.setName( this.getZxCateBean(_fsZxCateId, idFsZxCateMap).getName() );
 				}
 				if( StringUtils.isNotEmpty( dataOne.getString("amt") )){
-					beanForUpdate.setAmt( dataOne.getLongValue( "amt" ) ) ;
+					beanForUpdate.setAmt( price ) ;
 				}
 				int effectNum = this.fsMasterServiceCateDao.update(beanForUpdate);
 				Assert.isTrue( effectNum ==1 );
+				this.updateMasterStatistics(usrId, masterInfoId, zxCateId, status, price);
 			}else{
 				this.fsMasterServiceCateDao.offlineMasterCateService(masterInfoId, zxCateId);
 				FsMasterServiceCate beanForInsert = new FsMasterServiceCate();
-				beanForInsert.setAmt( dataOne.getLongValue( "amt" ) );
+				beanForInsert.setAmt( price );
 				beanForInsert.setCreateTime(now);
-				beanForInsert.setFsMasterInfoId(  dataOne.getLong( "fsMasterInfoId" )  ) ;
-				beanForInsert.setFsZxCateId(    dataOne.getLong( "fsZxCateId" )    );
+				beanForInsert.setFsMasterInfoId(dataOne.getLong("fsMasterInfoId")) ;
+				beanForInsert.setFsZxCateId(dataOne.getLong("fsZxCateId"));
 				beanForInsert.setIsPlatRecomm("N");
 				beanForInsert.setName( this.getZxCateBean(beanForInsert.getFsZxCateId(), idFsZxCateMap) .getName()   ) ; 
 				beanForInsert.setStatus("ON");
 				beanForInsert.setUpdateTime(now);
 				beanForInsert.setUsrId(usrId);
+				if (price != null && price < minPrice) {
+					minPrice = price;
+				}
+
 				this.fsMasterServiceCateDao.insert(beanForInsert);
+				this.updateMasterStatistics(usrId, masterInfoId, zxCateId, "ON", price);
 			}
 		}// end for
-	}	
+		
+		if (minPrice == Long.MAX_VALUE) {
+			minPrice = 0L;
+		}
+		this.updateMasterStatistics(usrId, masterInfoId, 1L, null, minPrice);
+	}
+	
+	private void updateMasterStatistics(Long masterUsrId, Long masterInfoId, Long cateId, String status, Long price) {
+		FsMasterStatistics masterStat = this.fsMasterStatisticsDao.findByCateId(masterUsrId, cateId);
+		boolean newStat = false;
+		Date now = new Date();
+		if (masterStat == null) {
+			// insert
+			masterStat = new FsMasterStatistics();
+			masterStat.setMasterUsrId(masterUsrId);
+			masterStat.setCateId(cateId);
+			masterStat.setCreateTime(now);
+			if (cateId != 1L) {
+				FsZxCate cate = this.fsZxCateDao.findById(cateId);
+				masterStat.setCateName(cate.getName());
+			} else {
+				masterStat.setCateName("全部");
+			}
+			newStat = true;
+		} else {
+			masterStat.setUpdateTime(now);
+		}
+		masterStat.setMasterInfoId(masterInfoId);
+		masterStat.setStatus(status);
+		masterStat.setMinPrice(price);
+		if (newStat) {
+			masterStat.defaultValue();
+			this.fsMasterStatisticsDao.insert(masterStat);
+		} else {
+			this.fsMasterStatisticsDao.update(masterStat);
+		}
+	}
 	
 	private FsZxCate getZxCateBean(Long zxCateId,Map<Long,FsZxCate> idFsZxCateMap){
 		if(idFsZxCateMap.containsKey(zxCateId)){
@@ -203,15 +260,18 @@ public class MasterRecruitServiceImpl {
 				@Override
 				public Boolean doInTransaction(TransactionStatus status) {
 					int effectNum = fsMasterInfoDao.updateServiceStatus(fsMasterInfoId, usrId, serviceStatus);
-					
+					String allStatus = "OFF";
 					if(serviceStatus.equals("ING")) {
 						Date now = new Date();
 						List<FsReserve> reserveList = fsReserveDao.findByMasterUsrId(masterUsrId);
 						fsReserveDao.noticeReserveUsrByMaster(masterUsrId, now);
 						asynReserveNote(masterUsrId, masterNickName, reserveList);
+						allStatus = "ON";
 					}
 					
 					Assert.isTrue( effectNum>0 );
+					updateMasterStatistics(masterUsrId, fsMasterInfoId, 1L, allStatus, null);
+					
 					return true;
 				}
 			});

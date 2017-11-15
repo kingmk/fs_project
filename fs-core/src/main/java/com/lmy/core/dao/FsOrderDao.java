@@ -350,4 +350,7 @@ public class FsOrderDao extends GenericDAOImpl<FsOrder> {
 		return this.getSqlSession().selectList(this.getNameSpace()+".findContactOrders", map);
 	}
 	
+	public List<Map<String, Object>> statOrdersByMasterCate() {
+		return this.getSqlSession().selectList(this.getNameSpace()+".statOrdersByMasterCate");
+	}
 }

@@ -116,4 +116,15 @@
 		 group by a.seller_usr_id
 </select>
 
+
+<select id="statEvaluateByMasterCate" parameterType="hashmap" resultType="hashmap">
+    select seller_usr_id, zx_cate_id, goods_name, count(*) as count, 
+    sum(resp_speed) as sum_resp_speed, sum(major_level) as sum_major_level, sum(service_attitude) as sum_service_attitude 
+    from
+    (select a.seller_usr_id, b.zx_cate_id, b.goods_name, resp_speed, major_level, service_attitude
+    from fs_order_evaluate a inner join fs_order b on a.order_id=b.id) c
+    group by seller_usr_id, zx_cate_id
+    order by seller_usr_id, zx_cate_id
+</select>
+
 </mapper>

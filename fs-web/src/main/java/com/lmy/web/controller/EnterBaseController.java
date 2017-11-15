@@ -1,6 +1,7 @@
 package com.lmy.web.controller;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,12 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lmy.common.component.HttpService;
 import com.lmy.core.model.FsUsr;
 import com.lmy.core.service.impl.FsWeiXinUrlServiceImpl;
+import com.lmy.core.service.impl.MasterStatisticsServiceImpl;
+import com.lmy.core.service.impl.OrderSettlementServiceImpl;
 import com.lmy.core.service.impl.UsrServiceImpl;
 import com.lmy.web.common.SessionUtil;
 import com.lmy.web.common.WebUtil;
@@ -25,12 +30,17 @@ import com.lmy.common.utils.CookieUtil;
 import com.lmy.common.utils.ResourceUtils;
 @Controller
 public class EnterBaseController {
+	private static final String defGoTo = "/usr/common/my";
+	private static final String defUsrHeadImg = ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.service.basehost") + "/static/images/def_headimg.png";
+
 	private static final Logger logger = Logger.getLogger(EnterBaseController.class);	
 	private HttpService httpService = new HttpService();
 	@Autowired
 	private UsrServiceImpl usrServiceImpl;
-	private static final String defGoTo = "/usr/common/my";
-	private static final String defUsrHeadImg = ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.service.basehost") + "/static/images/def_headimg.png";
+	@Autowired
+	private OrderSettlementServiceImpl orderSettlementServiceImpl;
+	@Autowired
+	private MasterStatisticsServiceImpl masterStatisticsServiceImpl;
 	/**
 	 * 
 	 * @param request  参数 _goTo 相对路劲 eg:/usr/index	(优先使用); redirect_url 绝对路劲 eg: http://news.qq.com/a/20170404/016550.htm	
@@ -110,6 +120,34 @@ public class EnterBaseController {
 		logger.info("get openid: "+respJson.toJSONString());
 		return respJson.getString("openid");
 	}
-	
+
+	@RequestMapping(value="/enter/manual_settlement")
+	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
+	public String manual_settlement(HttpServletRequest request,HttpServletResponse response) throws Exception{
+		orderSettlementServiceImpl.autoSettlement(null);
+		logger.info("=====manual settlement terminate=====");
+		return null;
+	}
+
+	@RequestMapping(value="/enter/manual_master_stat")
+	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
+	public String manual_master_stat(HttpServletRequest request,HttpServletResponse response) throws Exception{
+		masterStatisticsServiceImpl.calculateStatistics();
+		logger.info("=====manual master stat terminate=====");
+		return null;
+	}
+
+	@RequestMapping(value="/enter/test_search_master")
+	@ResponseBody
+	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
+	public String test_search_master(HttpServletRequest request,HttpServletResponse response
+			,@RequestParam(value = "filterCateId" , required = false) Long filterCateId
+			,@RequestParam(value = "orderBy" , required = false) String orderBy
+			,@RequestParam(value = "page" , required = true) int page
+			,@RequestParam(value = "pageSize" , required = true) int pageSize
+			) throws Exception{
+		JSONObject result = this.masterStatisticsServiceImpl.searchMasters(filterCateId, orderBy, page, pageSize);
+		return result.toJSONString();
+	}
 	
 }

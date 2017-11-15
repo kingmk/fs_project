@@ -137,4 +137,11 @@
 			#{item}
 	  </foreach>   
  </select>
+ 
+ <select id="findByMasterCate" parameterType="hashmap" resultType="hashmap">
+      select usr_id, fs_master_info_id as master_info_id, fs_zx_cate_id as zx_cate_id, name, amt, is_plat_recomm, status
+      from fs_master_service_cate
+      where status = 'ON'
+      order by usr_id, fs_zx_cate_id
+ </select>
 </mapper>

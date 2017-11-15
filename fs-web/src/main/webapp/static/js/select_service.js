@@ -51,7 +51,7 @@ function submit() {
                 amt: $this.find(':input[name="amt"]').val(),
                 fsZxCateId: $this.data("fsxcatecd"),
                 fsMasterInfoId: $this.data("fsmasterinfoid"),
-                status: "Off",
+                status: "OFF",
                 id: $this.data("id")
             });
 

@@ -38,8 +38,11 @@
 	<result column="forbid_reason" property="forbidReason"/>
 </resultMap>
 <select id="findById" parameterType="long"  resultMap="fs_master_info">
-	select * 	from fs_master_info where id=#{id}  
-</select>  
+	select * from fs_master_info where id=#{id}  
+</select>
+<select id="findByUsrId" parameterType="long"  resultMap="fs_master_info">
+	select * from fs_master_info where usr_id=#{id} and audit_status='approved' 
+</select>
 <insert id="insert"  parameterType="com.lmy.core.model.FsMasterInfo"  useGeneratedKeys="true" keyProperty="id">
 	insert into fs_master_info(id ,usr_id ,wx_open_id ,audit_status ,audit_time ,audit_word ,service_status ,name ,nick_name ,english_name ,sex ,cert_type ,cert_no ,cert_img1_url ,cert_img2_url ,head_img_url ,birth_year ,birth_date ,live_address ,contact_mobile ,contact_qq ,contact_weixin ,school ,experience ,achievement ,good_at ,profession ,work_date ,is_full_time ,is_sign_other ,create_time ,update_time, forbid_time)
    values(#{id,jdbcType=INTEGER} ,#{usrId,jdbcType=INTEGER} ,#{wxOpenId,jdbcType=VARCHAR} ,#{auditStatus,jdbcType=VARCHAR} ,#{auditTime,jdbcType=TIMESTAMP} ,#{auditWord,jdbcType=VARCHAR} ,#{serviceStatus,jdbcType=VARCHAR} ,#{name,jdbcType=VARCHAR} ,#{nickName,jdbcType=VARCHAR} ,#{englishName,jdbcType=VARCHAR} ,#{sex,jdbcType=VARCHAR} ,#{certType,jdbcType=VARCHAR} ,#{certNo,jdbcType=VARCHAR} ,#{certImg1Url,jdbcType=VARCHAR} ,#{certImg2Url,jdbcType=VARCHAR} ,#{headImgUrl,jdbcType=VARCHAR} ,#{birthYear,jdbcType=INTEGER} ,#{birthDate,jdbcType=VARCHAR} ,#{liveAddress,jdbcType=VARCHAR} ,#{contactMobile,jdbcType=VARCHAR} ,#{contactQq,jdbcType=VARCHAR} ,#{contactWeixin,jdbcType=VARCHAR} ,#{school,jdbcType=VARCHAR} ,#{experience,jdbcType=VARCHAR} ,#{achievement,jdbcType=VARCHAR} ,#{goodAt,jdbcType=VARCHAR} ,#{profession,jdbcType=VARCHAR} ,#{workDate,jdbcType=TIMESTAMP} ,#{isFullTime,jdbcType=VARCHAR} ,#{isSignOther,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP} ,#{forbidTime,jdbcType=TIMESTAMP}) 

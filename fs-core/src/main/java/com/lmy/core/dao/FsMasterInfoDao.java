@@ -16,6 +16,10 @@ public class FsMasterInfoDao extends GenericDAOImpl<FsMasterInfo> {
 		return "fs_master_info";
 	}
 	
+	public FsMasterInfo findByUsrId(Long usrId) {
+		return this.getSqlSession().selectOne(this.getNameSpace()+".findByUsrId", usrId);
+	}
+	
 	public List<FsMasterInfo> findBtCondition1(Long id ,Long usrId,  String wxOpenId , List<String> auditStatusList , List<String> serviceStatusList){
 		JSONObject map = new JSONObject();
 		map.put("usrId",usrId);

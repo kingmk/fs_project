@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_master_statistics">
+<resultMap id="fs_master_statistics" type="com.lmy.core.model.FsMasterStatistics">
+	<result column="id" property="id"/>
+	<result column="master_info_id" property="masterInfoId"/>
+	<result column="master_usr_id" property="masterUsrId"/>
+	<result column="cate_id" property="cateId"/>
+	<result column="cate_parent_id" property="cateParentId"/>
+	<result column="cate_name" property="cateName"/>
+	<result column="count_order" property="countOrder"/>
+	<result column="count_evaluate" property="countEvaluate"/>
+	<result column="sum_resp_speed" property="sumRespSpeed"/>
+	<result column="sum_major_level" property="sumMajorLevel"/>
+	<result column="sum_service_attitude" property="sumServiceAttitude"/>
+	<result column="min_price" property="minPrice"/>
+	<result column="is_plat_recomm" property="isPlatRecomm"/>
+	<result column="status" property="status"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_master_statistics">
+	select * from fs_master_statistics where id=#{id}  
+</select>
+<insert id="insert"  parameterType="com.lmy.core.model.FsMasterStatistics"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_master_statistics(id, master_info_id, master_usr_id, cate_id, cate_parent_id, cate_name, count_order, count_evaluate, sum_resp_speed, sum_major_level, sum_service_attitude, min_price, is_plat_recomm, status, create_time)
+	values(#{id,jdbcType=INTEGER}, #{masterInfoId,jdbcType=INTEGER}, #{masterUsrId,jdbcType=INTEGER}, #{cateId,jdbcType=INTEGER}, #{cateParentId,jdbcType=INTEGER}, #{cateName,jdbcType=VARCHAR}, #{countOrder,jdbcType=INTEGER}, #{countEvaluate,jdbcType=INTEGER}, #{sumRespSpeed,jdbcType=INTEGER}, #{sumMajorLevel,jdbcType=INTEGER}, #{sumServiceAttitude,jdbcType=INTEGER}, #{minPrice,jdbcType=INTEGER}, #{isPlatRecomm,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}) 
+</insert>
+<update id="update" parameterType="com.lmy.core.model.FsMasterStatistics">
+	update fs_master_statistics
+<set>
+	<if test="masterInfoId != null">master_info_id=#{masterInfoId},</if>
+	<if test="masterUsrId != null">master_usr_id=#{masterUsrId},</if>
+	<if test="cateId != null">cate_id=#{cateId},</if>
+	<if test="cateParentId != null">cate_parent_id=#{cateParentId},</if>
+	<if test="cateName != null">cate_name=#{cateName},</if>
+	<if test="countOrder != null">count_order=#{countOrder},</if>
+	<if test="countEvaluate != null">count_evaluate=#{countEvaluate},</if>
+	<if test="sumRespSpeed != null">sum_resp_speed=#{sumRespSpeed},</if>
+	<if test="sumMajorLevel != null">sum_major_level=#{sumMajorLevel},</if>
+	<if test="sumServiceAttitude != null">sum_service_attitude=#{sumServiceAttitude},</if>
+	<if test="minPrice != null">min_price=#{minPrice},</if>
+	<if test="isPlatRecomm != null">is_plat_recomm=#{isPlatRecomm},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="updateTime != null">update_time=#{updateTime}</if>
+</set>
+	where id=#{id}
+</update>
+
+
+<select id="findByCateId" parameterType="hashmap"  resultMap="fs_master_statistics">
+	select * from fs_master_statistics 
+    <where>
+        <if test="masterInfoId !=null">master_info_id=#{masterInfoId}</if>
+        <if test="masterUsrId !=null">and master_usr_id=#{masterUsrId}</if>
+        <if test="cateId !=null">and cate_id=#{cateId}</if>
+    </where>
+</select>
+
+<select id="findAll" parameterType="hashmap"  resultMap="fs_master_statistics">
+	select * from fs_master_statistics 
+	order by master_usr_id, cate_id
+</select>
+
+<update id="incOrder" parameterType="hashmap">
+	update fs_master_statistics
+	set count_order=count_order+1, update_time=#{updateTime}
+	where master_usr_id=#{masterUsrId} and (cate_id=#{cateId} or cate_id=1)
+</update>
+
+<update id="incEvaluate" parameterType="hashmap">
+	update fs_master_statistics
+	set 
+		count_evaluate=count_evaluate+1, 
+		sum_resp_speed=sum_resp_speed+#{respSpeed},
+		sum_major_level=sum_major_level+#{majorLevel},
+		sum_service_attitude=sum_service_attitude+#{serviceAttitude}, 
+		update_time=#{updateTime}
+	where master_usr_id=#{masterUsrId} and (cate_id=#{cateId} or cate_id=1)
+</update>
+
+<select id="findByUsrIds" parameterType="hashmap"  resultMap="fs_master_statistics">
+	select * from fs_master_statistics 
+    <where>
+		master_usr_id in 
+		<foreach collection="usrIdList"  item="item"  open="(" separator="," close=")" >
+			#{item}
+		</foreach>
+        <if test="cateId !=null">and cate_id=#{cateId}</if>
+    </where>
+</select>
+
+
+<select id="searchMastersByUser" parameterType="hashmap" resultType="hashmap">
+	select 
+		a.id as master_info_id, a.usr_id, a.name, a.nick_name, a.head_img_url,
+		a.cert_no, a.is_sign_other, a.is_full_time, a.work_date, a.service_status,
+		a.achievement, a.good_at, a.experience,
+		b.cate_id, b.cate_name, b.is_plat_recomm, b.count_order, b.count_evaluate,
+		b.sum_resp_speed, b.sum_major_level, b.sum_service_attitude, b.min_price 
+	from fs_master_info a join fs_master_statistics b
+	on a.usr_id=b.master_usr_id
+    <where>
+        a.service_status != 'FORBID' and a.audit_status = 'approved'
+        <if test="cateId != null">and b.cate_id=#{cateId}</if>
+        <if test="cateId == null">and b.cate_id=1</if>
+    </where>
+    order by
+    	a.service_status
+    	<if test="orderType == 'default'.toString()">, b.is_plat_recomm desc, b.count_order</if>
+    	<if test="orderType == 'price'.toString()">, b.min_price</if>
+    	<if test="orderType == 'evaluate'.toString()">, (b.sum_resp_speed+b.sum_major_level+b.sum_service_attitude)/b.count_evaluate</if>
+        <if test="ascType == 'asc'.toString()"> asc</if>
+        <if test="ascType == 'desc'.toString()"> desc</if>
+</select>
+
+
+</mapper>
