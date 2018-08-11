@@ -44,7 +44,7 @@ public class OrderAidUtil {
 				OrderStatus.settlementing.getStrValue(),OrderStatus.settlemented.getStrValue(),OrderStatus.settlement_fail.getStrValue() );
 	}
 	
-	public  static List<String> getMasterWaitIncometatus(){
+	public  static List<String> getMasterWaitIncomeStatus(){
 		return Arrays.asList(OrderStatus.pay_succ.getStrValue() ,OrderStatus.completed.getStrValue(), OrderStatus.refund_fail.getStrValue(),
 				OrderStatus.settlementing.getStrValue(),OrderStatus.settlement_fail.getStrValue() );
 	}
@@ -273,18 +273,33 @@ public class OrderAidUtil {
 		}
 		return all;
 	}
-	public static long getSumAmtFromStatusAmtMap(Map<String, Long> statusTotalFeeMap , String status){
-		return  (statusTotalFeeMap!=null &&  statusTotalFeeMap.get(status) !=null ) ? statusTotalFeeMap.get(status) : 0l;
-	}
-	public static long getSumAmtFromStatusAmtMap(Map<String, Long> statusTotalFeeMap , List<String> statusList){
-		if(CollectionUtils.isEmpty(statusList) || (statusTotalFeeMap==null || statusTotalFeeMap.isEmpty() ) ){
-			return 0l;
+//	public static long getSumAmtFromStatusAmtMap(Map<String, Long> statusTotalFeeMap , String status){
+//		return  (statusTotalFeeMap!=null &&  statusTotalFeeMap.get(status) !=null ) ? statusTotalFeeMap.get(status) : 0l;
+//	}
+	public static HashMap<String, Long> getSumAmtFromStatusAmtMap(JSONObject statAmtMap , List<String> statusList){
+		if(CollectionUtils.isEmpty(statusList) || (statAmtMap==null || statAmtMap.isEmpty() ) ){
+			return null;
 		}
-		Long all = 0l;
-		for(String status :  statusList){
-			all = all + (statusTotalFeeMap.get(status) !=null  ? statusTotalFeeMap.get(status) : 0l );
+		Long sumAmtPay = 0l;
+		Long sumAmtDiscount = 0l;
+		Long sumAmtDiscountPlat = 0l;
+		Long sumAmtDiscountMaster = 0l;
+		for(String status: statusList){
+			if (!statAmtMap.containsKey(status)) {
+				continue;
+			}
+			JSONObject amtMap = statAmtMap.getJSONObject(status);
+			sumAmtPay += amtMap.getLong("sumAmtPay");
+			sumAmtDiscount += amtMap.getLong("sumAmtDiscount");
+			sumAmtDiscountPlat += amtMap.getLong("sumAmtDiscountPlat");
+			sumAmtDiscountMaster += amtMap.getLong("sumAmtDiscountMaster");
 		}
-		return all;
+		HashMap<String, Long> result = new HashMap<>();
+		result.put("sumAmtPay", sumAmtPay);
+		result.put("sumAmtDiscount", sumAmtDiscount);
+		result.put("sumAmtDiscountPlat", sumAmtDiscountPlat);
+		result.put("sumAmtDiscountMaster", sumAmtDiscountMaster);
+		return result;
 	}
 	
 	
@@ -356,12 +371,12 @@ public class OrderAidUtil {
 			//return Double.valueOf( (beforeTaxIncomeRmbAmt - 800*100 )* 0.2d ).longValue();
 			return mul(beforeTaxIncomeRmbAmt - 800*100 , 0.2d).longValue();
 		}
-		else if(beforeTaxIncomeRmbAmt> 4000 * 100 && beforeTaxIncomeRmbAmt <= 20000 * 100){
+		else if(beforeTaxIncomeRmbAmt> 4000 * 100 && beforeTaxIncomeRmbAmt <= 25000 * 100){
 			long _jian = mul(beforeTaxIncomeRmbAmt, 0.2d).longValue();
 			return mul(beforeTaxIncomeRmbAmt -_jian , 0.2d).longValue();
 			//return Double.valueOf( ( beforeTaxIncomeRmbAmt - (0.2d *beforeTaxIncomeRmbAmt ) ) * 0.2d  ).longValue();
 		}
-		else if(beforeTaxIncomeRmbAmt> 20000 * 100&& beforeTaxIncomeRmbAmt <= 50000 * 100){
+		else if(beforeTaxIncomeRmbAmt> 25000 * 100&& beforeTaxIncomeRmbAmt <= 62500 * 100){
 			long _jian = mul(beforeTaxIncomeRmbAmt, 0.2d).longValue();
 			return mul(beforeTaxIncomeRmbAmt -_jian , 0.3d).longValue() - 2000 * 100 ;
 			//Double d = (beforeTaxIncomeRmbAmt - 0.2d * beforeTaxIncomeRmbAmt) *0.3d - 2000 * 100 ;

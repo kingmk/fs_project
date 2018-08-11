@@ -155,7 +155,9 @@ function chatSubmit(msgType, dataURL, imgData) {
   $("#msgType").val(msgType);
   $("#clientUniqueNo").val(clientUniqueNo);
   var form = new FormData($("#chatForm")[0]);
+  alert(JSON.stringify(form));
   handBeforeChatSubmit(clientUniqueNo, dataURL, imgData);
+  alert(1);
   $.ajax({
     type: "POST",
     url: "${host.base}/order/chat_submit",
@@ -165,6 +167,7 @@ function chatSubmit(msgType, dataURL, imgData) {
     processData: false,
     contentType: false,
     success: function(data) {
+  alert(2);
       handAfterChatSubmit(data, clientUniqueNo, imgData);
       isChatSubmit = false;
     },

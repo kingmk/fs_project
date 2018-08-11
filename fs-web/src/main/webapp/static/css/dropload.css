@@ -13,7 +13,7 @@
   height: 5rem;
   line-height: 5rem;
   text-align: center; }
-.dropload-noData{display: none!important; }
+/*.dropload-noData{display: none!important; }*/
 .dropload-load .loading {
   display: inline-block;
   height: 1.5rem;

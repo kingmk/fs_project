@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.lmy.core.model.FsOrder;
 import com.lmy.core.model.enums.OrderStatus;
 @Component
+@SuppressWarnings("rawtypes")
 public class FsOrderDao extends GenericDAOImpl<FsOrder> {
 	@Override
 	public String getNameSpace() {
@@ -176,21 +177,27 @@ public class FsOrderDao extends GenericDAOImpl<FsOrder> {
 	 * @param lastTime if is null 统计的时间
 	 * @return key status; value 所有费用
 	 */
-	public Map<String,Long> statAmtBySellerIdAndLastTimeAndStatusListWithGroupByStatus(long  sellerUsrId , Date lastTime,List<String> statusList){
+	public JSONObject statAmtBySellerIdGroupByStatus(long sellerUsrId, Date lastTime,List<String> statusList){
 		JSONObject map = new JSONObject();
 		map.put("sellerUsrId", sellerUsrId);
 		map.put("lastTime", lastTime);
 		if(CollectionUtils.isNotEmpty(statusList)){
 			map.put("statusList",statusList);
 		}
-		List<Map> list =  this.getSqlSession().selectList(this.getNameSpace()+".statAmtBySellerIdAndLastTimeAndStatusListWithGroupByStatus", map);
-		Map<String,Long> statusTotalFeeMap = new HashMap<String,Long>();
+		List<Map> list =  this.getSqlSession().selectList(this.getNameSpace()+".statAmtBySellerIdAndLastTimeAndStatusListWithGroupByStatus", map);		
+		JSONObject statusAmtMap = new JSONObject();
 		if(CollectionUtils.isNotEmpty(list)){
-			for(Map _map :  list){
-				statusTotalFeeMap.put((String) _map.get("status"), Long.valueOf(_map.get("totalFee").toString() ));
+			for(Map curMap: list){
+				JSONObject amtMap = new JSONObject();
+				amtMap.put("sumAmtPay", Long.valueOf(curMap.get("sum_amt_pay").toString()));
+				amtMap.put("sumAmtDiscount", Long.valueOf(curMap.get("sum_amt_discount").toString()));
+				amtMap.put("sumAmtDiscountPlat", Long.valueOf(curMap.get("sum_amt_discount_plat").toString()));
+				amtMap.put("sumAmtDiscountMaster", Long.valueOf(curMap.get("sum_amt_discount_master").toString()));
+				
+				statusAmtMap.put((String)curMap.get("status"), amtMap);
 			}
 		}
-		return statusTotalFeeMap;
+		return statusAmtMap;
 	}
 	/**
 	 * @param masterUsrId

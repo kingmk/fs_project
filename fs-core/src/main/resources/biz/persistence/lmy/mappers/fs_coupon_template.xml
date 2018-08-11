@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_coupon_template">
+<resultMap id="fs_coupon_template" type="com.lmy.core.model.FsCouponTemplate">
+	<result column="id" property="id"/>
+	<result column="name" property="name"/>
+	<result column="fetch_begin_time" property="fetchBeginTime"/>
+	<result column="fetch_end_time" property="fetchEndTime"/>
+	<result column="use_days" property="useDays"/>
+	<result column="last_use_time" property="lastUseTime"/>
+	<result column="user_limit" property="userLimit"/>
+	<result column="total_limit" property="totalLimit"/>
+	<result column="count_fetch" property="countFetch"/>
+	<result column="rules" property="rules"/>
+	<result column="type" property="type"/>
+	<result column="categories" property="categories"/>
+	<result column="pay_amt_min" property="payAmtMin"/>
+	<result column="discount_amt" property="discountAmt"/>
+	<result column="discount_amt_plat" property="discountAmtPlat"/>
+	<result column="discount_amt_master" property="discountAmtMaster"/>
+	<result column="status" property="status"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_coupon_template">
+	select * from fs_coupon_template where id=#{id}  
+</select>
+
+<update id="update"	parameterType="com.lmy.core.model.FsCouponTemplate">
+	update fs_coupon_template
+<set>
+	<if test="userLimit != null">user_limit=#{userLimit},</if>
+	<if test="totalLimit != null">total_limit=#{totalLimit},</if>
+	<if test="countFetch != null">count_fetch=#{countFetch},</if>
+	<if test="rules != null">rules=#{rules},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="updateTime != null">update_time=#{updateTime},</if>
+</set>
+	where id=#{id}
+</update>
+
+</mapper>

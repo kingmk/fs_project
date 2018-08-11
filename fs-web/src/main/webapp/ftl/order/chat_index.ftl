@@ -158,6 +158,9 @@ function chatSubmit(msgType,dataURL,imgData) {
 	$("#clientUniqueNo").val(clientUniqueNo);
 	var form = new FormData($("#chatForm")[0]);
 	handBeforeChatSubmit(clientUniqueNo, msgType, dataURL, imgData);
+	if(msgType =="text" && typeof(form.delete) == "function") {
+		form.delete("img");
+	}
 	$.ajax({
 		type: "POST",
 		url: "${host.base}/order/chat_submit",

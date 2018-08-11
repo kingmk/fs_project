@@ -39,7 +39,7 @@ var CommonUtils = function() {
 		return  rs;
 	}
 	this.numberCurrencyFix = function(n)  {    
-		var  s  =  numberCurrency(n);    
+		var  s  =  this.numberCurrency(n);    
 		var  ss  =  s.split(".");    
 		if  (ss.length  ==  1)  {        
 			return  s  +  ".00";    
@@ -185,9 +185,72 @@ var InitUserFooter = function(opts) {
 	}
 };
 
+var ESwiper = function(domId, images, rh, onclick, autoplay, loop) {
+	this.h = window.innerWidth/750.0*rh;
+	this.domSwiper = $(domId);
+	this.domSliderList = [];
+	this.onclick = onclick;
+	var domDots = $('<div class="swiper-pagination"></div>');
+	var domWrapper = $('<div class="swiper-wrapper"></div>');
+	this.domSwiper.append(domWrapper);
+	this.domSwiper.append(domDots);
+	domWrapper.css("height", ""+this.h+"px");
+	var self = this;
+
+	for (var i = 0; i < images.length; i++) {
+		var domSlider = $('<div class="swiper-slide" style="height:'+this.h+'px;" data-idx="'+i+'"><img src="'+images[i]+'" style="height:'+this.h+'px;"/></div>');
+		domWrapper.append(domSlider);
+		this.domSliderList.push(domSlider);
+	};
+	this.getSlideIdx = function(){
+		if (!self.mySwiper) {
+			return;
+		};
+		var actIdx = self.mySwiper.activeIndex;
+		if (self.mySwiper.params.loop) {
+			actIdx = $(self.mySwiper.slides[actIdx]).attr("data-idx");
+		};
+		return parseInt(actIdx);
+	};
+	var pagination = {
+		el: ".swiper-pagination"
+	}
+	if (images.length == 1) {
+		autoplay = false;
+		loop = false;
+		pagination = {el: null};
+	}
+
+	this.mySwiper = new Swiper (domId, {
+		direction: 'horizontal',
+		autoplay: autoplay,
+		loop: loop,
+		pagination: pagination,
+		on: {
+			slideChangeTransitionEnd: function(swiper){
+				var actIdx = self.getSlideIdx(swiper);
+				if (typeof(actIdx)!="number") {
+					return;
+				};
+				$(".slidedot.selected").removeClass("selected");
+				$($(".slidedot")[actIdx]).addClass("selected");
+			},
+			click: function(swiper) {
+				if (typeof(self.onclick) != "function") {
+					return;
+				};
+				var actIdx = self.getSlideIdx(swiper);
+				self.onclick(actIdx);
+			}
+		}
+	});
+
+}
+
 var Bgmsk = function(opts) {
 	this.defaults = {
 		hasClose: true,
+		canRemove: true,
 		hasHeader: false,
 		headerTxt:'',
 		title: '我是title信息',
@@ -224,13 +287,15 @@ var Bgmsk = function(opts) {
 		bgmask.append(bgmaskWrap);
 		bgmask.remove();
 		$('body').append(bgmask);
+		if (this.options.canRemove) {
+			bgmaskClose.on('click', function() {
+				bgmask.remove()
+			});
 
-		bgmaskClose.on('click', function() {
-			bgmask.remove()
-		});
-		bgmask.on("click", function() {
-			bgmask.remove()
-		});
+			bgmask.on("click", function() {
+				bgmask.remove()
+			});
+		};
 		bgmaskWrap.on("click", function(e) {
 			e.stopPropagation()
 		});

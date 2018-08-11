@@ -7,10 +7,12 @@
 <title>运势咨询</title>
 <script src="${host.js}/js/rem.js?${host.version}"></script>
 <script src="${host.js}/js/jquery-1.11.3.min.js"></script>
-<script src="${host.js}/js/common.js?${host.version}"></script>
+<script src="${host.js}/js/common.js?${host.version}2"></script>
 <script src="${host.js}/js/jquery.tmpl.min.js"></script>
-<link rel="stylesheet" href="${host.css}/css/consultation.css?${host.version}">
+<script src="${host.js}/js/swiper.jquery.min.js?t=1"></script>
+<link rel="stylesheet" href="${host.css}/css/consultation.css?${host.version}8">
 <link rel="stylesheet" href="${host.css}/css/bgmask.css?${host.version}">
+<link rel="stylesheet" href="${host.css}/css/swiper.min.css">
 <style type="text/css">
 .bgmask .bgmask-wrap {top: 8rem;}
 .bgmask .bgmask-wrap .bgmask-body{padding-left: 1.5rem; padding-right: 1.5rem;}
@@ -18,9 +20,30 @@
 .bgmask .bgmask-wrap .bgmask-body .text {text-align: left;}
 </style>
 <script>
+<#if (banners?size>0) >
+var banners = ${bannerStr};
+var eSwiper = null;
+
+function initBanners(banners){
+    var images = [];
+    for (var i = 0; i < banners.length; i++) {
+        images.push(banners[i].imgurl);
+    };
+    var onclick = function(actIdx) {
+        window.open(banners[actIdx].url);
+    };
+    eSwiper = new ESwiper(".banners", images, 240.0, onclick, {delay: 4000, disableOnInteraction:false}, true);
+}
+
+</#if>
+
 $(function(){
     $.initUserFooter({activedIndex:0,bubbleNum:0 });
     chatUnreadNum('${host.base}');
+
+    <#if (banners?size>0) >
+    setTimeout("initBanners(banners)", 100);
+    </#if>
 })
 
 function showOfflineNote() {
@@ -38,15 +61,20 @@ function showOfflineNote() {
 </head>
 
 <body id='consultation'>
+    <#if (banners?size>0) >
+    <div class="banners"></div>
+    </#if>
     <div class='content'>
     <#list zxCateList as item>
         <#if item.parentId == 10005>
         <a class='card' href='javascript:showOfflineNote()'>
             <img src="${host.img}/images/indexImg/${item.id}.jpg?${host.version}">
+            <span class="separator"></span>
         </a>
         <#else>
         <a class='card' href='${host.base}/usr/search/master_nav?zxCateId=${item.id}'>
             <img src="${host.img}/images/indexImg/${item.id}.jpg?${host.version}">
+            <span class="separator"></span>
         </a>
         </#if>
     </#list>

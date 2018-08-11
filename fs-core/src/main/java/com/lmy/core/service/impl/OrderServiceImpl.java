@@ -25,6 +25,8 @@ import com.lmy.common.utils.ResourceUtils;
 import com.lmy.core.beanstalkd.job.QueueNameConstant;
 import com.lmy.core.constant.FsConstants;
 import com.lmy.core.dao.FsChatSessionDao;
+import com.lmy.core.dao.FsCouponInstanceDao;
+import com.lmy.core.dao.FsCouponTemplateDao;
 import com.lmy.core.dao.FsMasterInfoDao;
 import com.lmy.core.dao.FsMasterServiceCateDao;
 import com.lmy.core.dao.FsMasterStatisticsDao;
@@ -33,6 +35,8 @@ import com.lmy.core.dao.FsPayRecordDao;
 import com.lmy.core.dao.FsUsrDao;
 import com.lmy.core.manage.impl.WxNoticeManagerImpl;
 import com.lmy.core.model.FsChatSession;
+import com.lmy.core.model.FsCouponInstance;
+import com.lmy.core.model.FsCouponTemplate;
 import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsMasterServiceCate;
 import com.lmy.core.model.FsOrder;
@@ -55,6 +59,10 @@ public class OrderServiceImpl {
 	@Autowired
 	private FsMasterInfoDao fsMasterInfoDao;
 	@Autowired
+	private FsCouponInstanceDao fsCouponInstanceDao;
+	@Autowired
+	private FsCouponTemplateDao fsCouponTemplateDao;
+	@Autowired
 	private FsOrderDao fsOrderDao;
 	@Autowired
 	private FsMasterStatisticsDao fsMasterStatisticsDao;
@@ -70,7 +78,7 @@ public class OrderServiceImpl {
 	 * 				JsonUtils.setBody(result, "order", orderBeanForInsert);<br>
 					JsonUtils.setBody(result, "payRecord", payRecordForInsert);
 	 */
-	public JSONObject unifiedorderWeixin(long buyUsrId, final String buyUsrOpenId ,String registerMobile, final String buyUsrIp,  long masterInfoId , long masterServiceCateId){
+	public JSONObject unifiedorderWeixin(long buyUsrId, final String buyUsrOpenId, String registerMobile, final String buyUsrIp, long masterInfoId, long masterServiceCateId, final Long couponId){
 		FsMasterServiceCate masterServiceCate = fsMasterServiceCateDao.findById(masterServiceCateId);
 		FsMasterInfo masterInfo =  this.fsMasterInfoDao.findById(masterInfoId);
 		FsUsr buyUser = fsUsrDao.findById(buyUsrId);
@@ -99,9 +107,33 @@ public class OrderServiceImpl {
 			logger.warn("buyUsrId="+buyUsrId+",masterInfoId="+masterInfoId+",masterServiceCateId="+masterServiceCateId+" 不在服务状态  masterServiceCate.getStatus():"+ masterServiceCate.getStatus());
 			return JsonUtils.commonJsonReturn("0003", "不在服务状态");
 		}
+		
+		FsCouponInstance coupon = null;
+		FsCouponTemplate couponTmpl = null;
+		if (couponId != null) {
+			coupon = fsCouponInstanceDao.findById(couponId);
+			if (coupon == null) {
+				return JsonUtils.commonJsonReturn("0010", "优惠券不存在");
+			}
+			if (coupon.getPayAmtMin() > masterServiceCate.getAmt()) {
+				return JsonUtils.commonJsonReturn("0011", "原订单金额需超过"+(coupon.getPayAmtMin()/100)+"才可用");
+			}
+			if (!coupon.getStatus().equals(FsCouponInstance.STATUS_UNUSED)) {
+				return JsonUtils.commonJsonReturn("0012", "优惠券已被使用");
+			}
+			Date now = new Date();
+			if (now.getTime()>= coupon.getLastUseTime().getTime()) {
+				return JsonUtils.commonJsonReturn("0013", "优惠券已过期");
+			}
+			couponTmpl = fsCouponTemplateDao.findById(coupon.getTemplateId());
+			if (couponTmpl == null) {
+				return JsonUtils.commonJsonReturn("0014", "优惠券不存在");
+			}
+		}
+		
 		String chatSessionNo = UniqueNoUtil.getSimpleUniqueNo();
 		//final List<FsChatSession> listChatSession = 	unifiedorderWeixin_buildFsChatSessionForInsert(buyUsrId, masterInfo.getUsrId() , chatSessionNo);
-		final FsOrder orderBeanForInsert = unifiedorderWeixin_buildOrderBeanForInsert(buyUsrId, registerMobile,masterInfo, masterServiceCate,chatSessionNo);
+		final FsOrder orderBeanForInsert = unifiedorderWeixin_buildOrderBeanForInsert(buyUsrId, registerMobile,masterInfo, masterServiceCate, chatSessionNo, coupon, couponTmpl);
 		try{
 			return 
 			fsTransactionTemplate.execute(new TransactionCallback<JSONObject>() {
@@ -109,8 +141,9 @@ public class OrderServiceImpl {
 				public JSONObject doInTransaction(TransactionStatus status) {
 					//fsChatSessionDao.batchInsert(listChatSession);
 					fsOrderDao.insert(orderBeanForInsert);
-					final FsPayRecord  payRecordForInsert=   unifiedorderWeixin_buildPayRecordBeanForInsert(orderBeanForInsert,buyUsrOpenId,buyUsrIp) ;
+					final FsPayRecord payRecordForInsert = unifiedorderWeixin_buildPayRecordBeanForInsert(orderBeanForInsert,buyUsrOpenId,buyUsrIp) ;
 					fsPayRecordDao.insert(payRecordForInsert);
+					fsCouponInstanceDao.updateStatus(couponId, FsCouponInstance.STATUS_USED);
 					JSONObject result = JsonUtils.commonJsonReturn();
 					JsonUtils.setBody(result, "order", orderBeanForInsert);
 					JsonUtils.setBody(result, "payRecord", payRecordForInsert);
@@ -122,7 +155,7 @@ public class OrderServiceImpl {
 			return JsonUtils.commonJsonReturn("9999", "系统错误");
 		}
 	}
-	private FsOrder unifiedorderWeixin_buildOrderBeanForInsert(long buyUsrId , String registerMobile,FsMasterInfo masterInfo , FsMasterServiceCate masterServiceCate ,String chatSessionNo ){
+	private FsOrder unifiedorderWeixin_buildOrderBeanForInsert(long buyUsrId, String registerMobile, FsMasterInfo masterInfo, FsMasterServiceCate masterServiceCate, String chatSessionNo, FsCouponInstance coupon, FsCouponTemplate couponTmpl){
 		Date now = new Date();
 		FsOrder bean = new  FsOrder();
 		//平台佣金调整为30% modify by fidel at  2017/08/03 15:50 
@@ -130,12 +163,21 @@ public class OrderServiceImpl {
 		if(settlementMasterServiceFee.equals(0l)){
 			settlementMasterServiceFee = masterServiceCate.getAmt();
 		}
-		bean.setBuyNum(1l).setBuyUsrId(buyUsrId).setDiscountRmbAmt(0l).setGoodsId(masterServiceCate.getId()).setGoodsName(masterServiceCate.getName())
+		bean.setBuyNum(1l).setBuyUsrId(buyUsrId).setDiscountRmbAmt(0l).setDiscountAmtPlat(0l).setDiscountAmtMaster(0l)
+		.setGoodsId(masterServiceCate.getId()).setGoodsName(masterServiceCate.getName())
 		.setOrderNum(UniqueNoUtil.getSimpleUniqueNo()).setChatSessionNo(chatSessionNo);
-		bean.setOrderType("zxfw").setPayConfirmTime(null).setPayRmbAmt(masterServiceCate.getAmt()).setPayType("weixinpay").setRefundRmbAmt(0l)
-		.setSellerUsrId(masterInfo.getUsrId()).setStatus( "init") .setTransDesc(masterInfo.getName()+"的订单-"+masterServiceCate.getName()).setZxCateId(masterServiceCate.getFsZxCateId());
-		bean.setSettlementMasterServiceFee(settlementMasterServiceFee) .setSettlementPlatServiceFee( masterServiceCate.getAmt() -settlementMasterServiceFee  );
+		bean.setOrderType("zxfw").setPayConfirmTime(null).setPayRmbAmt(masterServiceCate.getAmt())
+		.setPayType("weixinpay").setRefundRmbAmt(0l).setSellerUsrId(masterInfo.getUsrId())
+		.setStatus( "init") .setTransDesc(masterInfo.getName()+"的订单-"+masterServiceCate.getName()).setZxCateId(masterServiceCate.getFsZxCateId());
+		bean.setSettlementMasterServiceFee(settlementMasterServiceFee).setSettlementPlatServiceFee( masterServiceCate.getAmt() -settlementMasterServiceFee  );
 		bean.setUpdateTime(now) .setCreateTime(now);
+		
+		if (coupon != null) {
+			bean.setDiscountRmbAmt(coupon.getDiscountAmt()).setDiscountAmtPlat(couponTmpl.getDiscountAmtPlat())
+				.setDiscountAmtMaster(couponTmpl.getDiscountAmtMaster());
+			bean.setCouponId(coupon.getId());
+			bean.setPayRmbAmt(masterServiceCate.getAmt()-coupon.getDiscountAmt());
+		}
 		//办公风水 住宅风水
 		//办公风水和住宅风水无需填写什么信息，但需要将该用户的注册手机号带上保存下来 add by fidel at 2017/05/31 10:56
 		if(masterServiceCate.getFsZxCateId().equals(100011l) || masterServiceCate.getFsZxCateId().equals(100012l)  ){
@@ -155,12 +197,12 @@ public class OrderServiceImpl {
 		beanForInsert.setAppId( ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.appId") ) ; 
 		beanForInsert.setAttach(null) ; 
 		beanForInsert.setMchId( ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.merId") )  ;
-		beanForInsert.setNotifyUrl(  ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.service.basehost")  +  ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.pay.notify.relative.url") )  ;
+		beanForInsert.setNotifyUrl(  ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.service.basehost") + ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.pay.notify.relative.url") )  ;
 		beanForInsert.setBody(orderBeanAfterInsert.getGoodsName()).setCreateTime(orderBeanAfterInsert.getCreateTime());
 		beanForInsert.setDetail(orderBeanAfterInsert.getTransDesc()).setFeeType("CNY").setGoodsTag(null) ;
 		beanForInsert.setOpenId(buyUsrOpenId).setOrderId(orderBeanAfterInsert.getId()).setOutTradeNo(UniqueNoUtil.getSimpleUniqueNo()  ) .setPayChannel("weixin")
 		.setRefundFee(0l).setRemark(null).setSpbillCreateIp(buyUsrIp).setTotalFee(orderBeanAfterInsert.getPayRmbAmt()).setTradeStatus("ing")
-		.setTradeType("unifiedorder").setUsrId(orderBeanAfterInsert.getBuyUsrId()).setUpdateTime(orderBeanAfterInsert.getCreateTime()).setCreateTime(  orderBeanAfterInsert.getCreateTime());
+		.setTradeType("unifiedorder").setUsrId(orderBeanAfterInsert.getBuyUsrId()).setUpdateTime(orderBeanAfterInsert.getCreateTime()).setCreateTime(orderBeanAfterInsert.getCreateTime());
 		return beanForInsert;
 	}
 	

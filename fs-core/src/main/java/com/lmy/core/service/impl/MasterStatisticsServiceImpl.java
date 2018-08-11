@@ -277,7 +277,7 @@ public class MasterStatisticsServiceImpl {
 			jMasterStatArray = buildSearchResult(masterMapList, filterCateId);
 			RedisClient.set(cacheKey, jMasterStatArray, 600);
 		} else {
-			logger.info("===== load search result from cache =====");
+			logger.info("===== load search result from cache ["+cacheKey+"]=====");
 		}
 		
 		if (jMasterStatArray.size() == 0 || page*pageSize > jMasterStatArray.size()) {

@@ -29,10 +29,16 @@ public class FsOrder  extends BaseObject {
   private  Long  buyNum;
   /** 支付rmb总价 单位分 */
   private  Long  payRmbAmt;
-  /** 折扣数(rmb) 单位分; 原价 = pay_rmb_amt + discount_rmb_amt */
+  /** 折扣数(rmb) 单位分; 原价 = pay_rmb_amt + discount_rmb_amt, discount_rmb_amt=discount_amt_plat+discount_amt_master */
   private  Long  discountRmbAmt;
+  /** 平台补贴的折扣数(rmb) 单位分; */
+  private Long discountAmtPlat;
+  /** 老师补贴的折扣数(rmb) 单位分; */
+  private Long discountAmtMaster;
   /** 已退款总金额 单位分 */
   private  Long  refundRmbAmt;
+  /** 使用了优惠券的id */
+  private Long couponId;
   /** init 支付确认中;close 未支付|交易关闭;pay_succ 支付成功;pay_fail 支付失败;refund_applied 已申请退款待审批中; refunding 退款中(等待微信最终结果,一般可认为退款成功);refunded 已退款;refund_fail 退款失败;completed 已完成(已支付且24小时内有回复);settlementing 结算中(结算中打款给老师); settlemented 已结算（打款给老师）;settlement_fail 结算失败（打款给老师） */
   private  String  status;
   /** 订单单信息 */
@@ -190,7 +196,22 @@ public class FsOrder  extends BaseObject {
 		 this.discountRmbAmt=discountRmbAmt;
 		 return this;
 	}
-  /** 已退款总金额 单位分 */
+	
+	public Long getDiscountAmtPlat() {
+		return discountAmtPlat;
+	}
+	public FsOrder setDiscountAmtPlat(Long discountAmtPlat) {
+		this.discountAmtPlat = discountAmtPlat;
+		return this;
+	}
+	public Long getDiscountAmtMaster() {
+		return discountAmtMaster;
+	}
+	public FsOrder setDiscountAmtMaster(Long discountAmtMaster) {
+		this.discountAmtMaster = discountAmtMaster;
+		return this;
+	}
+/** 已退款总金额 单位分 */
 	public Long getRefundRmbAmt(){
 		return this.refundRmbAmt;
 	}
@@ -198,6 +219,13 @@ public class FsOrder  extends BaseObject {
 	public FsOrder setRefundRmbAmt(Long refundRmbAmt){
 		 this.refundRmbAmt=refundRmbAmt;
 		 return this;
+	}
+	public Long getCouponId() {
+		return couponId;
+	}
+	public FsOrder setCouponId(Long couponId) {
+		this.couponId = couponId;
+		return this;
 	}
   /** init 支付确认中;close 未支付|交易关闭;pay_succ 支付成功;pay_fail 支付失败;refund_applied 已申请退款待审批中; refunding 退款中(等待微信最终结果,一般可认为退款成功);refunded 已退款;refund_fail 退款失败;completed 已完成(已支付且24小时内有回复);settlementing 结算中(结算中打款给老师); settlemented 已结算（打款给老师）;settlement_fail 结算失败（打款给老师） */
 	public String getStatus(){

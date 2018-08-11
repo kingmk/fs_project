@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_banner">
+<resultMap id="fs_banner" type="com.lmy.core.model.FsBanner">
+	<result column="id" property="id"/>
+	<result column="imgurl" property="imgurl"/>
+	<result column="filepath" property="filepath"/>
+	<result column="description" property="description"/>
+	<result column="url" property="url"/>
+	<result column="sort" property="sort"/>
+	<result column="status" property="status"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_banner">
+	select * from fs_banner where id=#{id}  
+</select>
+<select id="getAllActive" resultMap="fs_banner">
+	select * from fs_banner where status='00' order by sort desc, create_time desc
+</select>
+<insert id="insert"  parameterType="com.lmy.core.model.FsBanner"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_banner(id, imgurl, filepath, description, url, sort, status, create_time)
+	values(#{id,jdbcType=INTEGER}, #{imgurl,jdbcType=VARCHAR}, #{filepath,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}) 
+</insert>
+
+
+<update id="update"	parameterType="com.lmy.core.model.FsBanner">
+	update fs_banner
+<set>
+	<if test="imgurl != null">imgurl=#{imgurl},</if>
+	<if test="filepath != null">filepath=#{filepath},</if>
+	<if test="description != null">description=#{description},</if>
+	<if test="url != null">url=#{url},</if>
+	<if test="sort != null">sort=#{sort},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="updateTime != null">update_time=#{updateTime}</if>
+</set>
+	where id=#{id}
+</update>
+
+	
+</mapper>

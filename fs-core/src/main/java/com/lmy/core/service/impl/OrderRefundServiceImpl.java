@@ -20,11 +20,13 @@ import com.lmy.common.component.CommonUtils;
 import com.lmy.common.component.JsonUtils;
 import com.lmy.common.queue.beanstalkd.BeanstalkClient;
 import com.lmy.core.beanstalkd.job.QueueNameConstant;
+import com.lmy.core.dao.FsCouponInstanceDao;
 import com.lmy.core.dao.FsMasterInfoDao;
 import com.lmy.core.dao.FsOrderDao;
 import com.lmy.core.dao.FsPayRecordDao;
 import com.lmy.core.dao.FsUsrDao;
 import com.lmy.core.manage.impl.WxNoticeManagerImpl;
+import com.lmy.core.model.FsCouponInstance;
 import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsOrder;
 import com.lmy.core.model.FsPayRecord;
@@ -49,6 +51,8 @@ public class OrderRefundServiceImpl {
 	private FsOrderDao fsOrderDao;
 	@Autowired
 	private FsPayRecordDao fsPayRecordDao;
+	@Autowired
+	private FsCouponInstanceDao fsCouponInstanceDao;
 	@Autowired
 	private WxNoticeManagerImpl wxNoticeManagerImpl;
 	@Autowired
@@ -130,12 +134,17 @@ public class OrderRefundServiceImpl {
 	}
 	
 	private void doRefundAfterWxApplyFail(final long id , final  Long refundBeanId , final String wxRespXml){
+		final FsOrder order = fsOrderDao.findById(id);
 		this.fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction(TransactionStatus status) {
 				Date now  = new Date();
 				int effectNum = fsOrderDao.updateRefundAfterWxRefundApplyResult(id, false, now);
 				Assert.isTrue( effectNum ==1 );
+				if (order.getCouponId() != null) {
+					fsCouponInstanceDao.updateStatus(order.getCouponId(), FsCouponInstance.STATUS_UNUSED);
+				}
+				
 				if(refundBeanId == null){
 					FsPayRecord payBeanForUpdate =  new FsPayRecord();
 					payBeanForUpdate.setId( refundBeanId  );
@@ -188,6 +197,9 @@ public class OrderRefundServiceImpl {
 				public Boolean doInTransaction(TransactionStatus status) {
 					int affectNum =fsOrderDao.updateForRefundAudit(order.getId(), true, refundReason, refundAuditWord, null, now);
 					Assert.isTrue(  affectNum== 1  );
+					if (order.getCouponId() != null) {
+						fsCouponInstanceDao.updateStatus(order.getCouponId(), FsCouponInstance.STATUS_UNUSED);
+					}
 					fsPayRecordDao.insert(payRecordForInsert);
 					return null;
 				}
@@ -229,7 +241,7 @@ public class OrderRefundServiceImpl {
 		
 	}
 	
-	public boolean   callWeiXinRefundAndHandWxResp(FsPayRecord refundBean , FsPayRecord orgPaySuccBean,FsOrder order , final boolean isAutoRefund,String refundReason){
+	public boolean callWeiXinRefundAndHandWxResp(FsPayRecord refundBean , FsPayRecord orgPaySuccBean,FsOrder order , final boolean isAutoRefund,String refundReason){
 		boolean wxRefundSucc = true;
 		try{
 			//call 微信退款交易接口
@@ -324,7 +336,7 @@ public class OrderRefundServiceImpl {
 		return result;
 	}
 	
-	private JSONObject  autoRefund_orgPayMatchCondition(List<FsPayRecord> payRecordList,Long orderId){
+	private JSONObject autoRefund_orgPayMatchCondition(List<FsPayRecord> payRecordList,Long orderId){
 		if(CollectionUtils.isEmpty(payRecordList)){
 			logger.warn("退款, 数据错误,未能查询到任何 支付记录orderId:{}", orderId);
 			return JsonUtils.commonJsonReturn("0001", "数据错误");

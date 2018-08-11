@@ -12,7 +12,9 @@ fs-web/src/main/webapp/static/css/npm-debug.log
 fs-web/src/main/webapp/static/css/.sass-cache
 fs-web/src/main/webapp/static/node_modules
 fs-web/src/main/webapp/static/npm-debug.log
+fs-web/src/main/webapp/static/images/upload/*
+fs-web/src/main/webapp/static/css/.sass-cache/*
+fs-web/src/main/webapp/static/css/{
 
 *.js
 
-fs-web/src/main/webapp/static/css/.sass-cache/*

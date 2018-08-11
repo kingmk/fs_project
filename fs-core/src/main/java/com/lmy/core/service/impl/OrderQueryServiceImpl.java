@@ -208,9 +208,9 @@ public class OrderQueryServiceImpl {
 	 */
 	public JSONObject findMasterUsrBillDetailList(long sellerUsrId ,Long orderSettleId,  int currentPage,int perPageNum ){
 		if(orderSettleId!=null){
-			return _findMasterUsrBillDetailList_had(sellerUsrId, orderSettleId, currentPage, perPageNum);
+			return _findBillDetailList_settlemented(sellerUsrId, orderSettleId, currentPage, perPageNum);
 		}else{
-			return _findMasterUsrBillDetailList_wait(sellerUsrId, currentPage, perPageNum);
+			return _findBillDetailList_unsettlemented(sellerUsrId, currentPage, perPageNum);
 		}
 	}
 	
@@ -230,7 +230,7 @@ public class OrderQueryServiceImpl {
 	}
 	
 	
-	private JSONObject _findMasterUsrBillDetailList_had(long sellerUsrId,long orderSettleId , int currentPage,int perPageNum){
+	private JSONObject _findBillDetailList_settlemented(long sellerUsrId,long orderSettleId , int currentPage,int perPageNum){
 		try{
 			FsOrderSettlement settlementBean = this.fsOrderSettlementDao.findById(orderSettleId);
 			 if(settlementBean == null){
@@ -255,11 +255,11 @@ public class OrderQueryServiceImpl {
 			 JSONObject result = JsonUtils.commonJsonReturn();
 			 // 个税情况
 			 JSONObject gsDetail = new JSONObject();
-			 gsDetail.put("djgsDesc",    CommonUtils.numberFormat( settlementBean.getPersonalIncomeTaxRmbAmt() / 100d , "###,##0.00", "0.0")  );
-			 gsDetail.put("jszqDesc",  CommonUtils.dateToString(  settlementBean.getCreateTime(),  CommonUtils.dateFormat1,"")  );
+			 gsDetail.put("descTotalTax",    CommonUtils.numberFormat( settlementBean.getPersonalIncomeTaxRmbAmt() / 100d , "###,##0.00", "0.0")  );
+			 gsDetail.put("descSettleDate",  CommonUtils.dateToString(  settlementBean.getCreateTime(),  CommonUtils.dateFormat1,"")  );
 			 JSONArray eleList = new JSONArray();
 			 for(FsOrder bean :  hadSettleOrderList ){
-				 eleList.add( _findMasterUsrBillDetailList_one(bean) );
+				 eleList.add( _findBillDetailList_one(bean) );
 			 }
 			 JsonUtils.setBody(result, "data", eleList);
 			 JsonUtils.setBody(result, "size", CollectionUtils.isNotEmpty(eleList) ? eleList.size():0);
@@ -282,21 +282,21 @@ public class OrderQueryServiceImpl {
 		return allOrderIdList;
 	}
 	
-	private JSONObject _findMasterUsrBillDetailList_wait(long sellerUsrId,int currentPage,int perPageNum){
+	private JSONObject _findBillDetailList_unsettlemented(long sellerUsrId,int currentPage,int perPageNum){
 		try{
 			 Date settlementCycleBeginTime = getSettlementCycleBeginTime(new Date());
-			 List<FsOrder> waitSettleOrderList = 	this.fsOrderDao.findShortOrderInfoForSettlement2(sellerUsrId, OrderAidUtil.getMasterWaitIncometatus() ,OrderAidUtil.getMasterRefundSatus(), settlementCycleBeginTime,currentPage , perPageNum) ;
+			 List<FsOrder> waitSettleOrderList = 	this.fsOrderDao.findShortOrderInfoForSettlement2(sellerUsrId, OrderAidUtil.getMasterWaitIncomeStatus() ,OrderAidUtil.getMasterRefundSatus(), settlementCycleBeginTime,currentPage , perPageNum) ;
 			 if(CollectionUtils.isEmpty(waitSettleOrderList)){
 				 return JsonUtils.commonJsonReturn("1000", "查无数据");
 			 }
 			 JSONObject result = JsonUtils.commonJsonReturn();
 			 // 个税情况
 			 JSONObject gsDetail = new JSONObject();
-			 gsDetail.put("djgsDesc",  "待计算");
-			 gsDetail.put("jszqDesc",  CommonUtils.dateToString(  new Date(),  CommonUtils.dateFormat1,"")  );
+			 gsDetail.put("descTotalTax",  "待计算");
+			 gsDetail.put("descSettleDate",  CommonUtils.dateToString(new Date(),  CommonUtils.dateFormat1,""));
 			 JSONArray eleList = new JSONArray();
 			 for(FsOrder bean :  waitSettleOrderList ){
-				 eleList.add( _findMasterUsrBillDetailList_one(bean) );
+				 eleList.add( _findBillDetailList_one(bean) );
 			 }
 			 JsonUtils.setBody(result, "data", eleList);
 			 JsonUtils.setBody(result, "size", CollectionUtils.isNotEmpty(eleList) ? eleList.size():0);
@@ -308,19 +308,33 @@ public class OrderQueryServiceImpl {
 		}
 	}
 
-	private JSONObject _findMasterUsrBillDetailList_one(FsOrder bean ){
+	private JSONObject _findBillDetailList_one(FsOrder bean ){
 		JSONObject dataOne = new JSONObject(true);
-		Long sqsr = OrderAidUtil.mul(bean.getPayRmbAmt(), (1-OrderAidUtil.getPlatCommissionRate())).longValue();
-		dataOne.put("ddje", bean.getPayRmbAmt() ); //订单金额 单位分
-		dataOne.put("ddjeDesc",  CommonUtils.numberFormat(bean.getPayRmbAmt() /100d, "###,##0.00", "0.0")    ); //订单金额 格式化数据 单位元
-		dataOne.put("sqsr", sqsr ); //税前收入  单位分
-		dataOne.put("sqsrDesc",   CommonUtils.numberFormat(sqsr/100d, "###,##0.00", "0.0")     ); //税前收入格式化数据  单位元
-		dataOne.put("ptyj", bean.getPayRmbAmt()  - sqsr ); //平台佣金  单位分
-		dataOne.put("ptyjDesc",    CommonUtils.numberFormat( (bean.getPayRmbAmt()  - sqsr) /100d, "###,##0.00", "0.0")  ); //平台佣金 格式化数据 单位元
+		Long amtPay = bean.getPayRmbAmt();
+		Long amtOrder = bean.getPayRmbAmt()+bean.getDiscountRmbAmt();
+		Long amtCommission = OrderAidUtil.mul(amtOrder, OrderAidUtil.getPlatCommissionRate()).longValue();
+		Long amtUntax1 = amtOrder-amtCommission;
+		Long amtUntax = amtUntax1-bean.getDiscountAmtMaster();
+//		Long amtCommission = amtCommission1-bean.getDiscountAmtPlat();
+		
+		dataOne.put("amtOrder", amtOrder ); //订单金额 单位分
+		dataOne.put("descAmtOrder", CommonUtils.numberFormat(amtOrder /100d, "###,##0.00", "0.0")); //订单金额 格式化数据 单位元
+		dataOne.put("amtPay", amtPay); // 用户实付
+		dataOne.put("descAmtPay", CommonUtils.numberFormat(amtPay/100d, "###,##0.00", "0.0"));
+		
+		dataOne.put("amtUntax", amtUntax ); //税前收入  单位分
+		dataOne.put("descAmtUntax", CommonUtils.numberFormat(amtUntax/100d, "###,##0.00", "0.0")); //税前收入格式化数据  单位元
+		dataOne.put("amtCommission", amtCommission ); //平台佣金  单位分
+		dataOne.put("descAmtCommission", CommonUtils.numberFormat(amtCommission /100d, "###,##0.00", "0.0")); //平台佣金 格式化数据 单位元
+
+		dataOne.put("amtDiscountPlat", bean.getDiscountAmtPlat());
+		dataOne.put("descAmtDiscountPlat", CommonUtils.numberFormat(bean.getDiscountAmtPlat()/100d, "###,##0.00", "0.0")); 
+		dataOne.put("amtDiscountMaster", bean.getDiscountAmtMaster());
+		dataOne.put("descAmtDiscountMaster", CommonUtils.numberFormat(bean.getDiscountAmtMaster()/100d, "###,##0.00", "0.0")); 
 		dataOne.put("goodsName", bean.getGoodsName());
 		dataOne.put("status", bean.getStatus());
 		dataOne.put("statusDesc",  OrderAidUtil.masterIncomeDetailGetStatusDesc(bean.getStatus()) );
-		dataOne.put("timeDesc",  CommonUtils.dateToString(bean.getCreateTime(),  CommonUtils.dateFormat1,"") );
+		dataOne.put("timeDesc",  CommonUtils.dateToString(bean.getCreateTime(),  CommonUtils.dateFormat1,""));
 		dataOne.put("simpleOrderExtraInfoAndCateName",   masterIncomeDetailGetSimpleOrderExtraInfoDesc(bean.getZxCateId(), bean.getOrderExtraInfo() , bean.getGoodsName())); 							
 		return dataOne;
 	}
@@ -332,22 +346,22 @@ public class OrderQueryServiceImpl {
 	 * @since 2017/07/13
 	 * @return
 	 */
-	public JSONObject findMasterUsrBillList(long sellerUsrId , int currentPage,int perPageNum){
+	public JSONObject findBillList(long sellerUsrId , int currentPage,int perPageNum){
 		JSONObject result = JsonUtils.commonJsonReturn();
 		try{
 			JSONArray eleList = new JSONArray();
 			if(currentPage ==0){
 				//未结算的
-				 List<FsOrder> waitSettleOrderList = this.fsOrderDao.findShortOrderInfoForSettlement1(sellerUsrId, OrderAidUtil.getMasterWaitIncometatus());
-				 if(CollectionUtils.isNotEmpty(waitSettleOrderList)){
-					 eleList.add(  _buildWaitSellteBill(waitSettleOrderList) );
+				 List<FsOrder> unsettledOrderList = this.fsOrderDao.findShortOrderInfoForSettlement1(sellerUsrId, OrderAidUtil.getMasterWaitIncomeStatus());
+				 if(CollectionUtils.isNotEmpty(unsettledOrderList)){
+					 eleList.add(_buildUnsettledBill(unsettledOrderList) );
 				 }				
 			}
 			 //分页查询已结算的
 			List<FsOrderSettlement>  settlementList =  fsOrderSettlementDao.find1(sellerUsrId, Arrays.asList("succ") , currentPage,perPageNum);
 			if(CollectionUtils.isNotEmpty(settlementList)){
 				for( FsOrderSettlement bean  : settlementList){
-					eleList.add( _buildHaDSellteBill(bean)  );
+					eleList.add( _buildSettledBill(bean)  );
 				}
 			}
 			JsonUtils.setBody(result, "data", eleList);
@@ -359,16 +373,21 @@ public class OrderQueryServiceImpl {
 		}
 	}
 	
-	private JSONObject _buildHaDSellteBill(FsOrderSettlement bean ){
+	private JSONObject _buildSettledBill(FsOrderSettlement bean ){
 		JSONObject result = new JSONObject(true);
-		result.put("sqsr", bean.getOrderTotalPayRmbAmt() - bean.getPlatCommissionRmbAmt());  	//税前收入  单位分
-		result.put("sqsrDesc",  	CommonUtils.numberFormat( 	 (bean.getOrderTotalPayRmbAmt() - bean.getPlatCommissionRmbAmt())/100d , "###,##0.00", "0.0")			);  	//税前收入格式化数据
-		result.put("zdje", bean.getOrderTotalPayRmbAmt());  			//账单金额  单位分
-		result.put("zdjeDesc",   	CommonUtils.numberFormat( 	bean.getOrderTotalPayRmbAmt() / 100d , "###,##0.00", "0.0")			);  			//账单金额格式化数据
-		result.put("ptyj",  bean.getPlatCommissionRmbAmt());  		//平台佣金  单位分
-		result.put("ptyjDesc",  	CommonUtils.numberFormat(bean.getPlatCommissionRmbAmt() / 100d , "###,##0.00", "0.0")				 );  		//平台佣金格式化数据
-		result.put("djgs", bean.getPersonalIncomeTaxRmbAmt());  	//待缴个税  单位分
-		result.put("djgsDesc", "¥" +CommonUtils.numberFormat(bean.getPersonalIncomeTaxRmbAmt()/100d, "###,##0.00", "0.0")  );  	//待缴个税  格式化数据 元
+		result.put("sumAmtUntax", bean.getOrderTotalPayRmbAmt() - bean.getPlatCommissionRmbAmt() - bean.getMasterDiscountAmt()); //税前收入  单位分
+		result.put("descSumAmtUntax", CommonUtils.numberFormat((bean.getOrderTotalPayRmbAmt() - bean.getPlatCommissionRmbAmt() - bean.getMasterDiscountAmt())/100d , "###,##0.00", "0.0"));
+		result.put("sumAmtOrder", bean.getOrderTotalPayRmbAmt());  //账单金额  单位分
+		result.put("descSumAmtOrder", CommonUtils.numberFormat( 	bean.getOrderTotalPayRmbAmt()/100d , "###,##0.00", "0.0"));
+		result.put("sumAmtCommission", bean.getPlatCommissionRmbAmt());  //平台佣金  单位分
+		result.put("descSumAmtCommission", CommonUtils.numberFormat(bean.getPlatCommissionRmbAmt()/100d , "###,##0.00", "0.0"));
+		result.put("sumAmtDiscountPlat", bean.getPlatDiscountAmt()); //平台补贴  单位分
+		result.put("descSumAmtDiscountPlat", CommonUtils.numberFormat(bean.getPlatDiscountAmt()/100d, "###,##0.00", "0.0") );
+		result.put("sumAmtDiscountMaster", bean.getMasterDiscountAmt()); //老师补贴  单位分
+		result.put("descSumAmtDiscountMaster", CommonUtils.numberFormat(bean.getMasterDiscountAmt()/100d, "###,##0.00", "0.0") );
+
+		result.put("sumAmtTax", bean.getPersonalIncomeTaxRmbAmt()); //待缴个税  单位分
+		result.put("descSumAmtTax", "-¥"+CommonUtils.numberFormat(bean.getPersonalIncomeTaxRmbAmt()/100d, "###,##0.00", "0.0"));
 		result.put("hadSettle", "Y");  //是否已结算
 		result.put("orderSettlementId", bean.getId());  
 		result.put("year", bean.getSettlementCycle().substring(0, 4));  
@@ -378,45 +397,51 @@ public class OrderQueryServiceImpl {
 	}
 	
 	
-	private JSONObject _buildWaitSellteBill( List<FsOrder> waitSettleOrderList  ){
+	private JSONObject _buildUnsettledBill( List<FsOrder> unsettledOrderList  ){
 		Date now = new Date();
-		JSONObject analysisListResult = _analysisList(waitSettleOrderList);
-		//订单总金额 C端用户支付总金额
-		Long orderTotalPayRmbAmt = (Long)JsonUtils.getBodyValue(analysisListResult, "orderTotalPayRmbAmt");
-		//List<Long> ids =(List<Long>) JsonUtils.getBodyValue(analysisListResult, "ids");
-		// 平台佣金 单位分           
-		Long platCommissionRmbAmt = OrderAidUtil.mul(orderTotalPayRmbAmt, OrderAidUtil.getPlatCommissionRate()).longValue();
+		JSONObject analysisListResult = _analysisList(unsettledOrderList);
+//		Long sumAmtPay = (Long)JsonUtils.getBodyValue(analysisListResult, "sumAmtPay");
+		Long sumAmtOrder = (Long)JsonUtils.getBodyValue(analysisListResult, "sumAmtOrder");
+		Long sumAmtDiscountPlat = (Long)JsonUtils.getBodyValue(analysisListResult, "sumAmtDiscountPlat");
+		Long sumAmtDiscountMaster = (Long)JsonUtils.getBodyValue(analysisListResult, "sumAmtDiscountMaster");     
+		Long sumAmtCommission = OrderAidUtil.mul(sumAmtOrder, OrderAidUtil.getPlatCommissionRate()).longValue();
+		
 		//税前总收入
-		Long beforeTaxIncomeRmbAmt = orderTotalPayRmbAmt - platCommissionRmbAmt;
-		//应出个税 单位分
-		Long personalIncomeTaxRmbAmt = OrderAidUtil.calPersonalIncomeTaxRmbAmt(beforeTaxIncomeRmbAmt);
+		Long sumAmtUntax = sumAmtOrder-sumAmtCommission-sumAmtDiscountMaster;
+
 		//实际到(转)账金额 单位分
 		//long realArrivalAmt =  beforeTaxIncomeRmbAmt - personalIncomeTaxRmbAmt ;
 		JSONObject result = new JSONObject(true);
-		result.put("sqsr", beforeTaxIncomeRmbAmt);  	//税前收入  单位分
-		result.put("sqsrDesc", CommonUtils.numberFormat(beforeTaxIncomeRmbAmt / 100d , "###,##0.00", "0.0") );  	//税前收入格式化数据
-		result.put("zdje", orderTotalPayRmbAmt);  		//账单金额  单位分
-		result.put("zdjeDesc", CommonUtils.numberFormat( orderTotalPayRmbAmt/100d, "###,##0.00", "0.0"));  		//账单金额格式化数据
-		result.put("ptyj", platCommissionRmbAmt);  		//平台佣金  单位分
-		result.put("ptyjDesc", CommonUtils.numberFormat(platCommissionRmbAmt/100d , "###,##0.00", "0.0") );  		//平台佣金格式数据
-		result.put("djgs", personalIncomeTaxRmbAmt);  //待缴个税  单位分
-		//result.put("djgs", CommonUtils.numberFormat(personalIncomeTaxRmbAmt/100d , "###,##0.00", "0.0") );  //待缴个税格式化数据
-		result.put("djgsDesc",  "待计算"  );  	//待缴个税  格式化数据 元
+		result.put("sumAmtUntax", sumAmtUntax);  //税前收入  单位分
+		result.put("descSumAmtUntax", CommonUtils.numberFormat(sumAmtUntax/100d, "###,##0.00", "0.0") );
+		result.put("sumAmtOrder", sumAmtOrder); //账单金额  单位分
+		result.put("descSumAmtOrder", CommonUtils.numberFormat( sumAmtOrder/100d, "###,##0.00", "0.0"));
+		result.put("sumAmtCommission", sumAmtCommission); //平台佣金  单位分
+		result.put("descSumAmtCommission", CommonUtils.numberFormat(sumAmtCommission/100d, "###,##0.00", "0.0") );
+		result.put("sumAmtDiscountPlat", sumAmtDiscountPlat); //平台补贴  单位分
+		result.put("descSumAmtDiscountPlat", CommonUtils.numberFormat(sumAmtDiscountPlat/100d, "###,##0.00", "0.0") );
+		result.put("sumAmtDiscountMaster", sumAmtDiscountMaster); //老师补贴  单位分
+		result.put("descSumAmtDiscountMaster", CommonUtils.numberFormat(sumAmtDiscountMaster/100d, "###,##0.00", "0.0") );
+		result.put("descSumAmtTax", "待计算" );
 		result.put("hadSettle", "N");  //是否已结算
-		result.put("year", CommonUtils.dateToString(now, "yyyy", ""));  
-		result.put("month",  CommonUtils.dateToString(now, "MM", ""));  
+//		result.put("year", CommonUtils.dateToString(now, "yyyy", ""));
+//		result.put("month",  CommonUtils.dateToString(now, "MM", ""));
 		return result;
 	}
-	private JSONObject _analysisList(List<FsOrder> waitSettleOrderList ){
-		long d = 0;
-		List<Long> ids = new ArrayList<Long>();
-		for(FsOrder order : waitSettleOrderList){
-			d = order.getPayRmbAmt() +d;
-			ids.add(order.getId());
+	private JSONObject _analysisList(List<FsOrder> unsettledOrderList ){
+		long amtPay = 0;
+		long amtDiscountPlat = 0;
+		long amtDiscountMaster = 0;
+		for(FsOrder order : unsettledOrderList){
+			amtPay += order.getPayRmbAmt();
+			amtDiscountPlat += order.getDiscountAmtPlat();
+			amtDiscountMaster += order.getDiscountAmtMaster();
 		}
 		JSONObject result = JsonUtils.commonJsonReturn();
-		JsonUtils.setBody(result, "orderTotalPayRmbAmt", d);
-		JsonUtils.setBody(result, "ids", ids);
+		JsonUtils.setBody(result, "sumAmtPay", amtPay);
+		JsonUtils.setBody(result, "sumAmtOrder", amtPay+amtDiscountPlat+amtDiscountMaster);
+		JsonUtils.setBody(result, "sumAmtDiscountPlat", amtDiscountPlat);
+		JsonUtils.setBody(result, "sumAmtDiscountMaster", amtDiscountMaster);
 		return result;
 	}
 	
@@ -473,24 +498,34 @@ public class OrderQueryServiceImpl {
 			}
 		}
 		JSONObject result = new JSONObject();
-		result.put("waitQueryUnReadNumChatSessionNoList"	, waitQueryUnReadNumChatSessionNoList);
-		result.put("masterUsrIdList"	, masterUsrIdList);
-		result.put("buyUsrIdList"	, buyUsrIdList);
+		result.put("waitQueryUnReadNumChatSessionNoList", waitQueryUnReadNumChatSessionNoList);
+		result.put("masterUsrIdList", masterUsrIdList);
+		result.put("buyUsrIdList", buyUsrIdList);
 		return result;
 	}
 
 	public JSONObject statMasterIncome(long masterUsrId){
 		try{
 			FsOrderSettlement statSettlement = this.fsOrderSettlementDao.stat1(masterUsrId, Arrays.asList("succ"));
-			Map<String, Long> statusTotalFeeMap =  this.fsOrderDao.statAmtBySellerIdAndLastTimeAndStatusListWithGroupByStatus(masterUsrId,null,null);
-			Long waitInComeAmt =  OrderAidUtil.getSumAmtFromStatusAmtMap(statusTotalFeeMap,  OrderAidUtil.getMasterWaitIncometatus()) ;
+			JSONObject statAmtMap =  this.fsOrderDao.statAmtBySellerIdGroupByStatus(masterUsrId,null,null);
+			logger.info("====="+statAmtMap.toJSONString()+"=====");
+			HashMap<String, Long> unsettledAmtMap = OrderAidUtil.getSumAmtFromStatusAmtMap(statAmtMap,  OrderAidUtil.getMasterWaitIncomeStatus());
+			Long amtOrder = unsettledAmtMap.get("sumAmtPay")+unsettledAmtMap.get("sumAmtDiscount");
+			Long amtCommission = OrderAidUtil.mul(amtOrder, OrderAidUtil.getPlatCommissionRate()).longValue();
+			Long amtUntax = amtOrder-amtCommission-unsettledAmtMap.get("sumAmtDiscountMaster");
+			
 			//已退款 = 退款确认成功+ 退款确认中
 			//退款申请中 = 退款申请成功+待审批
-			Long refundedComeAmt =  OrderAidUtil.getSumAmtFromStatusAmtMap(statusTotalFeeMap, OrderAidUtil.getMasterRefundSatus());
+			HashMap<String, Long> refundAmtMap = OrderAidUtil.getSumAmtFromStatusAmtMap(statAmtMap, OrderAidUtil.getMasterRefundSatus());
+			Long amtOrderRefund = refundAmtMap.get("sumAmtPay")+refundAmtMap.get("sumAmtDiscount");
+			Long amtCommissionRefund = OrderAidUtil.mul(amtOrderRefund, OrderAidUtil.getPlatCommissionRate()).longValue();
+			Long amtUntaxRefund = amtOrderRefund-amtCommissionRefund-refundAmtMap.get("sumAmtDiscountMaster");
+			
+			
 			JSONObject result = JsonUtils.commonJsonReturn();
-			JsonUtils.setBody(result, "allAmt", statSettlement==null ?  0  :  (statSettlement==null ?  0 : statSettlement.getRealArrivalAmt()  ) );
-			JsonUtils.setBody(result, "waitInComeAmt",   OrderAidUtil.mul(waitInComeAmt, (1-OrderAidUtil.getPlatCommissionRate())));
-			JsonUtils.setBody(result, "refundedComeAmt", OrderAidUtil.mul(refundedComeAmt, (1-OrderAidUtil.getPlatCommissionRate()))  );
+			JsonUtils.setBody(result, "allAmt", statSettlement==null ?  0  :  (statSettlement==null ?  0 : statSettlement.getRealArrivalAmt()));
+			JsonUtils.setBody(result, "amtUntax", amtUntax);
+			JsonUtils.setBody(result, "amtRefund", amtUntaxRefund);
 			return result;
 		}catch(Exception e){
 			logger.error("masterUsrId:"+masterUsrId, e);

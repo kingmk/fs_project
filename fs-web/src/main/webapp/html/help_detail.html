@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>雷门易帮助中心</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../static/js/jquery-1.11.3.js"></script>
+<script src="../static/js/common.js"></script>
+<script src="../static/js/help.js?t=5"></script>
+<link rel="stylesheet" href="../static/css/style.css">
+<style type="text/css">
+body{background-color: #fff;}
+.help-content {padding: 20px 15px 80px; color: #3f3f3f;}
+.help-content .help-title {font-size: 18px; font-weight: bold; line-height: 25px;  margin-bottom: 20px; }
+.help-content .help-detail {font-size: 14px; line-height: 20px;}
+
+.help-content .help-detail img.himg1 {width: 60%; margin: 20px 20%}
+.help-content .help-detail img.himg2 {width: 90%; margin: 20px 5%}
+
+.btn-back {width: 100%; height: 50px; line-height: 50px; background-color: #3f3f3f; font-size: 16px; color: #fff; text-align: center; position: fixed; bottom: 0;}
+</style>
+<script type="text/javascript">
+
+$(document).ready(function() {
+	var idx = commonUtils.getUrlParam("idx");
+	var title = helpList[idx].title;
+	var content = helpList[idx].content;
+	$(".help-title").text(title);
+	$(".help-detail").html(content);
+	$(".btn-back").click(function(){
+		window.history.back();
+	});
+})
+
+</script>
+
+</head>
+<body>
+<div class="page-content" >
+	<div class="help-content">
+		<div class="help-title"></div>
+		<div class="help-detail"></div>
+	</div>
+	<div class="btn-back">返回帮助中心</div>
+</div>
+
+</body>
+</html>

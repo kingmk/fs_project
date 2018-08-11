@@ -15,5 +15,4 @@
 <#assign js ="http://192.168.31.113:8080/static"> 
 <#assign img ="http://192.168.31.113:8080/static">
 
-
-<#assign version ="102511041734">
+<#assign version ="201808111121">

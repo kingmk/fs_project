@@ -94,7 +94,7 @@ public class UsrMasterController {
 			,@RequestParam(value = "perPageNum" , required = true) int perPageNum   //每页显示条数
 			){
 		Long loginUsrId = WebUtil.getUserId(request);
-		JSONObject result = orderQueryServiceImpl.findMasterUsrBillList(loginUsrId, currentPage, perPageNum);
+		JSONObject result = orderQueryServiceImpl.findBillList(loginUsrId, currentPage, perPageNum);
 		return result.toJSONString();
 	}
 

@@ -128,7 +128,7 @@ public class TencentSmsFacadeImpl {
             params.add("12345");
             params.add("雷门易");
             
-    		boolean rlt = sendSms(51564, params, "18858194592");
+    		boolean rlt = sendSms(119228, params, "18667193683");
     		System.out.println(rlt);
 		} catch (Exception e) {
 			e.printStackTrace();

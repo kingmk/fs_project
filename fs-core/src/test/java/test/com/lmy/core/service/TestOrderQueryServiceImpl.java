@@ -28,7 +28,7 @@ public class TestOrderQueryServiceImpl extends BaseTestCase {
 	}
 	
 	public void test_findMasterUsrBillList(){
-		JSONObject result = orderQueryServiceImpl.findMasterUsrBillList(100142l, 0, 10);
+		JSONObject result = orderQueryServiceImpl.findBillList(100142l, 0, 10);
 		System.out.println( JSON.toJSONString(result,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue) );
 	}
 	

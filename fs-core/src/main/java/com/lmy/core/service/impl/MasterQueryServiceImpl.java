@@ -277,11 +277,11 @@ public class MasterQueryServiceImpl {
 			logger.info( "masterInfoId="+masterInfoId+"  , cateId="+cateId+",参数cateId未空"  );
 			return JsonUtils.commonJsonReturn("0001", "参数错误");			
 		}
-		List<FsMasterServiceCate> serviceCateList = 	this.fsMasterServiceCateDao.findByMasterInfoIdAndCateId(masterInfoId, cateId, Arrays.asList("ON")) ;	
-		if(CollectionUtils.isEmpty(serviceCateList) ){
-			logger.info( "masterInfoId="+masterInfoId+", cateId="+cateId+",数据错误"  );
-			return JsonUtils.commonJsonReturn("0002", "数据错误");
-		}
+		List<FsMasterServiceCate> serviceCateList = this.fsMasterServiceCateDao.findByMasterInfoIdAndCateId(masterInfoId, cateId, Arrays.asList("ON")) ;	
+//		if(CollectionUtils.isEmpty(serviceCateList) ){
+//			logger.info( "masterInfoId="+masterInfoId+", cateId="+cateId+",数据错误"  );
+//			return JsonUtils.commonJsonReturn("0002", "数据错误");
+//		}
 		
 		FsReserve reserve = fsReserveDao.findReserve(loginUsrId, masterInfo.getUsrId());
 		FsUsr user = fsUsrDao.findById(loginUsrId);
@@ -299,7 +299,7 @@ public class MasterQueryServiceImpl {
 		body.put("isTranSecuried", "Y"); //是否担保交易
 		body.put("workBeginDate", masterInfo.getWorkDate());  // 工作起始日期
 		body.put("workYearStr",  UsrAidUtil.getWorkYearStr(masterInfo.getWorkDate()) );  // 从业年限
-		Map  avgScore = 	this.fsOrderEvaluateDao.statMasterAvgScore(null, masterInfo.getUsrId(), null);
+		Map avgScore = this.fsOrderEvaluateDao.statMasterAvgScore(null, masterInfo.getUsrId(), null);
 		Double respSpeed = UsrAidUtil.getEvaluateFromMap(avgScore , "resp_speed",0d)	;	
 		Double majorLevel = UsrAidUtil.getEvaluateFromMap(avgScore , "major_level",0d)	;	
 		Double serviceAttitude = UsrAidUtil.getEvaluateFromMap(avgScore , "service_attitude",0d)	;	
@@ -316,9 +316,12 @@ public class MasterQueryServiceImpl {
 		body.put("masterInfoId", masterInfoId) ;
 		body.put("hasReserved", (reserve == null? "N":"Y"));
 		body.put("isRegistered", ((user != null && user.getRegisterMobile() != null)? "Y":"N"));
-		List<MasterServiceCateDto> serviceCateDtoList = build(serviceCateList);
-		if(cateId!=null){
-			body.put("curServiceCateInfo",  getCurrMasterServiceCate(serviceCateDtoList, cateId) ) ;  			//当前服务类别 		
+		
+		if (!CollectionUtils.isEmpty(serviceCateList)) {
+			List<MasterServiceCateDto> serviceCateDtoList = build(serviceCateList);
+			if(cateId!=null ){
+				body.put("curServiceCateInfo",  getCurrMasterServiceCate(serviceCateDtoList, cateId) ) ;  			//当前服务类别 		
+			}
 		}
 		//body.put("serviceCateList", serviceCateDtoList) ;  					//当前所有服务类别 		
 		//~~~大师介绍 begin 
@@ -355,7 +358,7 @@ public class MasterQueryServiceImpl {
 		body.put("isTranSecuried", "Y"); //是否担保交易
 		FsOrderSettlement statSettlement = this.fsOrderSettlementDao.stat1(masterUsrId, Arrays.asList("succ"));
 		//道账税前收入
-		body.put("dzsqsr", statSettlement==null ?  0  :  ( statSettlement.getRealArrivalAmt()+statSettlement.getPersonalIncomeTaxRmbAmt()) ) ;  	  //单位分					
+		body.put("dzsqsr", statSettlement==null ?  0 : ( statSettlement.getRealArrivalAmt()+statSettlement.getPersonalIncomeTaxRmbAmt()) ) ;  	  //单位分					
 		//累计导账收入
 		body.put("ljdzsr", statSettlement==null ?  0 : statSettlement.getOrderTotalPayRmbAmt() ) ;  						// 单位分
 		

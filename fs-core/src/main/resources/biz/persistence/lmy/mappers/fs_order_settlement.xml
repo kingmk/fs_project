@@ -12,6 +12,8 @@
 	<result column="order_total_num" property="orderTotalNum"/>
 	<result column="order_total_pay_rmb_amt" property="orderTotalPayRmbAmt"/>
 	<result column="plat_commission_rmb_amt" property="platCommissionRmbAmt"/>
+	<result column="plat_discount_amt" property="platDiscountAmt"/>
+	<result column="master_discount_amt" property="masterDiscountAmt"/>
 	<result column="personal_income_tax_rmb_amt" property="personalIncomeTaxRmbAmt"/>
 	<result column="real_arrival_amt" property="realArrivalAmt"/>
 	<result column="status" property="status"/>
@@ -22,17 +24,17 @@
 	<result column="remark" property="remark"/>
 </resultMap>
 <select id="findById" parameterType="long"  resultMap="fs_order_settlement">
-	select * 	from fs_order_settlement where id=#{id}  
+	select * from fs_order_settlement where id=#{id}  
 </select>  
-<insert id="insert"  parameterType="com.lmy.core.model.FsOrderSettlement"  useGeneratedKeys="true" keyProperty="id">
-	insert into fs_order_settlement(id ,settlement_cycle_unit ,settlement_cycle ,settlement_cycle_begin_time ,settlement_cycle_end_time ,seller_usr_id ,seller_open_id ,order_total_num ,order_total_pay_rmb_amt ,plat_commission_rmb_amt ,personal_income_tax_rmb_amt ,real_arrival_amt ,status ,confrim_time ,wx_out_trade_no ,update_time ,create_time ,remark)
-   values(#{id,jdbcType=INTEGER} ,#{settlementCycleUnit,jdbcType=VARCHAR} ,#{settlementCycle,jdbcType=VARCHAR} ,#{settlementCycleBeginTime,jdbcType=TIMESTAMP} ,#{settlementCycleEndTime,jdbcType=TIMESTAMP} ,#{sellerUsrId,jdbcType=INTEGER} ,#{sellerOpenId,jdbcType=VARCHAR} ,#{orderTotalNum,jdbcType=INTEGER} ,#{orderTotalPayRmbAmt,jdbcType=INTEGER} ,#{platCommissionRmbAmt,jdbcType=INTEGER} ,#{personalIncomeTaxRmbAmt,jdbcType=INTEGER} ,#{realArrivalAmt,jdbcType=INTEGER} ,#{status,jdbcType=VARCHAR} ,#{confrimTime,jdbcType=TIMESTAMP} ,#{wxOutTradeNo,jdbcType=VARCHAR} ,#{updateTime,jdbcType=TIMESTAMP} ,#{createTime,jdbcType=TIMESTAMP} ,#{remark,jdbcType=VARCHAR}) 
+<insert id="insert" parameterType="com.lmy.core.model.FsOrderSettlement" useGeneratedKeys="true" keyProperty="id">
+	insert into fs_order_settlement(id, settlement_cycle_unit, settlement_cycle, settlement_cycle_begin_time, settlement_cycle_end_time, seller_usr_id, seller_open_id, order_total_num, order_total_pay_rmb_amt, plat_commission_rmb_amt, plat_discount_amt, master_discount_amt, personal_income_tax_rmb_amt, real_arrival_amt, status, confrim_time, wx_out_trade_no, update_time, create_time, remark)
+   values(#{id,jdbcType=INTEGER}, #{settlementCycleUnit,jdbcType=VARCHAR}, #{settlementCycle,jdbcType=VARCHAR}, #{settlementCycleBeginTime,jdbcType=TIMESTAMP}, #{settlementCycleEndTime,jdbcType=TIMESTAMP}, #{sellerUsrId,jdbcType=INTEGER}, #{sellerOpenId,jdbcType=VARCHAR}, #{orderTotalNum,jdbcType=INTEGER}, #{orderTotalPayRmbAmt,jdbcType=INTEGER}, #{platCommissionRmbAmt,jdbcType=INTEGER}, #{platDiscountAmt,jdbcType=INTEGER}, #{masterDiscountAmt,jdbcType=INTEGER}, #{personalIncomeTaxRmbAmt,jdbcType=INTEGER}, #{realArrivalAmt,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, #{confrimTime,jdbcType=TIMESTAMP}, #{wxOutTradeNo,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}) 
 </insert>
 <insert id="batchInsert"  parameterType="list">
-	insert into fs_order_settlement(id ,settlement_cycle_unit ,settlement_cycle ,settlement_cycle_begin_time ,settlement_cycle_end_time ,seller_usr_id ,seller_open_id ,order_total_num ,order_total_pay_rmb_amt ,plat_commission_rmb_amt ,personal_income_tax_rmb_amt ,real_arrival_amt ,status ,confrim_time ,wx_out_trade_no ,update_time ,create_time ,remark)
+	insert into fs_order_settlement(id, settlement_cycle_unit, settlement_cycle, settlement_cycle_begin_time, settlement_cycle_end_time, seller_usr_id, seller_open_id, order_total_num, order_total_pay_rmb_amt, plat_commission_rmb_amt, plat_discount_amt, master_discount_amt, personal_income_tax_rmb_amt, real_arrival_amt, status, confrim_time, wx_out_trade_no, update_time, create_time, remark)
    values
 	<foreach collection="list" item="item" index="index"   separator=","> 
-    (#{item.id,jdbcType=INTEGER} ,#{item.settlementCycleUnit,jdbcType=VARCHAR} ,#{item.settlementCycle,jdbcType=VARCHAR} ,#{item.settlementCycleBeginTime,jdbcType=TIMESTAMP} ,#{item.settlementCycleEndTime,jdbcType=TIMESTAMP} ,#{item.sellerUsrId,jdbcType=INTEGER} ,#{item.sellerOpenId,jdbcType=VARCHAR} ,#{item.orderTotalNum,jdbcType=INTEGER} ,#{item.orderTotalPayRmbAmt,jdbcType=INTEGER} ,#{item.platCommissionRmbAmt,jdbcType=INTEGER} ,#{item.personalIncomeTaxRmbAmt,jdbcType=INTEGER} ,#{item.realArrivalAmt,jdbcType=INTEGER} ,#{item.status,jdbcType=VARCHAR} ,#{item.confrimTime,jdbcType=TIMESTAMP} ,#{item.wxOutTradeNo,jdbcType=VARCHAR} ,#{item.updateTime,jdbcType=TIMESTAMP} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.remark,jdbcType=VARCHAR})
+    (#{item.id,jdbcType=INTEGER}, #{item.settlementCycleUnit,jdbcType=VARCHAR}, #{item.settlementCycle,jdbcType=VARCHAR}, #{item.settlementCycleBeginTime,jdbcType=TIMESTAMP}, #{item.settlementCycleEndTime,jdbcType=TIMESTAMP}, #{item.sellerUsrId,jdbcType=INTEGER}, #{item.sellerOpenId,jdbcType=VARCHAR}, #{item.orderTotalNum,jdbcType=INTEGER}, #{item.orderTotalPayRmbAmt,jdbcType=INTEGER}, #{item.platCommissionRmbAmt,jdbcType=INTEGER}, #{item.platDiscountAmt,jdbcType=INTEGER}, #{item.masterDiscountAmt,jdbcType=INTEGER}, #{item.personalIncomeTaxRmbAmt,jdbcType=INTEGER}, #{item.realArrivalAmt,jdbcType=INTEGER}, #{item.status,jdbcType=VARCHAR}, #{item.confrimTime,jdbcType=TIMESTAMP}, #{item.wxOutTradeNo,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR})
 	</foreach> 
 </insert>
 <update id="update"	parameterType="com.lmy.core.model.FsOrderSettlement">
@@ -46,6 +48,8 @@
 	<if test="orderTotalNum != null">order_total_num=#{orderTotalNum},</if>
 	<if test="orderTotalPayRmbAmt != null">order_total_pay_rmb_amt=#{orderTotalPayRmbAmt},</if>
 	<if test="platCommissionRmbAmt != null">plat_commission_rmb_amt=#{platCommissionRmbAmt},</if>
+	<if test="platDiscountAmt != null">plat_discount_amt=#{platDiscountAmt},</if>
+	<if test="masterDiscountAmt != null">master_discount_amt=#{masterDiscountAmt},</if>
 	<if test="personalIncomeTaxRmbAmt != null">personal_income_tax_rmb_amt=#{personalIncomeTaxRmbAmt},</if>
 	<if test="realArrivalAmt != null">real_arrival_amt=#{realArrivalAmt},</if>
 	<if test="status != null">status=#{status},</if>
@@ -61,12 +65,14 @@
 	SELECT 
        sum(a.order_total_pay_rmb_amt) as order_total_pay_rmb_amt, 
        sum(a.plat_commission_rmb_amt) as plat_commission_rmb_amt,
+       sum(a.plat_discount_amt) as plat_discount_amt,
+       sum(a.master_discount_amt) as master_discount_amt,
        sum(a.personal_income_tax_rmb_amt) as personal_income_tax_rmb_amt,
        sum(a.real_arrival_amt) as real_arrival_amt
   FROM fs_order_settlement a
   <where>
   	<if test="sellerUsrId!=null">a.seller_usr_id = #{sellerUsrId}</if>
-	<if test="  statusList !=null " >
+	<if test="statusList !=null" >
           and a.status in 
             <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
 				#{item}

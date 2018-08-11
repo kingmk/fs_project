@@ -74,8 +74,9 @@
 }
 
 
+
 .card-list-item{width:100%;box-sizing:border-box;border:0.05rem #ddd solid; border-width: 0.05rem 0; background: #fff; margin-bottom: 0.5rem;}
-.card-list-item .top{display:flex;display:-webkit-flex;flex:1;height:12rem;padding-top:2rem;box-sizing:border-box;padding-left:1.5rem;position:relative}
+.card-list-item .top{display:flex;display:-webkit-flex;flex:1;padding:2rem 0 1rem;box-sizing:border-box;padding-left:1.5rem;position:relative}
 .card-list-item .top:after{content:'';position:absolute;border-bottom:0.05rem #ddd solid;left:1.5rem;right:0;bottom:0}
 .card-list-item .top .left{flex-shrink:1;-webkit-flex-shrink:1;width:5rem;margin-right:4rem}
 .card-list-item .top .data{font-size:4rem;color:#3f3f3f;font-weight:bold;text-align:center;line-height:1}

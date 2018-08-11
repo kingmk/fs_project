@@ -198,7 +198,7 @@ public class UsrRegisterMobileController {
 		else if(!FsEnvUtil.isDev()){
 			//smsSendResult = AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, mobile, "SMS_68210019 " , null);
 		}
-		smsSendResult = TencentSmsFacadeImpl.sendSms(51564, params, mobile);
+		smsSendResult = TencentSmsFacadeImpl.sendSms(119228, params, mobile);
 //		smsSendResult = AlidayuSmsFacadeImpl.alidayuSmsSend(smsParamJson, mobile, "SMS_68210019 " , null);
 		if(smsSendResult){
 			//发送短信验证码 

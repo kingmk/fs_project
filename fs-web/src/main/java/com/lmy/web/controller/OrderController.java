@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.lmy.common.component.CommonUtils;
 import com.lmy.common.component.JsonUtils;
 import com.lmy.core.manage.impl.OrderManageImpl;
@@ -23,6 +25,7 @@ import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsMasterServiceCate;
 import com.lmy.core.model.FsOrder;
 import com.lmy.core.model.FsUsr;
+import com.lmy.core.service.impl.CouponServiceImpl;
 import com.lmy.core.service.impl.FsZxCateQueryServiceImpl;
 import com.lmy.core.service.impl.MasterQueryServiceImpl;
 import com.lmy.core.service.impl.OrderAidUtil;
@@ -42,6 +45,8 @@ public class OrderController {
 	private OrderQueryServiceImpl orderQueryServiceImpl;
 	@Autowired
 	private OrderManageImpl orderManageImpl;
+	@Autowired
+	private CouponServiceImpl couponServiceImpl;
 	@RequestMapping(value="/order/confirm_nav")
 	public String confirm_nav(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 									,@RequestParam(value = "masterServiceCateId" , required = true) long masterServiceCateId
@@ -59,10 +64,28 @@ public class OrderController {
 			return "forward:/usr/register/mobile_nav?backUrl="+backUrl;
 		}
 		FsMasterInfo masterInfo = 	masterQueryServiceImpl.findByMasterInfoId(masterInfoId);
-		FsMasterServiceCate masterServiceCate = 	fsZxCateQueryServiceImpl.findByMasterInfoIdAndId(masterInfoId, masterServiceCateId);
+		FsMasterServiceCate masterServiceCate = fsZxCateQueryServiceImpl.findByMasterInfoIdAndId(masterInfoId, masterServiceCateId);
+		Long orderAmt = masterServiceCate.getAmt();
+		JSONObject couponsForOrder = couponServiceImpl.getCouponsForOrder(usr.getId(), masterServiceCate.getAmt(), masterServiceCate.getFsZxCateId());
+		JSONObject couponSel = null;
+		JSONArray jCoupons = (JSONArray) JsonUtils.getBodyValue(couponsForOrder, "list");
+		if (jCoupons.size() > 0) {
+		couponSel = (JSONObject) jCoupons.get(0);
+			if (couponSel.getString("useForOrder").equals("N")) {
+				couponSel = null;
+			}
+		}
+		int countUsable = (int) JsonUtils.getBodyValue(couponsForOrder, "countUsable");
+		
 		modelMap.put("masterInfo", masterInfo);
 		modelMap.put("masterNickName", UsrAidUtil.getMasterNickName(masterInfo, null, ""));
 		modelMap.put("masterServiceCate", masterServiceCate);
+		modelMap.put("couponSel", couponSel);
+		modelMap.put("countUsable", countUsable);
+		modelMap.put("orderAmt", orderAmt);
+		modelMap.put("coupons", jCoupons);
+		modelMap.put("couponSize", jCoupons.size());
+		modelMap.put("strCoupons", JSON.toJSONString(jCoupons,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue));
 		return "/order/confirm_nav";
 	}
 	
@@ -72,10 +95,11 @@ public class OrderController {
 	@com.lmy.common.annotation.PreventDoubleClickAnnotation
 	public String unifiedorder_weixin(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 									,@RequestParam(value = "masterServiceCateId" , required = true) long masterServiceCateId
-									,@RequestParam(value = "masterInfoId" , required = true) long masterInfoId 
+									,@RequestParam(value = "masterInfoId" , required = true) long masterInfoId
+									,@RequestParam(value = "couponId" , required = false) Long couponId
 			) {
 		FsUsr usr = SessionUtil.getFsUsr(request);
-		JSONObject result = orderManageImpl.unifiedorderWeixin(usr.getId(), usr.getWxOpenId(),usr.getRegisterMobile(), WebUtil.getIpAddr(request), masterInfoId, masterServiceCateId);
+		JSONObject result = orderManageImpl.unifiedorderWeixin(usr.getId(), usr.getWxOpenId(),usr.getRegisterMobile(), WebUtil.getIpAddr(request), masterInfoId, masterServiceCateId, couponId);
 		return result.toJSONString();
 	}
 	
@@ -113,7 +137,7 @@ public class OrderController {
 	public String order_pay_succ(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 									,@RequestParam(value = "orderId" , required = true) long orderId 
 			) {
-		FsUsr usr = 	SessionUtil.getFsUsr(request);
+		FsUsr usr = SessionUtil.getFsUsr(request);
 		FsOrder order = orderQueryServiceImpl.findByOrderIdAndBuyUsrId(orderId, usr.getId());
 		if(order ==null || !"pay_succ".equals(order.getStatus()) ) {
 			logger.warn("orderId:"+orderId+",usrId:"+usr.getId()+",未查询到订单数据 攻击？响应空白页面");

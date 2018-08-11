@@ -1,19 +1,19 @@
+<#import "/common/host.ftl" as host>
+<#import "/common/funUtils.ftl" as funUtils>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${zxCateBean.name}</title>
+<script src="${host.js}/js/rem.js?${host.version}"></script>
+<script src="${host.js}/js/jquery-1.11.3.min.js"></script>
+<script src="${host.js}/js/common.js?${host.version}"></script>
+<link rel="stylesheet" href="${host.css}/css/consultation.css?${host.version}">
+<link rel="stylesheet" href="${host.css}/css/star.css?${host.version}">
+<script src="../static/js/components.js?${host.version}"></script>
 
- <#import "/common/host.ftl" as host>
- <#import "/common/funUtils.ftl" as funUtils>
- <html>
- <head>
-  <meta charset="UTF-8">
-    <title>${zxCateBean.name}</title>
-    <script src="${host.js}/js/rem.js?${host.version}"></script>
-    <script src="${host.js}/js/jquery-1.11.3.min.js"></script>
-    <script src="${host.js}/js/common.js?${host.version}"></script>
-    <link rel="stylesheet" href="${host.css}/css/consultation.css?${host.version}">
-    <link rel="stylesheet" href="${host.css}/css/star.css?${host.version}">
-    <script src="../static/js/components.js?${host.version}"></script>
- </head>
- <body id='consultation-detail'>
- <div class="header">
+</head>
+<body id='consultation-detail'>
+<div class="header">
         <img src="${host.img}/images/sortdetail/${zxCateBean.id}.jpg?${host.version}">
         <#-- <img src="${host.img}/images/sortdetail/transparent.png?${host.version}">
         <div class="title">${zxCateBean.name}</div>
@@ -60,5 +60,5 @@
             </a>
         </div>
     </div>
- </body>
- </html>
+</body>
+</html>

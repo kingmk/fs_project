@@ -8,7 +8,7 @@
 <script src="${host.js}/js/rem.js?${host.version}"></script>
 <script src="${host.js}/js/jquery-1.11.3.min.js"></script>
 <script src="${host.js}/js/common.js?${host.version}"></script>
-<link rel="stylesheet" href="${host.css}/css/user_mine.css?${host.version}1">
+<link rel="stylesheet" href="${host.css}/css/user_mine.css?${host.version}2">
 <link rel="stylesheet" href="${host.css}/css/bgmask.css?${host.version}2">
 <style>
 .img-logo-box{width: 7.5rem; height: 7.5rem ;border-radius: 50%; border: 0.1rem solid #fff; overflow: hidden ;position: relative; margin: 0 auto 2.5rem;}
@@ -50,6 +50,11 @@ function showCustomerService() {
 <div class="content">
 <div class="list">
     <div class="list-body">
+        <a class="list-item" href="${host.base}/coupon/my_coupons">
+            <div class="list-icon icon-coupon"></div>
+            <div class="list-label">我的优惠券</div>
+            <div class="list-arrow"></div>
+        </a>
         <a class="list-item" href="${host.base}/usr/common/personal_data">
             <div class="list-icon icon-mine"></div>
             <div class="list-label">个人资料</div>

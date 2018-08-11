@@ -109,7 +109,6 @@ function reserveMaster(masterInfoId) {
 		} ,
 		dataType: "json",
 		success: function(data){
-			console.log(data);
 			if (data.head.code != "0000") {
 				mAlert.addAlert(data.head.msg);
 			} else {

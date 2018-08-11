@@ -23,6 +23,10 @@ public class FsOrderSettlement  extends BaseObject {
   private  Long  orderTotalPayRmbAmt;
   /** 平台佣金 单位分 */
   private  Long  platCommissionRmbAmt;
+  /** 平台优惠 单位分 */
+  private  Long  platDiscountAmt;
+  /** 老师优惠 单位分 */
+  private  Long  masterDiscountAmt;
   /** 应出个税 单位分 */
   private  Long  personalIncomeTaxRmbAmt;
   /** 实际到账金额 单位分 */
@@ -118,7 +122,22 @@ public class FsOrderSettlement  extends BaseObject {
 		 this.platCommissionRmbAmt=platCommissionRmbAmt;
 		 return this;
 	}
-  /** 应出个税 单位分 */
+	
+	public Long getPlatDiscountAmt() {
+		return platDiscountAmt;
+	}
+	public FsOrderSettlement setPlatDiscountAmt(Long platDiscountAmt) {
+		this.platDiscountAmt = platDiscountAmt;
+		 return this;
+	}
+	public Long getMasterDiscountAmt() {
+		return masterDiscountAmt;
+	}
+	public FsOrderSettlement setMasterDiscountAmt(Long masterDiscountAmt) {
+		this.masterDiscountAmt = masterDiscountAmt;
+		 return this;
+	}
+/** 应出个税 单位分 */
 	public Long getPersonalIncomeTaxRmbAmt(){
 		return this.personalIncomeTaxRmbAmt;
 	}

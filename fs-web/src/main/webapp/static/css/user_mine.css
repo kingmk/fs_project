@@ -741,6 +741,8 @@ a {
 .list-icon {
   background: url("../images/user_account_icon.png?6");
   background-size: 100% auto; }
+  .list-icon.icon-coupon {
+    background-position: 0 -100%; }
   .list-icon.icon-mine {
     background-position: 0 -200%; }
   .list-icon.icon-follow {

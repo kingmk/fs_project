@@ -18,9 +18,9 @@ public class OrderManageImpl {
 	private static final Logger logger = Logger.getLogger(OrderManageImpl.class);
 	@Autowired
 	private OrderServiceImpl orderServiceImpl;
-	public JSONObject unifiedorderWeixin(long buyUsrId, final String buyUsrOpenId ,final String registerMobile,final String buyUsrIp,  long masterInfoId , long masterServiceCateId){
+	public JSONObject unifiedorderWeixin(long buyUsrId, final String buyUsrOpenId, final String registerMobile, final String buyUsrIp, long masterInfoId, long masterServiceCateId, Long couponId){
 		//本地db 持久化
-		JSONObject unifiedorderLocalDbPersisResult =  orderServiceImpl.unifiedorderWeixin(buyUsrId, buyUsrOpenId,registerMobile,buyUsrIp, masterInfoId, masterServiceCateId);
+		JSONObject unifiedorderLocalDbPersisResult =  orderServiceImpl.unifiedorderWeixin(buyUsrId, buyUsrOpenId,registerMobile,buyUsrIp, masterInfoId, masterServiceCateId, couponId);
 		if(!JsonUtils.equalDefSuccCode(unifiedorderLocalDbPersisResult)){
 			return unifiedorderLocalDbPersisResult;
 		}

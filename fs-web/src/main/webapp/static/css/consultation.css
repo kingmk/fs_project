@@ -841,28 +841,15 @@ a {
   right: 0;
   border-top: 0.1rem solid #ddd; }
 
-#consultation .content {
-  width: 100%;
-  padding-bottom: 8.5rem; }
-  #consultation .content .card {
-    width: 100%;
-    position: relative;
-    box-sizing: border-box;
-    display: block;
-    text-decoration: none;
-    line-height: 1;
-    margin-bottom: 1rem; }
-    #consultation .content .card img {
-      width: 100%; }
-    #consultation .content .card .title {
-      padding-top: 5.7rem;
-      font-size: 1.8rem;
-      color: #3f3f3f;
-      padding-bottom: 0.7rem;
-      font-weight: bold; }
-    #consultation .content .card .text {
-      font-size: 1.2rem;
-      color: #3f3f3f; }
+.banners{width: 100%; position: relative; overflow: hidden;}
+.swiper-container-horizontal .swiper-pagination {bottom: 0!important;}
+
+
+#consultation .content {width: 100%;padding-bottom: 8.5rem; }
+#consultation .content .card {width: 100%;position: relative;box-sizing: border-box;display: block;text-decoration: none;line-height: 1;}
+#consultation .content .card img {width: 100%; vertical-align: bottom;}
+#consultation .content .card .separator {position: absolute; bottom: 0; left: 1.5rem; right: 0; background-color: #eee; height: 1px; }
+
 
 #consultation-detail .header {
   width: 100%;

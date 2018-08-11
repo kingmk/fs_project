@@ -22,8 +22,10 @@ import com.lmy.common.component.HttpService;
 import com.lmy.core.model.FsUsr;
 import com.lmy.core.service.impl.FsWeiXinUrlServiceImpl;
 import com.lmy.core.service.impl.MasterStatisticsServiceImpl;
+import com.lmy.core.service.impl.OrderServiceImpl;
 import com.lmy.core.service.impl.OrderSettlementServiceImpl;
 import com.lmy.core.service.impl.UsrServiceImpl;
+import com.lmy.core.utils.FsEnvUtil;
 import com.lmy.web.common.SessionUtil;
 import com.lmy.web.common.WebUtil;
 import com.lmy.common.utils.CookieUtil;
@@ -37,6 +39,8 @@ public class EnterBaseController {
 	private HttpService httpService = new HttpService();
 	@Autowired
 	private UsrServiceImpl usrServiceImpl;
+	@Autowired
+	private OrderServiceImpl orderServiceImpl;
 	@Autowired
 	private OrderSettlementServiceImpl orderSettlementServiceImpl;
 	@Autowired
@@ -149,5 +153,18 @@ public class EnterBaseController {
 		JSONObject result = this.masterStatisticsServiceImpl.searchMasters(filterCateId, orderBy, page, pageSize);
 		return result.toJSONString();
 	}
-	
+
+
+	@RequestMapping(value="/enter/test_order_succ")
+	@ResponseBody
+	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
+	public String test_order_succ(HttpServletRequest request,HttpServletResponse response
+			,@RequestParam(value = "out_trade_no" , required = true) String out_trade_no
+			) throws Exception{
+		if (!FsEnvUtil.isDev()) {
+			return "only for test environment";
+		}
+		JSONObject result = this.orderServiceImpl.zxOrderHandWeiXinNotify(out_trade_no, "CFT", out_trade_no, true);
+		return result.toJSONString();
+	}
 }

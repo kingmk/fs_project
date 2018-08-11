@@ -44,7 +44,7 @@
 <update id="offlineMasterCateService" parameterType="hashmap">
 	update fs_master_service_cate
 <set>
-    status='Off', update_time=#{updateTime}
+    status='OFF', update_time=#{updateTime}
 </set>
 	where fs_master_info_id=#{masterInfoId} and fs_zx_cate_id=#{cateId}
 </update>
@@ -55,7 +55,7 @@
     on a.fs_zx_cate_id = b.id
     <where>
         <if test="usrId!=null">a.usr_id =#{usrId}</if>
-        <if test="	statusList!=null">
+        <if test="statusList!=null">
             and a.status in 
            	<foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
 			#{item}

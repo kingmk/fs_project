@@ -101,7 +101,8 @@
 	from fs_master_info a join fs_master_statistics b
 	on a.usr_id=b.master_usr_id
     <where>
-        a.service_status != 'FORBID' and a.audit_status = 'approved'
+        a.service_status != 'FORBID' and a.audit_status = 'approved' 
+        <if test="cateId != 1">and b.status='ON'</if>
         <if test="cateId != null">and b.cate_id=#{cateId}</if>
         <if test="cateId == null">and b.cate_id=1</if>
     </where>

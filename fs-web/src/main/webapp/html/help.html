@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>雷门易帮助中心</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../static/js/jquery-1.11.3.js"></script>
+<script src="../static/js/common.js"></script>
+<script src="../static/js/help.js?t=1"></script>
+<link rel="stylesheet" href="../static/css/style.css">
+<style type="text/css">
+.topbar {height: 80px; width: 100%;}
+.topbar .topimg {width: 105px; height: 80px; background: url(../static/images/help_img.png); background-size: 100% 100%; float: right;}
+.topbar .topc {padding: 25px 0 0 15px;}
+.topbar .topc .t1 {font-size: 18px; font-weight: bold; color: #3f3f3f; line-height: 25px; }
+.topbar .topc .t2 {font-size: 12px; color: #888; margin-top: 5px;}
+.help-list {border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding-left: 15px; background-color: #fff;}
+.help-item {height: 50px; line-height: 50px; font-size: 14px; color: #3f3f3f; border-top: 1px solid #ddd; }
+.help-item.first {border-top: none;}
+.help-item .icon-arrow{width: 9px; height: 15px; background-image:url(../static/images/icon_arrow_right_grey.png); background-size: 100% 100%; float: right; margin-top: 17px; margin-right: 15px;}
+
+</style>
+<script type="text/javascript">
+$(document).ready(function() {
+	var domList = $(".help-list");
+	for (var i = 0; i < helpList.length; i++) {
+		var item = helpList[i];
+		var domItem = $('<div class="help-item" data-idx="'+i+'"><div class="icon-arrow"></div>'+item.title+'</div>');
+		if (i==0) {
+			domItem.addClass("first");
+		};
+		domItem.click(function(){
+			var idx = $(this).attr("data-idx");
+			location.href = "help_detail.html?idx="+idx;
+		});
+		domList.append(domItem);
+	};
+
+})
+
+</script>
+</head>
+<body>
+<div class="page-list">
+	<div class="topbar clearfix">
+		<div class="topimg"></div>
+		<div class="topc">
+			<div class="t1">您好！我的朋友</div>
+			<div class="t2">希望以下内容对您有帮助</div>
+		</div>
+	</div>
+	<div class="help-list"></div>
+</div>
+</body>
+</html>

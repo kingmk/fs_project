@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_coupon_instance">
+<resultMap id="fs_coupon_instance" type="com.lmy.core.model.FsCouponInstance">
+	<result column="id" property="id"/>
+	<result column="name" property="name"/>
+	<result column="usr_id" property="usrId"/>
+	<result column="template_id" property="templateId"/>
+	<result column="last_use_time" property="lastUseTime"/>
+	<result column="type" property="type"/>
+	<result column="categories" property="categories"/>
+	<result column="pay_amt_min" property="payAmtMin"/>
+	<result column="discount_amt" property="discountAmt"/>
+	<result column="status" property="status"/>
+	<result column="create_time" property="createTime"/>
+	<result column="used_time" property="usedTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="fs_coupon_instance">
+	select * from fs_coupon_instance where id=#{id}  
+</select> 
+<insert id="insert"  parameterType="com.lmy.core.model.FsCouponInstance"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_coupon_instance(id, name, usr_id, template_id, last_use_time, type, categories, pay_amt_min, discount_amt, status, create_time)
+	values(#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{usrId,jdbcType=INTEGER}, #{templateId,jdbcType=INTEGER}, #{lastUseTime,jdbcType=TIMESTAMP}, #{type, jdbcType=VARCHAR}, #{categories, jdbcType=VARCHAR}, #{payAmtMin, jdbcType=INTEGER}, #{discountAmt, jdbcType=INTEGER}, #{status, jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}) 
+</insert>
+
+<select id="countInstance" parameterType="hashmap" resultType="long">
+	select count(*) from fs_coupon_instance 
+    <where>
+        <if test="usrId !=null">usr_id=#{usrId}</if>
+        <if test="templateId !=null">and template_id=#{templateId}</if>
+        <if test="usable == 'Y'.toString()">and status='UNUSED' and last_use_time &gt; #{now}</if>
+        <if test="usable == 'N'.toString()">and (status='USED' or last_use_time &lt; #{now})</if>
+    </where>
+</select>
+
+<select id="findByUser" parameterType="hashmap" resultMap="fs_coupon_instance">
+    select * from fs_coupon_instance
+    <where>
+        usr_id=#{usrId}
+        <if test="usable == 'Y'.toString()">and status='UNUSED' and last_use_time &gt; #{now}</if>
+        <if test="usable == 'N'.toString()">and (status='USED' or last_use_time &lt; #{now})</if>
+    </where>
+    order by create_time desc
+    <if test="start !=null and pagesize !=null">limit #{start}, #{pagesize}</if>
+</select>
+
+
+<update id="updateStatus" parameterType="hashmap">
+    update fs_coupon_instance 
+    set status=#{status}
+    <if test="status=='USED'.toString()">, used_time = now()</if>
+    <if test="status=='UNUSED'.toString()">, used_time = null</if> 
+    where id =#{id}
+</update>
+
+</mapper>

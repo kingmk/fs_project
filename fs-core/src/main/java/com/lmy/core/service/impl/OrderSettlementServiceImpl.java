@@ -102,14 +102,14 @@ public class OrderSettlementServiceImpl {
 	}
 	
 	public void autoSettlement(Date now){
-		String redisLockSuffixKey = this.getClass()+"#"+Thread.currentThread().getStackTrace()[1].getMethodName();
+		String redisLockSuffixKey = this.getClass().getSimpleName()+"#"+Thread.currentThread().getStackTrace()[1].getMethodName();
 		try{
 			boolean hadGetlock = getLock(redisLockSuffixKey, RedisClient.oneHourSec *3);
 			if(!hadGetlock){
 				if(FsEnvUtil.isDev()){
 					RedisClient.delete(CacheConstant.AUTO_JOB +"_" +redisLockSuffixKey);
 				}
-				logger.info("获取所失败,本次操作 忽略");
+				logger.info("获取锁失败,本次操作 忽略");
 				return ;
 			}
 			Date settlementCycleBeginTime = getSettlementCycleBeginTime(now);
@@ -134,30 +134,37 @@ public class OrderSettlementServiceImpl {
 		JSONObject wxTransResult = null;
 		try{
 			logger.info("开始结算 waitSettleSellerUsrId:"+waitSettleSellerUsrId+",settlementCycleBeginTime:"+CommonUtils.dateToString(settlementCycleBeginTime, CommonUtils.dateFormat2, "")+"  ,settlementCycleEndTime"+CommonUtils.dateToString(settlementCycleEndTime, CommonUtils.dateFormat2, ""));
-			List<FsOrder> waitSettleOrderList =   this.fsOrderDao.findShortOrderInfoForSettlement(waitSettleSellerUsrId, settlementCycleBeginTime, settlementCycleEndTime);
-			if(CollectionUtils.isEmpty(waitSettleOrderList)){
-				logger.info("没有待结算的订单waitSettleSellerUsrId:"+waitSettleSellerUsrId+",settlementCycleBeginTime:"+CommonUtils.dateToString(settlementCycleBeginTime, CommonUtils.dateFormat2, "")+"  ,settlementCycleEndTime"+CommonUtils.dateToString(settlementCycleEndTime, CommonUtils.dateFormat2, ""));
+			List<FsOrder> unsettledOrderList =   this.fsOrderDao.findShortOrderInfoForSettlement(waitSettleSellerUsrId, settlementCycleBeginTime, settlementCycleEndTime);
+			if(CollectionUtils.isEmpty(unsettledOrderList)){
+				logger.info("没有待结算的订单waitSettleSellerUsrId:"+unsettledOrderList+",settlementCycleBeginTime:"+CommonUtils.dateToString(settlementCycleBeginTime, CommonUtils.dateFormat2, "")+"  ,settlementCycleEndTime"+CommonUtils.dateToString(settlementCycleEndTime, CommonUtils.dateFormat2, ""));
 				return ;
 			}
 			Date now = new Date();
 			FsUsr sellerUsr = this.fsUsrDao.findById(waitSettleSellerUsrId);
-			int orderTotalNum = waitSettleOrderList.size();
-			JSONObject analysisListResult = _analysisList(waitSettleOrderList);
-			//订单总金额 C端用户支付总金额
-			Long orderTotalPayRmbAmt = (Long)JsonUtils.getBodyValue(analysisListResult, "orderTotalPayRmbAmt");
+			int orderTotalNum = unsettledOrderList.size();
+			JSONObject analysisListResult = _analysisList(unsettledOrderList);
 			List<Long> ids =(List<Long>) JsonUtils.getBodyValue(analysisListResult, "ids");
-			// 平台佣金 单位分
-			Long platCommissionRmbAmt = OrderAidUtil.mul(orderTotalPayRmbAmt, OrderAidUtil.getPlatCommissionRate()).longValue();
+			
+
+			Long sumAmtPay = (Long)JsonUtils.getBodyValue(analysisListResult, "sumAmtPay");
+			Long sumAmtOrder = (Long)JsonUtils.getBodyValue(analysisListResult, "sumAmtOrder");
+			Long sumAmtDiscountPlat = (Long)JsonUtils.getBodyValue(analysisListResult, "sumAmtDiscountPlat");
+			Long sumAmtDiscountMaster = (Long)JsonUtils.getBodyValue(analysisListResult, "sumAmtDiscountMaster");     
+			Long sumAmtCommission = OrderAidUtil.mul(sumAmtOrder, OrderAidUtil.getPlatCommissionRate()).longValue();
+			
 			//税前总收入
-			Long beforeTaxIncomeRmbAmt = orderTotalPayRmbAmt - platCommissionRmbAmt;
+			Long sumAmtUntax = sumAmtOrder-sumAmtCommission-sumAmtDiscountMaster;
 			//应出个税 单位分
-			Long personalIncomeTaxRmbAmt = OrderAidUtil.calPersonalIncomeTaxRmbAmt(beforeTaxIncomeRmbAmt);
+			Long personalIncomeTaxRmbAmt = OrderAidUtil.calPersonalIncomeTaxRmbAmt(sumAmtUntax);
+			
 			//实际到(转)账金额 单位分
-			long realArrivalAmt =  beforeTaxIncomeRmbAmt - personalIncomeTaxRmbAmt ;
+			long realArrivalAmt =  sumAmtUntax - personalIncomeTaxRmbAmt;
+			
 			FsOrderSettlement orderSettleForInsert = new FsOrderSettlement();
 			orderSettleForInsert.setCreateTime(now);
-			orderSettleForInsert.setOrderTotalNum(Long.valueOf(orderTotalNum)).setOrderTotalPayRmbAmt(orderTotalPayRmbAmt).setPersonalIncomeTaxRmbAmt(personalIncomeTaxRmbAmt).setPlatCommissionRmbAmt(platCommissionRmbAmt)
-			.setRealArrivalAmt(realArrivalAmt);
+			orderSettleForInsert.setOrderTotalNum(Long.valueOf(orderTotalNum)).setOrderTotalPayRmbAmt(sumAmtOrder)
+			.setPlatCommissionRmbAmt(sumAmtCommission).setPlatDiscountAmt(sumAmtDiscountPlat).setMasterDiscountAmt(sumAmtDiscountMaster)
+			.setPersonalIncomeTaxRmbAmt(personalIncomeTaxRmbAmt).setRealArrivalAmt(realArrivalAmt);
 			orderSettleForInsert.setSellerOpenId(sellerUsr.getWxOpenId()).setSellerUsrId(waitSettleSellerUsrId);
 			orderSettleForInsert.setSettlementCycle( CommonUtils.dateToString(settlementCycleBeginTime, "yyyyMM", "") ).setSettlementCycleBeginTime(settlementCycleBeginTime).setSettlementCycleEndTime(settlementCycleEndTime).setSettlementCycleUnit("month");
 			orderSettleForInsert.setStatus("ing").setUpdateTime(now);
@@ -379,20 +386,25 @@ public class OrderSettlementServiceImpl {
 		.setReUserName(null).setTradeConfirmTime(null).setTradeDesc("月结").setTradeStatus("ing").setTradeType("transfers").setSpbillCreateIp(InetAddress.getLocalHost().getHostAddress());
 		return beanForInsert;
 	}
-	
-	
 
-	
-	private JSONObject _analysisList(List<FsOrder> waitSettleOrderList ){
-		long d = 0;
+	private JSONObject _analysisList(List<FsOrder> unsettledOrderList ){
+		long amtPay = 0;
+		long amtDiscountPlat = 0;
+		long amtDiscountMaster = 0;
 		List<Long> ids = new ArrayList<Long>();
-		for(FsOrder order : waitSettleOrderList){
-			d = order.getPayRmbAmt() +d;
+		for(FsOrder order : unsettledOrderList){
+			amtPay += order.getPayRmbAmt();
+			amtDiscountPlat += order.getDiscountAmtPlat();
+			amtDiscountMaster += order.getDiscountAmtMaster();
 			ids.add(order.getId());
 		}
 		JSONObject result = JsonUtils.commonJsonReturn();
-		JsonUtils.setBody(result, "orderTotalPayRmbAmt", d);
+		JsonUtils.setBody(result, "sumAmtPay", amtPay);
+		JsonUtils.setBody(result, "sumAmtOrder", amtPay+amtDiscountPlat+amtDiscountMaster);
+		JsonUtils.setBody(result, "sumAmtDiscountPlat", amtDiscountPlat);
+		JsonUtils.setBody(result, "sumAmtDiscountMaster", amtDiscountMaster);
 		JsonUtils.setBody(result, "ids", ids);
+		logger.info("=====analyst: "+result.toJSONString()+"=====");
 		return result;
 	}
 	
@@ -450,9 +462,9 @@ public class OrderSettlementServiceImpl {
 		 redis.clients.jedis.Transaction trans = null;
 		 String key = null;
 		 try{
-			 Assert.isTrue(  StringUtils.isNotEmpty( classNameAndMethodName));
-			 jedis = RedisClient.getJedis();
-			 key = CacheConstant.AUTO_JOB +"_" + classNameAndMethodName;
+			Assert.isTrue(StringUtils.isNotEmpty( classNameAndMethodName));
+			jedis = RedisClient.getJedis();
+			key = CacheConstant.AUTO_JOB +"_" + classNameAndMethodName;
 			boolean keyExists = jedis.exists(key) ;
 			if( ! keyExists  ){
 					jedis.watch(key);// make sure below operation is particle
