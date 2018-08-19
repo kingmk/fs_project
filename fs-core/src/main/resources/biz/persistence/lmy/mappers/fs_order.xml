@@ -41,6 +41,7 @@
 	<result column="create_time" property="createTime"/>
 	<result column="update_time" property="updateTime"/>
 	<result column="remark" property="remark"/>
+	<result column="is_user_delete" property="isUserDelete"/>
 </resultMap>
 <select id="findById" parameterType="long"  resultMap="fs_order">
 	select * 	from fs_order where id=#{id}  
@@ -93,6 +94,7 @@
 	<if test="refundAuditTime != null">refund_audit_time=#{refundAuditTime},</if>
 	<if test="updateTime != null">update_time=#{updateTime},</if>
 	<if test="remark != null">remark=#{remark}</if>
+	<if test="isUserDelete != null">is_user_delete=#{isUserDelete}</if>
 </set>
 	where id=#{id}
 </update>
@@ -125,6 +127,7 @@
 	<if test="refundAuditTime != null">refund_audit_time=#{refundAuditTime},</if>
 	<if test="updateTime != null">update_time=#{updateTime},</if>
 	<if test="remark != null">remark=#{remark}</if>
+	<if test="isUserDelete != null">is_user_delete=#{isUserDelete}</if>
 </set>
  where id=#{id} and status &lt;&gt; #{status}
 </update>
@@ -153,6 +156,7 @@
         <if test="buyUsrId !=null">buy_usr_id=#{buyUsrId}</if>
         <if test="gtId !=null">and id  &gt;#{gtId}</if>
         <if test="sellerUsrId !=null">and seller_usr_id=#{sellerUsrId}</if>
+        <if test="isUserDelete !=null">and is_user_delete=#{isUserDelete}</if>
         <if test="statusList !=null" >
             and status in 
             <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >

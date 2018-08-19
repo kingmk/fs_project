@@ -8,9 +8,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import com.lmy.common.redis.RedisClient;
 import com.lmy.core.constant.CacheConstant;
+import com.lmy.core.model.FsPeriodStatistics;
 import com.lmy.core.service.impl.AdminAuditServiceImpl;
 import com.lmy.core.service.impl.MasterStatisticsServiceImpl;
 import com.lmy.core.service.impl.OrderSettlementServiceImpl;
+import com.lmy.core.service.impl.StatisticsServiceImpl;
 
 /**
  * 所有的job 已经添加了 分布式处理
@@ -25,6 +27,8 @@ public class LmySpringWebJob {
 	private MasterStatisticsServiceImpl masterStatisticsServiceImpl;
 	@Autowired
 	private AdminAuditServiceImpl adminAuditServiceImpl;
+	@Autowired
+	private StatisticsServiceImpl statisticsServiceImpl;
 	//就每个月7号晚上22点结算上个月的全部订单
 	@Scheduled(cron="0 0 22 */7 * ?")
 	public void lmyAutoSettle(){
@@ -32,6 +36,16 @@ public class LmySpringWebJob {
 			logger.info("非生产不执行"+ this.getClass()+"#"+Thread.currentThread().getStackTrace()[1].getMethodName());
 		}
 		orderSettlementServiceImpl.autoSettlement(null);
+	}
+	
+	//就每个月1号凌晨4点生成上月统计数据
+	@Scheduled(cron="0 0 4 */1 * ?")
+	public void lmyAutoStatistics(){
+		if(!com.lmy.core.utils.FsEnvUtil.isPro() ){
+			logger.info("非生产不执行"+ this.getClass()+"#"+Thread.currentThread().getStackTrace()[1].getMethodName());
+		}
+		logger.info("==========生成统计数据==========");
+		statisticsServiceImpl.monthlyStatistics();
 	}
 
 	@Scheduled(cron="0 0 2 * * ?")

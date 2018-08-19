@@ -146,6 +146,8 @@
 			text-align: center;
 			line-height: px2rem(50);
 			font-size: px2rem(24);
+            vertical-align: middle;
+            display: inline-block;
             &.go-evaluate{
                color:$text-color;
                background: #fff;
@@ -154,6 +156,12 @@
             &.see-evaluate{
                color:#fff;
                background: #000;
+            }
+            &.go-delete {
+                color: $text-color;
+                width: px2rem(80);
+                border: px2rem(1) solid #ccc;
+                margin-right: px2rem(10);
             }
     	}
 

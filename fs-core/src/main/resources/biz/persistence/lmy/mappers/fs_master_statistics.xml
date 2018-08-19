@@ -107,7 +107,7 @@
         <if test="cateId == null">and b.cate_id=1</if>
     </where>
     order by
-    	a.service_status
+    	a.service_status, a.is_sign_other
     	<if test="orderType == 'default'.toString()">, b.is_plat_recomm desc, b.count_order</if>
     	<if test="orderType == 'price'.toString()">, b.min_price</if>
     	<if test="orderType == 'evaluate'.toString()">, (b.sum_resp_speed+b.sum_major_level+b.sum_service_attitude)/b.count_evaluate</if>

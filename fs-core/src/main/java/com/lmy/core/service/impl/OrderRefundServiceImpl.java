@@ -101,6 +101,11 @@ public class OrderRefundServiceImpl {
 				logger.warn("buyUsrId:"+buyUsrId+",orderId:"+orderId+",数据错误");
 				return JsonUtils.commonJsonReturn("0001", "数据错误");
 			}
+			if(order.getIsUserDelete().equals("Y")) {
+				logger.warn("buyUsrId:"+buyUsrId+",orderId:"+orderId+",订单已删除");
+				return JsonUtils.commonJsonReturn("0010", "订单已删除");
+			}
+			
 			Date now = new Date();
 			boolean isCanRefund = OrderAidUtil.isOrderCanApplyRefund(order, now);
 			if(!isCanRefund){

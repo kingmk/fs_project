@@ -91,6 +91,7 @@ public class SearchMasterController {
 			return "/usr/search/master_nav";
 	}
 	
+	// depricated
 	@RequestMapping(value="/usr/search/master_ajax_query" )
 	@ResponseBody
 	public String search_master_ajax(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response

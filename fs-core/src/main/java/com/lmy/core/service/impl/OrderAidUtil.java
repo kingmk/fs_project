@@ -60,13 +60,22 @@ public class OrderAidUtil {
 	}
 	
 	/** 订单是否可以(普通)发起退款申请 **/
-	public static boolean isOrderCanApplyRefund(FsOrder order , Date now){
+	public static boolean isOrderCanApplyRefund(FsOrder order, Date now){
 		return order.getStatus().equals(OrderStatus.completed.getStrValue())
 			&& order.getSellerFirstReplyTime()!=null && order.getCompletedTime().getTime() < now.getTime()
 			&& order.getSettlementTime().getTime() > now.getTime();
 	}
 	
+	public static boolean isOrderCanEvaluate(FsOrder order, Date now) {
+		boolean isCanEvaluate = (order.getEvaluateTime() == null && 
+				OrderAidUtil.getCanEvaluateStatus().contains(order.getStatus()) && 
+				order.getSettlementTime().getTime() > now.getTime());
+		return isCanEvaluate;
+	}
 	
+	public static boolean isOrderCanDelete(FsOrder order, Date now) {
+		return OrderAidUtil.getCanEvaluateStatus().contains(order.getStatus());
+	}
 
 	
 	

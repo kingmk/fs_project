@@ -1,0 +1,1 @@
+ALTER TABLE `fs_pro`.`fs_order` ADD COLUMN `is_user_delete` VARCHAR(4) NULL DEFAULT 'N'  AFTER `remark` ;

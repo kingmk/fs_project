@@ -432,5 +432,32 @@ public class OrderServiceImpl {
 			return JsonUtils.commonJsonReturn("9999","系统错误");
 		}
 	}
-	
+
+	/** **/
+	public JSONObject deleteOrderByBuyer(long buyUsrId, long orderId){
+		try{
+			FsOrder order = this.fsOrderDao.findById(orderId);
+			if(order == null || !order.getBuyUsrId().equals(buyUsrId)){
+				logger.warn("buyUsrId:"+buyUsrId+",orderId:"+orderId+",数据错误");
+				return JsonUtils.commonJsonReturn("0001", "数据错误");
+			}
+			Date now = new Date();
+			boolean isCanDelete = OrderAidUtil.isOrderCanDelete(order, now);
+			if(!isCanDelete){
+				logger.warn("buyUsrId:"+buyUsrId+",orderId:"+orderId+",当前状态不可删除订单");
+				return JsonUtils.commonJsonReturn("0002", "当前状态不可删除订单");
+			}
+			if (order.getIsUserDelete().equals("Y")) {
+				logger.warn("buyUsrId:"+buyUsrId+",orderId:"+orderId+",当前订单已删除");
+				return JsonUtils.commonJsonReturn("0003", "当前订单已删除");
+			}
+			
+			int effecNum = this.fsOrderDao.deleteOrderByBuyer(order.getId());
+			Assert.isTrue( effecNum ==1 );
+			return JsonUtils.commonJsonReturn();
+		}catch(Exception e){
+			logger.warn("buyUsrId:"+buyUsrId+",orderId:"+orderId,e);
+			return JsonUtils.commonJsonReturn("9999", "系统错误");
+		}
+	}
 }

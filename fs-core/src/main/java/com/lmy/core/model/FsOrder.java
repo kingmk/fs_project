@@ -79,6 +79,9 @@ public class FsOrder  extends BaseObject {
   private  Date  updateTime;
   /** 备注 */
   private  String  remark;
+  /** 是否被用户删除，NULL 或Y,N*/
+  private String isUserDelete;
+  
   /** 下单/购买 人fs_usr.id */
 	public Long getBuyUsrId(){
 		return this.buyUsrId;
@@ -406,6 +409,14 @@ public class FsOrder  extends BaseObject {
 	public FsOrder setRemark(String remark){
 		 this.remark=remark;
 		 return this;
+	}
+	
+	public String getIsUserDelete() {
+		return isUserDelete;
+	}
+	public FsOrder setIsUserDelete(String isUserDelete) {
+		this.isUserDelete = isUserDelete;
+		return this;
 	}
 	public String toString(){
 	    return JSON.toJSONString(this,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue);

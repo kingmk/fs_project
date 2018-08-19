@@ -1,7 +1,9 @@
 package com.lmy.web.controller;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,17 +21,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lmy.common.component.HttpService;
+import com.lmy.common.utils.CookieUtil;
+import com.lmy.common.utils.ResourceUtils;
+import com.lmy.core.model.FsPeriodStatistics;
 import com.lmy.core.model.FsUsr;
 import com.lmy.core.service.impl.FsWeiXinUrlServiceImpl;
 import com.lmy.core.service.impl.MasterStatisticsServiceImpl;
 import com.lmy.core.service.impl.OrderServiceImpl;
 import com.lmy.core.service.impl.OrderSettlementServiceImpl;
+import com.lmy.core.service.impl.StatisticsServiceImpl;
 import com.lmy.core.service.impl.UsrServiceImpl;
 import com.lmy.core.utils.FsEnvUtil;
 import com.lmy.web.common.SessionUtil;
 import com.lmy.web.common.WebUtil;
-import com.lmy.common.utils.CookieUtil;
-import com.lmy.common.utils.ResourceUtils;
 @Controller
 public class EnterBaseController {
 	private static final String defGoTo = "/usr/common/my";
@@ -45,6 +49,8 @@ public class EnterBaseController {
 	private OrderSettlementServiceImpl orderSettlementServiceImpl;
 	@Autowired
 	private MasterStatisticsServiceImpl masterStatisticsServiceImpl;
+	@Autowired
+	private StatisticsServiceImpl statisticsServiceImpl;
 	/**
 	 * 
 	 * @param request  参数 _goTo 相对路劲 eg:/usr/index	(优先使用); redirect_url 绝对路劲 eg: http://news.qq.com/a/20170404/016550.htm	
@@ -166,5 +172,24 @@ public class EnterBaseController {
 		}
 		JSONObject result = this.orderServiceImpl.zxOrderHandWeiXinNotify(out_trade_no, "CFT", out_trade_no, true);
 		return result.toJSONString();
+	}
+	
+
+	@RequestMapping(value="/enter/test_period_statistics")
+	@ResponseBody
+	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
+	public String test_period_statistics(HttpServletRequest request,HttpServletResponse response
+			) throws Exception{
+//		if (!FsEnvUtil.isDev()) {
+//			return "only for test environment";
+//		}
+		String[] monthes = {"2017-08","2017-09","2017-10","2017-11","2017-12",
+				"2018-01","2018-02","2018-03","2018-04","2018-05","2018-06","2018-07"};
+		
+		for (int i = 0; i < monthes.length; i++) {
+			statisticsServiceImpl.monthlyStatistics(monthes[i]);
+		}
+		
+		return "";
 	}
 }

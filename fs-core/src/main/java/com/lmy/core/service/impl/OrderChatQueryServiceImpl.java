@@ -120,6 +120,11 @@ public class OrderChatQueryServiceImpl {
 			FsMasterInfo masterInfo = queryForChatIndex_getMaster(order.getSellerUsrId());
 			//当前用户是否为master
 			boolean isMaster = masterInfo.getUsrId() .equals(loginUsrId) ;
+			if(!isMaster && order.getIsUserDelete().equals("Y")) {
+				logger.warn("用户已删除该订单 orderId:"+orderId+",loginUsrId:"+loginUsrId+",chatSessionNo:"+chatSessionNo+",orderSellerUsrId:"+order.getSellerUsrId()+",orderBuyUsrId:"+order.getBuyUsrId());
+				return JsonUtils.commonJsonReturn("0011","无法查看已删除的订单");
+			}
+			
 			if(!isMaster && OrderStatus.pay_succ.getStrValue().equals( order.getStatus() )
 					&&   OrderAidUtil.getNeedSupplyOrderInfoZxCateIds().contains( order.getZxCateId()  )  && (StringUtils.isEmpty(order.getOrderExtraInfo())  && !Boolean.TRUE.equals(afterCommUsrSupplyInfo)  ))   {
 				logger.warn("咨询人待补充数据  orderId:"+orderId+",buyUsrId:"+loginUsrId+",chatSessionNo:"+chatSessionNo+",zxCateId:"+order.getZxCateId()+",orderExtraInfo:"+order.getOrderExtraInfo()+",afterCommUsrSupplyInfo:"+afterCommUsrSupplyInfo);
@@ -170,12 +175,14 @@ public class OrderChatQueryServiceImpl {
 			JsonUtils.setBody(result, "contactUsrId", masterInfo.getUsrId());
 			JsonUtils.setBody(result, "contactUsrName", UsrAidUtil.getMasterNickName(masterInfo, null, ""));  //与 谁聊天
 			JsonUtils.setBody(result, "contactUsrHeadImgUrl", UsrAidUtil.getMasterHeadImg(masterInfo,null,""));  //与 谁聊天 人的头像
+			JsonUtils.setBody(result, "settlementTime", CommonUtils.dateToString(order.getSettlementTime(), CommonUtils.dateFormat5, ""));
 			boolean isCanRefund =OrderAidUtil.isOrderCanApplyRefund(order, now);
+			boolean isCanEvaluate = OrderAidUtil.isOrderCanEvaluate(order, now);
 			//退款剩余秒数
 			long refundSurplusSec = isCanRefund?CommonUtils.calculateDiffSeconds(DateUtils.addDays(order.getSellerFirstReplyTime(), 7),now) : 0l;
 			//是否可以点评
-			boolean isCanEvaluate = ( order.getEvaluateTime() == null && OrderAidUtil.getCanEvaluateStatus().contains(order.getStatus())); 
-			JsonUtils.setBody(result, "isCanEvaluate", isCanEvaluate ? 'Y':'N'); //是否可以点评
+//			boolean isCanEvaluate = ( order.getEvaluateTime() == null && OrderAidUtil.getCanEvaluateStatus().contains(order.getStatus())); 
+			JsonUtils.setBody(result, "isCanEvaluate", isCanEvaluate ? "Y":"N");  //是否可以评价
 			JsonUtils.setBody(result, "isCanRefund", isCanRefund ? "Y":"N"); //是否可发起退款
 			JsonUtils.setBody(result, "refundSurplusSec", refundSurplusSec); //发起退款剩余秒数
 		}

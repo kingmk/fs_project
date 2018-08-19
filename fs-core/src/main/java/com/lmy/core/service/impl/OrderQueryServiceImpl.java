@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -69,7 +70,7 @@ public class OrderQueryServiceImpl {
 		if(CollectionUtils.isEmpty(statusList)){
 			statusList =OrderAidUtil.getCommAllOrderStatus();
 		}
-		List<FsOrder> orderList = this.fsOrderDao.findOrder1(null,buyUsrId, null, currentPage, perPageNum, orderBy, statusList);
+		List<FsOrder> orderList = this.fsOrderDao.findOrder1(null,buyUsrId, null, "N", currentPage, perPageNum, orderBy, statusList);
 		if(CollectionUtils.isEmpty(orderList)){
 			return JsonUtils.commonJsonReturn("1000", "查无数据");
 		}
@@ -106,9 +107,12 @@ public class OrderQueryServiceImpl {
 																			&& bean.getOrderExtraInfo() == null )
 																			? 'Y':'N' );  // 是否等待提交订单补充信息
 			boolean isServiceEnd = now.after( bean.getEndChatTime() ) ;
-			boolean isCanEvaluate = ( bean.getEvaluateTime() == null && OrderAidUtil.getCanEvaluateStatus().contains(  bean.getStatus()) ); 
+			boolean isCanEvaluate = OrderAidUtil.isOrderCanEvaluate(bean, now);
+			boolean isCanDelete = OrderAidUtil.isOrderCanDelete(bean, now);
 			boolean hadEvaluate = bean.getEvaluateTime() !=null ;
+			
 			dataOne.put("isCanEvaluate", isCanEvaluate ? "Y":"N");  //是否可评价
+			dataOne.put("isCanDelete", isCanDelete ? "Y":"N");  //是否可删除
 			dataOne.put("isServiceEnd", isServiceEnd ? "Y":"N");  //聊天服务是否已过截止时间
 			dataOne.put("hadRefund",  (bean.getRefundApplyTime()!=null  ) ? "Y":"N");  //是否发起过投诉
 			dataOne.put("hadEvaluate", hadEvaluate ? "Y":"N");  //是否已评价
@@ -134,7 +138,7 @@ public class OrderQueryServiceImpl {
 		}
 		List<FsOrder> orderList = null;
 		if (buyUsrId == null) {
-			orderList = this.fsOrderDao.findOrder1(null, null, sellerUsrId, currentPage, perPageNum, orderBy, statusList);
+			orderList = this.fsOrderDao.findOrder1(null, null, sellerUsrId, null, currentPage, perPageNum, orderBy, statusList);
 		} else {
 			orderList = this.fsOrderDao.findContactOrders(sellerUsrId, buyUsrId, excludeOrderId, currentPage, perPageNum);
 		}
@@ -575,7 +579,6 @@ public class OrderQueryServiceImpl {
 		}
 	}
 	
-	
 	public JSONObject masterIncomeDetail(long masterUsrId , int currentPage,int perPageNum,String orderBy){
 		try{
 			List<Map> list = this.fsOrderDao.findMyInComeList(masterUsrId, currentPage, perPageNum, OrderAidUtil.getMasterLeiJitatus()	, null);
@@ -610,4 +613,6 @@ public class OrderQueryServiceImpl {
 			return JsonUtils.commonJsonReturn("9999", "系统错误");
 		}
 	}
+
+	
 }

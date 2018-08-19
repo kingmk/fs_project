@@ -212,6 +212,16 @@ public class OrderEvaluateServiceImpl {
 				logger.warn("loginUsrId:"+buyUsrId+",orderId:"+orderId+",数据错误");
 				return JsonUtils.commonJsonReturn("0001", "数据错误");
 			}
+			if(order.getIsUserDelete().equals("Y")) {
+				logger.warn("loginUsrId:"+buyUsrId+",orderId:"+orderId+",订单已删除");
+				return JsonUtils.commonJsonReturn("0010", "订单已删除");
+			}
+			
+			Date now = new Date();
+			if (!OrderAidUtil.isOrderCanEvaluate(order, now)) {
+				logger.warn("loginUsrId:"+buyUsrId+",orderId:"+orderId+",已过评价时限");
+				return JsonUtils.commonJsonReturn("0020", "当前订单已无法评价");
+			}
 			List<FsOrderEvaluate> list= this.fsOrderEvaluateDao.findByContion1(order.getId(), order.getSellerUsrId(), order.getBuyUsrId()) ;
 			if(CollectionUtils.isNotEmpty(list)){
 				logger.warn("loginUsrId:"+buyUsrId+",orderId:"+orderId+",重复点评,点评记录数:"+CommonUtils.getListSize(list));

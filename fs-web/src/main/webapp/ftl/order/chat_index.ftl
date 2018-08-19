@@ -621,7 +621,9 @@ function showImg(url){
 	<#elseif body.hadEvaluate == 'N' && body.isMaster>
 		<div class="btn wait-evaluate">等待用户评价</div>
 	<#elseif body.hadEvaluate == 'N' && !body.isMaster>
-		<div class="btn" onclick="userToEvaluate(${body.orderId})">去评价</div>
+		<#if body.isCanEvaluate == 'Y'>
+			<div class="btn" onclick="userToEvaluate(${body.orderId})">${body.settlementTime} 前完成评价</div>
+		</#if>
 	</#if>
 </div>
 </#if>

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils.Null;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -56,6 +57,7 @@ public class FsOrderDao extends GenericDAOImpl<FsOrder> {
 		map.put("updateTime"	, now);
 		return this.getSqlSession().update(this.getNameSpace()+".updateByIdWithStatus", map);
 	}
+
 	public int updateForAfterRefundResult(long id  ,boolean refundSucc , String remark , Date now){
 		if(now == null ){
 			now = new Date();
@@ -104,20 +106,20 @@ public class FsOrderDao extends GenericDAOImpl<FsOrder> {
 		return this.getSqlSession().update(this.getNameSpace()+".updateByIdWithStatus", map);
 	}
 	
-	public int updateRefundAfterWxRefundApplyResult(long id  ,  boolean isWxRefundApplySucc, Date now){
+	public int updateRefundAfterWxRefundApplyResult(long id, boolean isWxRefundApplySucc, Date now){
 		if(now == null ){
 			now = new Date();
 		}
 		JSONObject map = new JSONObject();
 		map.put("id", id);
 		if(isWxRefundApplySucc){
-			map.put("status",  OrderStatus.refunding.getStrValue());
+			map.put("status", OrderStatus.refunding.getStrValue());
 		}else{
-			map.put("status", 	OrderStatus.refund_fail.getStrValue());
+			map.put("status", OrderStatus.refund_fail.getStrValue());
 			map.put("refundRmbAmt", 0l);
-			map.put("refundConfirmTime"	, now);
+			map.put("refundConfirmTime", now);
 		}
-		map.put("updateTime"	, now);
+		map.put("updateTime", now);
 		return this.getSqlSession().update(this.getNameSpace()+".updateByIdWithStatus", map);
 	}
 	
@@ -127,21 +129,37 @@ public class FsOrderDao extends GenericDAOImpl<FsOrder> {
 		map.put("id", id);
 		return this.getSqlSession().update(this.getNameSpace()+".updateLastChatTime", map);
 	}
+	
+	public int deleteOrderByBuyer(long id){
+		Date now = new Date();
+		JSONObject map = new JSONObject();
+		map.put("id", id);
+		map.put("isUserDelete", "Y");
+		map.put("updateTime", now);
+		return this.getSqlSession().update(this.getNameSpace()+".update", map);
+	}
+	
+	
 	/**
 	 * @param gtId 需要大于的id
 	 * @param buyUsrId
 	 * @param sellerUsrId
+	 * @param isUserDelete 不为NULL时需要判断
 	 * @param currentPage
 	 * @param perPageNum
 	 * @param orderBy  排序方式 0  最近聊天时间 ; def is 0
 	 * @param statusList
 	 * @return
 	 */
-	public List<FsOrder>  findOrder1 (Long gtId,  Long buyUsrId , Long sellerUsrId, int currentPage,int perPageNum,int orderBy , List<String> statusList){
+	public List<FsOrder>  findOrder1 (Long gtId, Long buyUsrId, Long sellerUsrId, String isUserDelete,int currentPage,int perPageNum , int orderBy, List<String> statusList){
 		JSONObject map = new JSONObject();
 		map.put("sellerUsrId", sellerUsrId);
 		map.put("buyUsrId", buyUsrId);
 		map.put("gtId", gtId);
+		if (isUserDelete != null) {
+			map.put("isUserDelete", isUserDelete);
+		}
+		
 		if(CollectionUtils.isNotEmpty(statusList  )){
 			map.put("statusList", statusList);
 		}

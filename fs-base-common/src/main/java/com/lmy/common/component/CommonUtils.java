@@ -23,6 +23,8 @@ public class CommonUtils {
 	public static final String dateFormat3 = "yyyyMMddHHmmss";
 	/** yyyy-MM-dd HH:mm **/
 	public static final String dateFormat4 = "yyyy-MM-dd HH:mm";
+	/** MM-dd HH:mm **/
+	public static final String dateFormat5 = "MM-dd HH:mm";
 	/**
 	 * 默认数字格式 "###,##0.00"
 	 */

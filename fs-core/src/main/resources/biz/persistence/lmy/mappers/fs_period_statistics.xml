@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_period_statistics">
+<resultMap id="fs_period_statistics" type="com.lmy.core.model.FsPeriodStatistics">
+	<result column="id" property="id"/>
+	<result column="period_name" property="periodName"/>
+	<result column="seller_usr_id" property="sellerUsrId"/>
+	<result column="count_order" property="countOrder"/>
+	<result column="count_buyer" property="countBuyer"/>
+	<result column="avg_resp_time" property="avgRespTime"/>
+	<result column="type" property="type"/>
+	<result column="start_time" property="startTime"/>
+	<result column="end_time" property="endTime"/>
+	<result column="create_time" property="createTime"/>
+</resultMap>
+
+<insert id="insert" parameterType="com.lmy.core.model.FsPeriodStatistics" useGeneratedKeys="true" keyProperty="id">
+	insert into fs_period_statistics(id, period_name, seller_usr_id, count_order, count_buyer, avg_resp_time, type, start_time, end_time, create_time)
+	values(#{id,jdbcType=INTEGER}, #{periodName,jdbcType=VARCHAR}, #{sellerUsrId,jdbcType=INTEGER}, #{countOrder,jdbcType=INTEGER}, #{countBuyer,jdbcType=INTEGER}, #{avgRespTime,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}) 
+</insert>
+<insert id="batchInsert" parameterType="list">
+	insert into fs_period_statistics(id, period_name, seller_usr_id, count_order, count_buyer, avg_resp_time, type, start_time, end_time, create_time)
+	values
+	<foreach collection="list" item="item" index="index" separator=","> 
+    (#{item.id,jdbcType=INTEGER}, #{item.periodName,jdbcType=VARCHAR}, #{item.sellerUsrId,jdbcType=INTEGER}, #{item.countOrder,jdbcType=INTEGER}, #{item.countBuyer,jdbcType=INTEGER}, #{item.avgRespTime,jdbcType=INTEGER}, #{item.type,jdbcType=VARCHAR}, #{item.startTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+	</foreach>
+</insert>
+
+<select id="statisticPeriodOrder" parameterType="hashmap" resultMap="fs_period_statistics">
+    select seller_usr_id, count(*) count_order, count(distinct buy_usr_id) count_buyer,
+    avg(UNIX_TIMESTAMP(begin_chat_time)-UNIX_TIMESTAMP(create_time)) avg_resp_time
+    from fs_order
+    <where>
+        <if test="startTime !=null">create_time &gt;= #{startTime}</if>
+        <if test="endTime !=null">and create_time &lt;#{endTime}</if>
+        <if test="statusList !=null" >
+			and status in 
+			<foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+			#{item}
+			</foreach>
+		</if>
+    </where>
+    group by seller_usr_id
+</select>
+
+</mapper>

@@ -233,6 +233,7 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .content .item .top .right .bubbel.refunded, .content .item .top .right .bubbel.refund_fail, .content .item .top .right .bubbel.refund_applied, .content .item .top .right .bubbel.refunding { width: 6rem; background: #c09318; float: right; }
 .content .bottom { line-height: 4rem; display: flex; display: -webkit-flex; justify-content: space-between; -webkit-justify-content: space-between; align-items: center; -webkit-align-items: center; padding-right: 1.5rem; }
 .content .bottom .bottom-time { font-size: 1rem; color: #999; }
-.content .bottom .bottom-button { width: 6.5rem; height: 2.5rem; text-align: center; line-height: 2.5rem; font-size: 1.2rem; }
+.content .bottom .bottom-button { width: 6.5rem; height: 2.5rem; text-align: center; line-height: 2.5rem; font-size: 1.2rem; vertical-align: middle; display: inline-block; }
 .content .bottom .bottom-button.go-evaluate { color: #3f3f3f; background: #fff; border: 0.05rem solid #ccc; }
 .content .bottom .bottom-button.see-evaluate { color: #fff; background: #000; }
+.content .bottom .bottom-button.go-delete { color: #3f3f3f; width: 4rem; border: 0.05rem solid #ccc; margin-right: 0.5rem; }

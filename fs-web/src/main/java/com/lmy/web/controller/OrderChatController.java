@@ -45,9 +45,9 @@ public class OrderChatController {
 			if( JsonUtils.codeEqual(result, "1000") ){
 				return "redirect:/order/order_pay_succ?orderId="+orderId;
 			}
-			else if( JsonUtils.codeEqual(result, "0010") ){
+			else if( JsonUtils.codeEqual(result, "0010") || JsonUtils.codeEqual(result, "0011")){
 				logger.warn("查询聊天记录错误result"+result);
-				return WebUtil.failedResponse(response,"");		
+				return WebUtil.failedResponse(response,JsonUtils.getHeadMsg(result));		
 			}
 			else{
 				logger.warn("查询聊天记录错误");
