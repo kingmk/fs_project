@@ -174,8 +174,8 @@ public class OrderRefundServiceImpl {
 				logger.warn("orderId:"+(order!=null ? order.getId():null)+",状态错误 当前状态:"+order.getStatus()+",期待状态:refund_applied");
 				return JsonUtils.commonJsonReturn("0001", "数据/状态错误");
 			}
-			List<FsPayRecord> payRecordList =   this.fsPayRecordDao.findByOrderIdAndTradeType(order.getId(),null);
-			JSONObject analysisPayRecordResult =   autoRefund_orgPayMatchCondition(payRecordList,order.getId());
+			List<FsPayRecord> payRecordList = this.fsPayRecordDao.findByOrderIdAndTradeType(order.getId(),null);
+			JSONObject analysisPayRecordResult = autoRefund_orgPayMatchCondition(payRecordList,order.getId());
 			if(!JsonUtils.equalDefSuccCode(analysisPayRecordResult)){
 				return analysisPayRecordResult;
 			}

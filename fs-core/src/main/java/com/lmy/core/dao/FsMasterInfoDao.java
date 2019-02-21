@@ -36,7 +36,7 @@ public class FsMasterInfoDao extends GenericDAOImpl<FsMasterInfo> {
 		return this.getSqlSession().selectList(this.getNameSpace()+".findBtCondition1", map);
 	}
 	
-	public Long statRecordNum1(Long usrId , List<String> auditStatusList , List<String> serviceStatusList){
+	public Long statRecordNum1(Long usrId, List<String> auditStatusList, List<String> serviceStatusList){
 		JSONObject map = new JSONObject();
 		map.put("usrId",usrId);
 		if(CollectionUtils.isNotEmpty(auditStatusList)){
@@ -57,15 +57,15 @@ public class FsMasterInfoDao extends GenericDAOImpl<FsMasterInfo> {
 		map.put("serviceStatus" , serviceStatus);
 		return this.getSqlSession().update(this.getNameSpace()+".updateServiceStatus", map);
 	}
-	public List<FsMasterInfo> findByUsrIds2(List<Long> usrIdList,String auditStatus , String serviceStatus){
+	public List<FsMasterInfo> findByUsrIds2(List<Long> usrIdList,String auditStatus, List<String> serviceStatusList){
 		Assert.isTrue(  CollectionUtils.isNotEmpty(usrIdList)  );
 		JSONObject map = new JSONObject();
 		map.put("usrIdList", usrIdList);
 		if(StringUtils.isNotBlank(auditStatus)){
 			map.put("auditStatus", auditStatus);	
 		}
-		if(StringUtils.isNotBlank(serviceStatus)){
-			map.put("serviceStatus", serviceStatus);	
+		if(CollectionUtils.isNotEmpty(serviceStatusList)){
+			map.put("serviceStatusList", serviceStatusList);	
 		}
 		return this.getSqlSession().selectList(this.getNameSpace()+".findByUsrIds2", map);
 	}

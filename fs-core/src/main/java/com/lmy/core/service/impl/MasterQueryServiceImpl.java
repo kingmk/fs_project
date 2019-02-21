@@ -446,4 +446,9 @@ public class MasterQueryServiceImpl {
 	public FsMasterInfo findByMasterInfoId(Long masterInfoId){
 		return this.fsMasterInfoDao.findById(masterInfoId);
 	}
+	
+	public FsMasterInfo findByUsrId(Long usrId) {
+		return this.fsMasterInfoDao.findByUsrId(usrId);
+	}
+	
 }

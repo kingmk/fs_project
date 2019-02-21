@@ -395,6 +395,8 @@ function initWxShare() {
 	<#else>
 <div class="button service fix reserve">老师比较忙，点此预约</div>
 	</#if>
+<#elseif result.body.serviceStatus=="FIRED">
+<div class="button service fix disabled">老师已与平台解约</div>
 <#else>
 <div class="button service fix disabled">老师暂时无法接单</div>
 </#if>

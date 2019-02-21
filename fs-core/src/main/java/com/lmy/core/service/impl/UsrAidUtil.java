@@ -1,5 +1,7 @@
 package com.lmy.core.service.impl;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -13,6 +15,7 @@ import com.lmy.common.utils.SecretConvert;
 import com.lmy.core.constant.CacheConstant;
 import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.model.FsUsr;
+import com.lmy.core.model.enums.OrderStatus;
 /**
  * @author fidel
  * @since 2017/05/01
@@ -173,4 +176,7 @@ public class UsrAidUtil {
 		return true;
 	}
 	
+	public static List<String> getMasterNormalServiceStatus(){
+		return Arrays.asList("ING","NOTING","FORBID");
+	}
 }

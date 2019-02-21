@@ -124,7 +124,7 @@ public class WeiXinPayConfirmManagerImpl extends QueueHandler{
 			}
 		}
 		//需要再次确认
-		else if(  JsonUtils.codeEqual(weiXinQueryResult, "1000") ){
+		else if (JsonUtils.codeEqual(weiXinQueryResult, "1000")){
 			//再一次入队列
 			if(JsonUtils.codeEqual(weiXinQueryResult, "9999")){
 				pushInQueueAgain(data);

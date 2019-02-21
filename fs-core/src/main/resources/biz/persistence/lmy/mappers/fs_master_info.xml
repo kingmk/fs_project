@@ -160,8 +160,13 @@
 	<foreach collection="usrIdList"  item="item"  open="(" separator="," close=")" >
 		#{item}
 	</foreach>   
-	<if test=" auditStatus!=null  ">and audit_status = #{auditStatus}</if>
-	<if test=" serviceStatus!=null  ">and service_status = #{serviceStatus}</if>
+	<if test="auditStatus != null">and audit_status = #{auditStatus}</if>
+  	<if test="serviceStatusList != null">
+    	and service_status in 
+    	<foreach collection="serviceStatusList"  item="item"  open="(" separator="," close=")" >
+			#{item}
+		</foreach>
+    </if>
 	</where> 
 </select>
 

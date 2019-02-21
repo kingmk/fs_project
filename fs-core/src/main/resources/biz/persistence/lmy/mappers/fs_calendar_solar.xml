@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_calendar_solar">
+<resultMap id="fs_calendar_solar" type="com.lmy.core.model.FsCalendarSolar">
+	<result column="id" property="id"/>
+	<result column="name" property="name"/>
+	<result column="time" property="time"/>
+	<result column="show_date" property="showDate"/>
+	<result column="year_heaven" property="yearHeaven"/>
+	<result column="year_earth" property="yearEarth"/>
+	<result column="month_heaven" property="monthHeaven"/>
+	<result column="month_earth" property="monthEarth"/>
+	<result column="create_time" property="createTime"/>
+</resultMap>
+
+<insert id="insert"  parameterType="com.lmy.core.model.FsCalendarSolar"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_calendar_solar(id, name, time, show_date, year_heaven, year_earth, month_heaven, month_earth,create_time)
+	values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP}, #{showDate,jdbcType=TIMESTAMP}, 
+	#{yearHeaven,jdbcType=VARCHAR}, #{yearEarth,jdbcType=VARCHAR}, #{monthHeaven,jdbcType=VARCHAR}, #{monthEarth,jdbcType=VARCHAR}, 
+	#{createTime,jdbcType=TIMESTAMP})
+</insert>
+
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_calendar_solar(id, name, time, show_date, year_heaven, year_earth, month_heaven, month_earth, create_time)
+	values
+	<foreach collection="list" item="item" index="index"   separator=",">
+	(#{item.id,jdbcType=INTEGER}, #{item.name,jdbcType=VARCHAR}, #{item.time,jdbcType=TIMESTAMP}, #{item.showDate,jdbcType=TIMESTAMP}, 
+	#{item.yearHeaven,jdbcType=VARCHAR}, #{item.yearEarth,jdbcType=VARCHAR}, #{item.monthHeaven,jdbcType=VARCHAR}, #{item.monthEarth,jdbcType=VARCHAR}, 
+	#{item.createTime,jdbcType=TIMESTAMP})
+	</foreach>
+</insert>
+
+
+<update id="update"	parameterType="com.lmy.core.model.FsCalendarSolar">
+	update fs_calendar_solar
+<set>
+	<if test="name != null">name=#{name},</if>
+	<if test="time != null">time=#{time},</if>
+	<if test="showDate != null">show_date=#{showDate},</if>
+	<if test="year_heaven != null">year_heaven=#{yearHeaven},</if>
+	<if test="year_earth != null">year_earth=#{yearEarth},</if>
+	<if test="month_heaven != null">month_heaven=#{monthHeaven},</if>
+	<if test="month_earth != null">month_earth=#{monthEarth},</if>
+</set>
+	where id=#{id}
+</update>
+
+<select id="getSolarByPeriod" parameterType="hashmap" resultMap="fs_calendar_solar">
+    select * from fs_calendar_solar
+	<where>
+		<if test="dateStart != null"> and time &gt;= #{dateStart}</if>
+		<if test="dateEnd != null"> and time &lt; #{dateEnd}</if>
+	</where>
+	order by time
+</select>
+
+</mapper>

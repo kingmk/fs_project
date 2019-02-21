@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_calendar_user">
+<resultMap id="fs_calendar_user" type="com.lmy.core.model.FsCalendarUser">
+	<result column="id" property="id"/>
+	<result column="open_id" property="openId"/>
+	<result column="wx_name" property="wxName"/>
+	<result column="avatar_url" property="avatarUrl"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+
+<insert id="insert"  parameterType="com.lmy.core.model.FsCalendarUser"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_calendar_user(id, open_id, wx_name, avatar_url, create_time)
+	values(#{id,jdbcType=INTEGER}, #{openId,jdbcType=VARCHAR}, #{wxName,jdbcType=VARCHAR}, 
+	#{avatarUrl,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+</insert>
+
+<update id="update"	parameterType="com.lmy.core.model.FsCalendarUser">
+	update fs_calendar_user
+<set>
+	<if test="userId != null">id=#{userId},</if>
+	<if test="openId != null">open_id=#{openId},</if>
+	<if test="wxName != null">wx_name=#{wxName},</if>
+	<if test="avatarUrl != null">avatar_url=#{avatarUrl},</if>
+	<if test="updateTime != null">update_time=#{updateTime},</if>
+</set>
+	where id=#{id}
+</update>
+
+<select id="findById" parameterType="hashmap"  resultMap="fs_calendar_user">
+	select * from fs_calendar_user where id=#{id}
+</select>
+
+<select id="findByOpenId" parameterType="hashmap"  resultMap="fs_calendar_user">
+	select * from fs_calendar_user where open_id=#{openId}
+</select>
+
+</mapper>

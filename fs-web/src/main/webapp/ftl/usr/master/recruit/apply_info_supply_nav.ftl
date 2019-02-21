@@ -144,6 +144,13 @@ function save(){
 	}
 	var formData = new FormData($("#form")[0]);
 
+	var tmpfile = formData.get("headImg");
+	if (tmpfile.size == 0 ) {
+		if (typeof(formData.delete) == "function") {
+			formData.delete("headImg");
+		};
+	};
+
 	$.ajax({
 		url: '/usr/master/recruit/supply_submit',
 		type: 'POST',
@@ -170,6 +177,9 @@ function save(){
 			} else {
 				mAlert.addAlert(rlt.head.msg);
 			}
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			alert(JSON.stringify(textStatus));
 		}
 	});
 

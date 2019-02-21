@@ -1,16 +1,17 @@
 package com.lmy.common.redis;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
-import com.lmy.common.utils.ResourceUtils;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
+
+import com.lmy.common.utils.ResourceUtils;
 /**
  * @author 
  * redis pool
@@ -302,6 +303,19 @@ public class RedisClient {
 			return jedis.incrBy(key.getBytes(), num);
 		} catch (Exception e) {
 			logger.error("key="+key+",num="+num,e);
+			return null;
+		} finally {
+			closeJedis(jedis);
+		}
+	}
+	
+	public static Set<String> getKeys(String keyString) {
+		Jedis jedis = null;
+		try {
+			jedis = pool.getResource();
+			return jedis.keys(keyString);
+		} catch (Exception e) {
+			logger.error("keyString="+keyString,e);
 			return null;
 		} finally {
 			closeJedis(jedis);

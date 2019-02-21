@@ -1,1 +1,178 @@
+
+  wxPay:function(data, fCallback) {
+    var self = this;
+    // wx.redirectTo({
+    //   url: '../pageintro/pageintro?from=initial',
+    // });
+    // return;
+    wx.requestPayment({
+      timeStamp: data.timeStamp,
+      nonceStr: data.nonceStr,
+      package: data.package,
+      signType: data.signType,
+      paySign: data.paySign,
+      success: function(res) {
+        // console.log(res);
+        calCommonService.succeedOrder(data.orderId, function () {
+        });
+
+        var f = function() {
+          wx.showToast({
+            title: '支付成功，感谢使用雷历',
+          })
+          if (typeof (fCallback) == "function") {
+            fCallback();
+          }
+          wx.setStorageSync(calCommonService.genCurUserinfoKey(), self.data.userinfo);
+          wx.redirectTo({
+            url: '../pageintro/pageintro?from=register'
+          })
+        }
+
+        setTimeout(f, 200);
+      },
+      fail: function(res) {
+        console.log(res);
+        if (typeof (fCallback) == "function") {
+          fCallback();
+        }
+      }
+    })
+  },
+
+
+// 2019.01.09
+ALTER TABLE `fs_pro`.`fs_calendar_userinfo` CHANGE COLUMN `mobile` `mobile` VARCHAR(11) NOT NULL  
+, ADD UNIQUE INDEX `mobile_UNIQUE` (`mobile` ASC) ;
+
+
+
+// 2018.12.22
+ALTER TABLE `fs_pro`.`fs_calendar` ADD COLUMN `luck_v1` INT NOT NULL DEFAULT 0  AFTER `luck` , ADD COLUMN `luck_v2` INT NOT NULL DEFAULT 0  AFTER `luck_v1` ;
+
+
+CREATE TABLE `fs_calendar_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `open_id` varchar(40) NOT NULL,
+  `wx_name` varchar(50) DEFAULT NULL,
+  `avatar_url` varchar(250) DEFAULT NULL,
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `open_id` (`open_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+
+
+CREATE TABLE `fs_calendar_userinfo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `name` varchar(20) DEFAULT NULL,
+  `type` varchar(10) NOT NULL COMMENT 'MAIN, SUB',
+  `status` varchar(4) NOT NULL COMMENT '00: unpaid, 01: paid',
+  `gender` varchar(1) DEFAULT NULL COMMENT 'M: male, F: female, O: other',
+  `birth_time` datetime DEFAULT NULL,
+  `birth_real_time` datetime DEFAULT NULL,
+  `birth_province` varchar(20) DEFAULT NULL,
+  `birth_city` varchar(20) DEFAULT NULL,
+  `birth_area` varchar(20) DEFAULT NULL,
+  `birth_longitude` int(11) DEFAULT NULL COMMENT 'round(longitude * 100000)',
+  `birth_latitude` int(11) DEFAULT NULL COMMENT 'round(latitude * 100000)',
+  `mobile` varchar(11) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `year_heaven` varchar(1) DEFAULT NULL,
+  `year_earth` varchar(1) DEFAULT NULL,
+  `month_heaven` varchar(1) DEFAULT NULL,
+  `month_earth` varchar(1) DEFAULT NULL,
+  `day_heaven` varchar(1) DEFAULT NULL,
+  `day_earth` varchar(1) DEFAULT NULL,
+  `hour_heaven` varchar(1) DEFAULT NULL,
+  `hour_earth` varchar(1) DEFAULT NULL,
+  `tai_heaven` varchar(1) DEFAULT NULL,
+  `tai_earth` varchar(1) DEFAULT NULL,
+  `life_heaven` varchar(1) DEFAULT NULL,
+  `life_earth` varchar(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+
+
+ALTER TABLE `fs_pro`.`fs_calendar_solar` ADD COLUMN `year_heaven` VARCHAR(1) NOT NULL  AFTER `create_time` , ADD COLUMN `year_earth` VARCHAR(1) NOT NULL  AFTER `year_heaven` , ADD COLUMN `month_heaven` VARCHAR(1) NOT NULL  AFTER `year_earth` , ADD COLUMN `month_earth` VARCHAR(1) NOT NULL  AFTER `month_heaven` ;
+
+
+CREATE TABLE `fs_calendar_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `info_id` int(11) NOT NULL,
+  `order_num` varchar(50) NOT NULL,
+  `order_type` varchar(10) NOT NULL COMMENT 'member_fee',
+  `name` varchar(50) NOT NULL,
+  `detail` varchar(100) NOT NULL,
+  `pay_rmb_amt` int(11) NOT NULL COMMENT 'in cent',
+  `discount_rmb_amt` int(11) NOT NULL DEFAULT '0',
+  `status` varchar(15) NOT NULL COMMENT 'init, close, pay_succ, pay_fail',
+  `create_time` datetime NOT NULL,
+  `pay_confirm_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `status` (`status`),
+  KEY `create_time` (`create_time`),
+  KEY `pay_confirm_time` (`pay_confirm_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+
+
+
+#############################
+
+
 ALTER TABLE `fs_pro`.`fs_order` ADD COLUMN `is_user_delete` VARCHAR(4) NULL DEFAULT 'N'  AFTER `remark` ;
+
+
+CREATE  TABLE `fs_pro`.`fs_period_statistics` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT ,
+  `period_name` VARCHAR(50) NOT NULL ,
+  `seller_usr_id` INT(11) NOT NULL ,
+  `count_order` INT(11) NOT NULL ,
+  `count_buyer` INT(11) NOT NULL ,
+  `avg_resp_time` INT(11) NOT NULL ,
+  `type` VARCHAR(10) NOT NULL COMMENT 'YEAR,MONTH,WEEK' ,
+  `start_time` DATETIME NOT NULL ,
+  `end_time` DATETIME NOT NULL ,
+  `create_time` DATETIME NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `period_name` (`period_name` ASC) ,
+  INDEX `seller` (`seller_usr_id` ASC) );
+
+
+
+SELECT seller_usr_id, count(*), count(distinct buy_usr_id),
+avg(UNIX_TIMESTAMP(begin_chat_time)-UNIX_TIMESTAMP(create_time)) avg_diff_time 
+FROM fs_pro.fs_order group by seller_usr_id;
+
+
+// 20180924
+CREATE  TABLE `fs_pro`.`fs_calendar` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT ,
+  `user_id` INT(11) NULL COMMENT 'null for common calendar' ,
+  `type` INT(4) NOT NULL COMMENT '0: common, 1: custom' ,
+  `date` DATETIME NOT NULL ,
+  `lunar_date` DATETIME NULL ,
+  `year_heaven` VARCHAR(4) NULL ,
+  `year_earth` VARCHAR(4) NULL ,
+  `month_heaven` VARCHAR(4) NULL ,
+  `month_earth` VARCHAR(4) NULL ,
+  `day_heaven` VARCHAR(4) NULL ,
+  `day_earth` VARCHAR(4) NULL ,
+  `constel` VARCHAR(4) NULL ,
+  `guard` VARCHAR(4) NULL ,
+  `luck` VARCHAR(8) NULL ,
+  `evil` VARCHAR(8) NULL ,
+  `solar` VARCHAR(8) NULL ,
+  `holiday` VARCHAR(8) NULL ,
+  `events_value` BIGINT(64) NOT NULL DEFAULT 0 COMMENT '2bits for one event, can hold 32 events\nevents order from low bits\nfor each event -\n0(00):  not good or bad, 1(01): good, 2(10): bad' ,
+  `create_time` DATETIME NOT NULL ,
+  PRIMARY KEY (`id`) );
+
+
+
+

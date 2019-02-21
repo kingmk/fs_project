@@ -168,9 +168,10 @@ public class HttpService {
 			logger.debug("url="+url+",data="+data);
 			InputStream in = null;
 			String charset = (responseEncode!=null && responseEncode.length==1) ? responseEncode[0]:"UTF-8";
+//			logger.info("###charset: "+charset+" ###");
 			postMethod = new PostMethod(url);
 			postMethod.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, charset);
-			RequestEntity re = new StringRequestEntity(data,null,null);
+			RequestEntity re = new StringRequestEntity(data,"text/html",charset);
 	        postMethod.setRequestEntity(re);
 	        if(useLocalSockey){
 		        Protocol https = new Protocol("https", new HTTPSSecureProtocolSocketFactory(), 443);

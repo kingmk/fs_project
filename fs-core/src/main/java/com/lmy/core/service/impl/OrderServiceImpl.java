@@ -396,7 +396,9 @@ public class OrderServiceImpl {
 					Assert.isTrue(effectOrderNum ==1 );
 					int effectPayNum = fsPayRecordDao.updateForPayByResult(payRecord.getId(),bank_type,transaction_id ,paySucc, now);
 					Assert.isTrue(effectPayNum ==1 );
-					fsMasterStatisticsDao.incOrder(order.getSellerUsrId(), order.getZxCateId());
+					if (paySucc) {
+						fsMasterStatisticsDao.incOrder(order.getSellerUsrId(), order.getZxCateId());
+					}
 					return true;
 				}
 			});

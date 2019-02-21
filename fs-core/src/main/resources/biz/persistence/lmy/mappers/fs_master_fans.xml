@@ -58,7 +58,10 @@
 </select>
 <!-- 查询到关注的人id(masterUsrId) -->
 <select id="findCurFocusUsrIdsByFollowUsrId" parameterType="hashmap" resultType="long">
-    select distinct focus_usr_id  from fs_master_fans where follow_usr_id = #{followUsrId} and status='followed' order by id desc  limit #{limitBegin} , #{limitEnd} 
+    select distinct focus_usr_id  from fs_master_fans 
+    where 
+    	follow_usr_id = #{followUsrId} and status='followed' 
+    order by id desc  limit #{limitBegin} , #{limitEnd} 
 </select>
 	
 </mapper>

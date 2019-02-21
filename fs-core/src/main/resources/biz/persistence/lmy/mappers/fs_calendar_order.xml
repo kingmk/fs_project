@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_calendar_order">
+<resultMap id="fs_calendar_order" type="com.lmy.core.model.FsCalendarOrder">
+	<result column="id" property="id"/>
+	<result column="user_id" property="userId"/>
+	<result column="info_id" property="infoId"/>
+	<result column="order_num" property="orderNum"/>
+	<result column="order_type" property="orderType"/>
+	<result column="name" property="name"/>
+	<result column="detail" property="detail"/>
+	<result column="pay_rmb_amt" property="payRmbAmt"/>
+	<result column="discount_rmb_amt" property="discountRmbAmt"/>
+	<result column="status" property="status"/>
+	<result column="create_time" property="createTime"/>
+	<result column="pay_confirm_time" property="payConfirmTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+
+<insert id="insert" parameterType="com.lmy.core.model.FsCalendarOrder"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_calendar_order(id, user_id, info_id, order_num, order_type, name, detail, pay_rmb_amt, discount_rmb_amt,
+	status, create_time, pay_confirm_time, update_time)
+	values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{infoId,jdbcType=INTEGER}, #{orderNum,jdbcType=VARCHAR}, #{orderType,jdbcType=VARCHAR},
+	#{name,jdbcType=VARCHAR}, #{detail,jdbcType=VARCHAR}, #{payRmbAmt,jdbcType=INTEGER}, #{discountRmbAmt,jdbcType=INTEGER},
+	#{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{payConfirmTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+</insert>
+
+
+<update id="update"	parameterType="com.lmy.core.model.FsCalendarOrder">
+	update fs_calendar_order
+<set>
+	<if test="userId != null">user_id=#{userId},</if>
+	<if test="infoId != null">info_id=#{infoId},</if>
+	<if test="orderNum != null">order_num=#{orderNum},</if>
+	<if test="orderType != null">order_type=#{orderType},</if>
+	<if test="name != null">name=#{name},</if>
+	<if test="detail != null">detail=#{detail},</if>
+	<if test="payRmbAmt != null">pay_rmb_amt=#{payRmbAmt},</if>
+	<if test="discountRmbAmt != null">discount_rmb_amt=#{discountRmbAmt},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="payConfirmTime != null">pay_confirm_time=#{payConfirmTime},</if>
+	<if test="updateTime != null">update_time=#{updateTime},</if>
+</set>
+	where id=#{id}
+</update>
+
+
+<select id="findById" parameterType="hashmap" resultMap="fs_calendar_order">
+    select * from fs_calendar_order where id = #{id}
+</select>
+
+</mapper>

@@ -1,0 +1,18 @@
+@import "style";
+
+.error {
+	text-align: center;
+	padding-top: px2rem(120);
+	.error-icon {
+		width: px2rem(240);
+		height: px2rem(240);
+		margin-bottom: px2rem(60);
+	}
+	.error-msg {
+		font-size: px2rem(30);
+		line-height: px2rem(40);
+		padding-left: px2rem(60);
+		padding-right: px2rem(60);
+		color: #333;
+	}
+}

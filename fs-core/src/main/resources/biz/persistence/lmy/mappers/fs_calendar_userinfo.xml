@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_calendar_userinfo">
+<resultMap id="fs_calendar_userinfo" type="com.lmy.core.model.FsCalendarUserinfo">
+	<result column="id" property="id"/>
+	<result column="user_id" property="userId"/>
+	<result column="name" property="name"/>
+	<result column="type" property="type"/>
+	<result column="status" property="status"/>
+	<result column="gender" property="gender"/>
+	<result column="birth_time" property="birthTime"/>
+	<result column="birth_real_time" property="birthRealTime"/>
+	<result column="birth_province" property="birthProvince"/>
+	<result column="birth_city" property="birthCity"/>
+	<result column="birth_area" property="birthArea"/>
+	<result column="birth_longitude" property="birthLongitude"/>
+	<result column="birth_latitude" property="birthLatitude"/>
+	<result column="mobile" property="mobile"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+	<result column="year_heaven" property="yearHeaven"/>
+	<result column="year_earth" property="yearEarth"/>
+	<result column="month_heaven" property="monthHeaven"/>
+	<result column="month_earth" property="monthEarth"/>
+	<result column="day_heaven" property="dayHeaven"/>
+	<result column="day_earth" property="dayEarth"/>
+	<result column="hour_heaven" property="hourHeaven"/>
+	<result column="hour_earth" property="hourEarth"/>
+	<result column="tai_heaven" property="taiHeaven"/>
+	<result column="tai_earth" property="taiEarth"/>
+	<result column="life_heaven" property="lifeHeaven"/>
+	<result column="life_earth" property="lifeEarth"/>
+	<result column="count_update" property="countUpdate"/>
+</resultMap>
+
+<insert id="insert"  parameterType="com.lmy.core.model.FsCalendarUserinfo"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_calendar_userinfo(id, user_id, name, type, status, gender, birth_time, birth_real_time,
+ 	birth_province, birth_city, birth_area, birth_longitude, birth_latitude, mobile, create_time, update_time,
+ 	year_heaven, year_earth, month_heaven, month_earth, day_heaven, day_earth, hour_heaven, hour_earth,
+ 	tai_heaven, tai_earth, life_heaven, life_earth, count_update)
+	values(#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
+	#{status,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{birthTime,jdbcType=TIMESTAMP},  #{birthRealTime,jdbcType=TIMESTAMP},
+	#{birthProvince,jdbcType=VARCHAR}, #{birthCity,jdbcType=VARCHAR}, #{birthArea,jdbcType=VARCHAR},
+	#{birthLongitude,jdbcType=INTEGER}, #{birthLatitude,jdbcType=INTEGER}, #{mobile,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+	#{yearHeaven,jdbcType=VARCHAR}, #{yearEarth,jdbcType=VARCHAR}, #{monthHeaven,jdbcType=VARCHAR}, #{monthEarth,jdbcType=VARCHAR}, 
+	#{dayHeaven,jdbcType=VARCHAR}, #{dayEarth,jdbcType=VARCHAR}, #{hourHeaven,jdbcType=VARCHAR}, #{hourEarth,jdbcType=VARCHAR},
+	#{taiHeaven,jdbcType=VARCHAR}, #{taiEarth,jdbcType=VARCHAR}, #{lifeHeaven,jdbcType=VARCHAR}, #{lifeEarth,jdbcType=VARCHAR}, 
+	#{countUpdate,jdbcType=INTEGER} )
+</insert>
+
+<update id="update"	parameterType="com.lmy.core.model.FsCalendarUserinfo">
+	update fs_calendar_userinfo
+<set>
+	<if test="userId != null">id=#{userId},</if>
+	<if test="name != null">name=#{name},</if>
+	<if test="type != null">type=#{type},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="gender != null">gender=#{gender},</if>
+	<if test="birthTime != null">birth_time=#{birthTime},</if>
+	<if test="birthRealTime != null">birth_real_time=#{birthRealTime},</if>
+	<if test="birthProvince != null">birth_province=#{birthProvince},</if>
+	<if test="birthCity != null">birth_city=#{birthCity},</if>
+	<if test="birthArea != null">birth_area=#{birthArea},</if>
+	<if test="birthLongitude != null">birth_longitude=#{birthLongitude},</if>
+	<if test="birthLatitude != null">birth_latitude=#{birthLatitude},</if>
+	<if test="mobile != null">mobile=#{mobile},</if>
+	<if test="updateTime != null">update_time=#{updateTime},</if>
+	<if test="yearHeaven != null">year_heaven=#{yearHeaven},</if>
+	<if test="yearEarth != null">year_earth=#{yearEarth},</if>
+	<if test="monthHeaven != null">month_heaven=#{monthHeaven},</if>
+	<if test="monthEarth != null">month_earth=#{monthEarth},</if>
+	<if test="dayHeaven != null">day_heaven=#{dayHeaven},</if>
+	<if test="dayEarth != null">day_earth=#{dayEarth},</if>
+	<if test="hourHeaven != null">hour_heaven=#{hourHeaven},</if>
+	<if test="hourEarth != null">hour_earth=#{hourEarth},</if>
+	<if test="taiHeaven != null">tai_heaven=#{taiHeaven},</if>
+	<if test="taiEarth != null">tai_earth=#{taiEarth},</if>
+	<if test="lifeHeaven != null">life_heaven=#{lifeHeaven},</if>
+	<if test="lifeEarth != null">life_earth=#{lifeEarth},</if>
+	<if test="countUpdate != null">count_update=#{countUpdate},</if>
+</set>
+	where id=#{id}
+</update>
+
+<select id="findById" parameterType="hashmap"  resultMap="fs_calendar_userinfo">
+	select * from fs_calendar_userinfo where id=#{id}
+</select>
+
+<select id="findUserMainInfo" parameterType="hashmap"  resultMap="fs_calendar_userinfo">
+	select * from fs_calendar_userinfo where user_id=#{userId} and type='MAIN'
+</select>
+
+<select id="findByMobile" parameterType="hashmap"  resultMap="fs_calendar_userinfo">
+	select * from fs_calendar_userinfo where mobile=#{mobile}
+</select>
+
+</mapper>

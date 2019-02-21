@@ -513,17 +513,28 @@ public class OrderQueryServiceImpl {
 			FsOrderSettlement statSettlement = this.fsOrderSettlementDao.stat1(masterUsrId, Arrays.asList("succ"));
 			JSONObject statAmtMap =  this.fsOrderDao.statAmtBySellerIdGroupByStatus(masterUsrId,null,null);
 			logger.info("====="+statAmtMap.toJSONString()+"=====");
+			Long amtOrder = 0l;
+			Long amtCommission = 0l;
+			Long amtUntax = 0l;
 			HashMap<String, Long> unsettledAmtMap = OrderAidUtil.getSumAmtFromStatusAmtMap(statAmtMap,  OrderAidUtil.getMasterWaitIncomeStatus());
-			Long amtOrder = unsettledAmtMap.get("sumAmtPay")+unsettledAmtMap.get("sumAmtDiscount");
-			Long amtCommission = OrderAidUtil.mul(amtOrder, OrderAidUtil.getPlatCommissionRate()).longValue();
-			Long amtUntax = amtOrder-amtCommission-unsettledAmtMap.get("sumAmtDiscountMaster");
+			if (unsettledAmtMap != null) {
+				amtOrder = unsettledAmtMap.get("sumAmtPay")+unsettledAmtMap.get("sumAmtDiscount");
+				amtCommission = OrderAidUtil.mul(amtOrder, OrderAidUtil.getPlatCommissionRate()).longValue();
+				amtUntax = amtOrder-amtCommission-unsettledAmtMap.get("sumAmtDiscountMaster");
+			}
 			
 			//已退款 = 退款确认成功+ 退款确认中
 			//退款申请中 = 退款申请成功+待审批
+			Long amtOrderRefund = 0l;
+			Long amtCommissionRefund = 0l;
+			Long amtUntaxRefund = 0l;
+			
 			HashMap<String, Long> refundAmtMap = OrderAidUtil.getSumAmtFromStatusAmtMap(statAmtMap, OrderAidUtil.getMasterRefundSatus());
-			Long amtOrderRefund = refundAmtMap.get("sumAmtPay")+refundAmtMap.get("sumAmtDiscount");
-			Long amtCommissionRefund = OrderAidUtil.mul(amtOrderRefund, OrderAidUtil.getPlatCommissionRate()).longValue();
-			Long amtUntaxRefund = amtOrderRefund-amtCommissionRefund-refundAmtMap.get("sumAmtDiscountMaster");
+			if (refundAmtMap != null) {
+				amtOrderRefund = refundAmtMap.get("sumAmtPay")+refundAmtMap.get("sumAmtDiscount");
+				amtCommissionRefund = OrderAidUtil.mul(amtOrderRefund, OrderAidUtil.getPlatCommissionRate()).longValue();
+				amtUntaxRefund = amtOrderRefund-amtCommissionRefund-refundAmtMap.get("sumAmtDiscountMaster");
+			}
 			
 			
 			JSONObject result = JsonUtils.commonJsonReturn();

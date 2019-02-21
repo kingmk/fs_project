@@ -51,6 +51,7 @@ public class EnterBaseController {
 	private MasterStatisticsServiceImpl masterStatisticsServiceImpl;
 	@Autowired
 	private StatisticsServiceImpl statisticsServiceImpl;
+	
 	/**
 	 * 
 	 * @param request  参数 _goTo 相对路劲 eg:/usr/index	(优先使用); redirect_url 绝对路劲 eg: http://news.qq.com/a/20170404/016550.htm	
@@ -179,17 +180,20 @@ public class EnterBaseController {
 	@ResponseBody
 	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
 	public String test_period_statistics(HttpServletRequest request,HttpServletResponse response
+			,@RequestParam(value = "month" , required = true) String month
 			) throws Exception{
 //		if (!FsEnvUtil.isDev()) {
 //			return "only for test environment";
 //		}
-		String[] monthes = {"2017-08","2017-09","2017-10","2017-11","2017-12",
-				"2018-01","2018-02","2018-03","2018-04","2018-05","2018-06","2018-07"};
+//		String[] monthes = {"2017-08","2017-09","2017-10","2017-11","2017-12",
+//				"2018-01","2018-02","2018-03","2018-04","2018-05","2018-06","2018-07"};
+//		for (int i = 0; i < monthes.length; i++) {
+//			statisticsServiceImpl.monthlyStatistics(monthes[i]);
+//		}
 		
-		for (int i = 0; i < monthes.length; i++) {
-			statisticsServiceImpl.monthlyStatistics(monthes[i]);
-		}
+		statisticsServiceImpl.monthlyStatistics(month);
 		
 		return "";
 	}
+	
 }

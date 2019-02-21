@@ -66,10 +66,10 @@
 </update>
 
 <select id="findByWxOpenIdOrId" parameterType="hashmap"  resultMap="fs_usr">
-	select * 	from fs_usr 
+	select * from fs_usr 
 	<where>
-		<if test=" id!=null ">id=#{id}  </if> 
-		<if test="wxOpenId !=null">and	wx_open_id = #{wxOpenId}  </if>
+		<if test=" id!=null ">id=#{id}</if> 
+		<if test="wxOpenId !=null">and wx_open_id = #{wxOpenId}</if>
 	</where>
 </select>  
 <select id="statNumByMobile" parameterType="hashmap"  resultType="long">

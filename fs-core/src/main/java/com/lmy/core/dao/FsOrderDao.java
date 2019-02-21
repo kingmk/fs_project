@@ -191,7 +191,7 @@ public class FsOrderDao extends GenericDAOImpl<FsOrder> {
 		return idNumMap;
 	}
 	/**
-	 * @param sellerUsrId 统计某个大师的的收入
+	 * @param sellerUsrId 统计某个大师各个状态的收入情况
 	 * @param lastTime if is null 统计的时间
 	 * @return key status; value 所有费用
 	 */

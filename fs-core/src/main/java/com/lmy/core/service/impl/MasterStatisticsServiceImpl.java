@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -372,5 +374,19 @@ public class MasterStatisticsServiceImpl {
 		}
 		
 		return jDataArr;
+	}
+	
+	public JSONObject clearSearchCache() {
+		
+		Set<String> keySet = RedisClient.getKeys(CacheConstant.FS_SEARCH_MASTER+"*");
+		Iterator<String> it = keySet.iterator();
+		while(it.hasNext()){
+			String keyStr = it.next();
+			RedisClient.delete(keyStr);
+			logger.info("#########del cache: "+keyStr);
+		}
+		
+		JSONObject result = JsonUtils.commonJsonReturn(); 
+		return result;
 	}
 }

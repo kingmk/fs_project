@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fs_calendar">
+<resultMap id="fs_calendar" type="com.lmy.core.model.FsCalendar">
+	<result column="id" property="id"/>
+	<result column="user_id" property="userId"/>
+	<result column="type" property="type"/>
+	<result column="date" property="date"/>
+	<result column="lunar_date" property="lunarDate"/>
+	<result column="lunar_str" property="lunarStr"/>
+	<result column="year_heaven" property="yearHeaven"/>
+	<result column="year_earth" property="yearEarth"/>
+	<result column="month_heaven" property="monthHeaven"/>
+	<result column="month_earth" property="monthEarth"/>
+	<result column="day_heaven" property="dayHeaven"/>
+	<result column="day_earth" property="dayEarth"/>
+	<result column="constel" property="constel"/>
+	<result column="guard" property="guard"/>
+	<result column="luck" property="luck"/>
+	<result column="luck_v1" property="luckV1"/>
+	<result column="luck_v2" property="luckV2"/>
+	<result column="evil" property="evil"/>
+	<result column="solar" property="solar"/>
+	<result column="holiday" property="holiday"/>
+	<result column="events_value" property="eventsValue"/>
+	<result column="create_time" property="createTime"/>
+</resultMap>
+
+<insert id="insert"  parameterType="com.lmy.core.model.FsCalendar"  useGeneratedKeys="true" keyProperty="id">
+	insert into fs_calendar(id, user_id, type, date, lunar_date, lunar_str, year_heaven, year_earth, month_heaven, 
+	month_earth, day_heaven, day_earth, constel, guard, luck, luck_v1, luck_v2, evil, solar, holiday, events_value, create_time)
+	values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{date,jdbcType=TIMESTAMP}, #{lunarDate,jdbcType=TIMESTAMP}, 
+	#{lunarStr,jdbcType=VARCHAR}, #{yearHeaven,jdbcType=VARCHAR}, #{yearEarth,jdbcType=VARCHAR}, #{monthHeaven,jdbcType=VARCHAR}, #{monthEarth,jdbcType=VARCHAR}, 
+	#{dayHeaven,jdbcType=VARCHAR}, #{dayEarth,jdbcType=VARCHAR}, #{constel,jdbcType=VARCHAR}, #{guard,jdbcType=VARCHAR}, 
+	#{luck,jdbcType=VARCHAR}, #{luckV1,jdbcType=INTEGER}, #{luckV2,jdbcType=INTEGER}, #{evil,jdbcType=VARCHAR}, #{solar,jdbcType=VARCHAR}, 
+	#{holiday,jdbcType=VARCHAR}, #{eventsValue,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+</insert>
+
+<insert id="batchInsert"  parameterType="list">
+	insert into fs_calendar(id, user_id, type, date, lunar_date, lunar_str, year_heaven, year_earth, month_heaven, 
+	month_earth, day_heaven, day_earth, constel, guard, luck, luck_v1, luck_v2, evil, solar, holiday, events_value, create_time)
+	values
+	<foreach collection="list" item="item" index="index"   separator=",">
+	(#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.type,jdbcType=INTEGER}, #{item.date,jdbcType=TIMESTAMP}, #{item.lunarDate,jdbcType=TIMESTAMP}, 
+	#{item.lunarStr,jdbcType=VARCHAR}, #{item.yearHeaven,jdbcType=VARCHAR}, #{item.yearEarth,jdbcType=VARCHAR}, #{item.monthHeaven,jdbcType=VARCHAR}, #{item.monthEarth,jdbcType=VARCHAR}, 
+	#{item.dayHeaven,jdbcType=VARCHAR}, #{item.dayEarth,jdbcType=VARCHAR}, #{item.constel,jdbcType=VARCHAR}, #{item.guard,jdbcType=VARCHAR}, 
+	#{item.luck,jdbcType=VARCHAR}, #{item.luckV1,jdbcType=INTEGER}, #{item.luckV2,jdbcType=INTEGER}, #{item.evil,jdbcType=VARCHAR}, #{item.solar,jdbcType=VARCHAR}, 
+	#{item.holiday,jdbcType=VARCHAR}, #{item.eventsValue,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
+	</foreach>
+</insert>
+
+
+<update id="update"	parameterType="com.lmy.core.model.FsCalendar">
+	update fs_calendar
+<set>
+	<if test="userId != null">user_id=#{userId},</if>
+	<if test="type != null">type=#{type},</if>
+	<if test="date != null">date=#{date},</if>
+	<if test="lunarDate != null">lunar_date=#{lunarDate},</if>
+	<if test="lunarStr != null">lunar_str=#{lunarStr},</if>
+	<if test="yearHeaven != null">year_heaven=#{yearHeaven},</if>
+	<if test="yearEarth != null">year_earth=#{yearEarth},</if>
+	<if test="monthHeaven != null">month_heaven=#{monthHeaven},</if>
+	<if test="monthEarth != null">month_earth=#{monthEarth},</if>
+	<if test="dayHeaven != null">day_heaven=#{dayHeaven},</if>
+	<if test="dayEarth != null">day_earth=#{dayEarth},</if>
+	<if test="constel != null">constel=#{constel},</if>
+	<if test="guard != null">guard=#{guard},</if>
+	<if test="luck != null">luck=#{luck},</if>
+	<if test="luckV1 != null">luck_v1=#{luckV1},</if>
+	<if test="luckV2 != null">luck_v2=#{luckV2},</if>
+	<if test="evil != null">evil=#{evil},</if>
+	<if test="solar != null">solar=#{solar},</if>
+	<if test="holiday != null">holiday=#{holiday},</if>
+	<if test="eventsValue != null">events_value=#{eventsValue},</if>
+</set>
+	where id=#{id}
+</update>
+
+<select id="getCalendarsByPeriod" parameterType="hashmap" resultMap="fs_calendar">
+    select * from fs_calendar
+	<where>
+		<if test="type != null"> type = #{type}</if>
+		<if test="type == null"> and type = 0</if>
+		<if test="userId != null"> and user_id = #{userId}</if>
+		<if test="dateStart != null"> and date &gt;= #{dateStart}</if>
+		<if test="dateEnd != null"> and date &lt; #{dateEnd}</if>
+	</where>
+	order by date, id
+</select>
+
+</mapper>

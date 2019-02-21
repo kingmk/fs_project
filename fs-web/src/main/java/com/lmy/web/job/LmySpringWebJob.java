@@ -29,7 +29,7 @@ public class LmySpringWebJob {
 	private AdminAuditServiceImpl adminAuditServiceImpl;
 	@Autowired
 	private StatisticsServiceImpl statisticsServiceImpl;
-	//就每个月7号晚上22点结算上个月的全部订单
+	//就每月7日晚上22点结算上个月的全部订单
 	@Scheduled(cron="0 0 22 */7 * ?")
 	public void lmyAutoSettle(){
 		if(!com.lmy.core.utils.FsEnvUtil.isPro() ){
@@ -38,14 +38,27 @@ public class LmySpringWebJob {
 		orderSettlementServiceImpl.autoSettlement(null);
 	}
 	
-	//就每个月1号凌晨4点生成上月统计数据
-	@Scheduled(cron="0 0 4 */1 * ?")
+	//就每月1日凌晨4点生成上月统计数据
+	@Scheduled(cron="0 0 4 1 * ?")
 	public void lmyAutoStatistics(){
 		if(!com.lmy.core.utils.FsEnvUtil.isPro() ){
 			logger.info("非生产不执行"+ this.getClass()+"#"+Thread.currentThread().getStackTrace()[1].getMethodName());
 		}
-		logger.info("==========生成统计数据==========");
-		statisticsServiceImpl.monthlyStatistics();
+		logger.info("========== auto monthly statistics ==========");
+		long secsRand = (long)(Math.random()*10000);
+		try {
+			Thread.sleep(secsRand);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		String cacheKey = CacheConstant.AUTO_JOB+"_master_monthly_statistics";
+		if (!RedisClient.exists(cacheKey) ) {
+			RedisClient.set(cacheKey, Boolean.TRUE, 3600);
+			logger.info("=====start calcuate master monthly statistics=====");
+			statisticsServiceImpl.monthlyStatistics();
+		} else {
+			logger.info("=====other server is calculating master monthly statistics, skip on current server=====");
+		}
 	}
 
 	@Scheduled(cron="0 0 2 * * ?")

@@ -37,8 +37,8 @@ public class FsPayRecordDao extends GenericDAOImpl<FsPayRecord> {
 		}else{
 			map.put("tradeStatus", "fail");
 		}
-		map.put("tradeConfirmTime"	, now);
-		map.put("updateTime"	, now);
+		map.put("tradeConfirmTime", now);
+		map.put("updateTime", now);
 		if(StringUtils.isNotEmpty(respTradeNo)){
 			map.put("respTradeNo"	, respTradeNo);	
 		}

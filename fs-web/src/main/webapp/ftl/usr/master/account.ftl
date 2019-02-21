@@ -190,6 +190,8 @@ function changeServiceStatus(serviceStatus,dom){
 <body>
 <#if result.body.serviceStatus="FORBID">
 <div class="forbid-bar"><span class="forbid-bar-btn">下线理由</span>${result.body.forbidTimeStr}</div>
+<#elseif result.body.serviceStatus="FIRED">
+<div class="forbid-bar">当前您已与平台解约，无法接单</div>
 </#if>
 <div class="header">
     <div class="header-top  <#if result.body.serviceStatus="ING">stop<#else>start</#if>">
@@ -201,7 +203,7 @@ function changeServiceStatus(serviceStatus,dom){
             </div>
             <div class="name-box">
                 <p class="name">${result.body.masterNickName}</p>
-                <p class="status">状态：<#if result.body.serviceStatus="ING">接单中<#elseif result.body.serviceStatus="NOTING">暂停接单<#elseif result.body.serviceStatus="FORBID">已下线</#if>  </p>
+                <p class="status">状态：<#if result.body.serviceStatus="ING">接单中<#elseif result.body.serviceStatus="NOTING">暂停接单<#elseif result.body.serviceStatus="FORBID">已下线<#elseif result.body.serviceStatus="FIRED">已解约</#if>  </p>
             </div>
         </div>
         <#if result.body.serviceStatus="ING">

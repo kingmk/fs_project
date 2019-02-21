@@ -16,11 +16,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.lmy.common.component.JsonUtils;
 import com.lmy.core.model.FsMasterCard;
-import com.lmy.core.model.FsUsr;
+import com.lmy.core.model.FsMasterInfo;
 import com.lmy.core.service.impl.MasterQueryServiceImpl;
 import com.lmy.core.service.impl.OrderEvaluateServiceImpl;
 import com.lmy.core.service.impl.OrderQueryServiceImpl;
-import com.lmy.core.service.impl.UsrAidUtil;
 import com.lmy.core.service.impl.UsrQueryImpl;
 import com.lmy.web.common.WebUtil;
 
@@ -132,10 +131,15 @@ public class UsrMasterController {
 			,@RequestParam(value = "contactUsrId" , required = false) Long contactUsrId
 			,@RequestParam(value = "excludeOrderId" , required = false) Long excludeOrderId
 			){
+		Long loginUsrId = WebUtil.getUserId(request);
+		if (isMasterFired(loginUsrId)) {
+			modelMap.put("error_msg", "您已与雷门易平台解约，为保障平台客户的信息安全，您无法查看订单信息");
+			return "redirect:/common/error";
+		}
+		
 		modelMap.put("contactUsrId", contactUsrId);
 		modelMap.put("excludeOrderId", excludeOrderId);
 		if (contactUsrId != null && contactUsrId > 0) {
-			Long loginUsrId = WebUtil.getUserId(request);
 			JSONObject rlt = orderQueryServiceImpl.contactUsrOrderInfo(loginUsrId, contactUsrId);
 			modelMap.put("contactUsrName", JsonUtils.getBodyValue(rlt, "contactUsrName"));
 			modelMap.put("contactCnt", JsonUtils.getBodyValue(rlt, "contactCnt"));
@@ -168,6 +172,10 @@ public class UsrMasterController {
 		Long loginUsrId = WebUtil.getUserId(request);
 		if(masterUsrId == null ){
 			masterUsrId = loginUsrId;
+		}
+		if (isMasterFired(masterUsrId)) {
+			modelMap.put("error_msg", "您已与雷门易平台解约，为保障平台客户的信息安全，您无法查看评价");
+			return "redirect:/common/error";
 		}
 		modelMap.put("masterUsrId", masterUsrId);
 		JSONObject result =orderEvaluateServiceImpl.masterEvaluateSummary(masterUsrId);
@@ -236,6 +244,11 @@ public class UsrMasterController {
 	@RequestMapping(value="/usr/master/personal_home_page")
 	public String personal_home_page(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 			){
+		Long loginUsrId = WebUtil.getUserId(request);
+		if (isMasterFired(loginUsrId)) {
+			modelMap.put("error_msg", "您已与雷门易平台解约，无法预览您的个人主页");
+			return "redirect:/common/error";
+		}
 		JSONObject result = this.masterQueryServiceImpl.masterPersonalHomePage(WebUtil.getUserId(request));
 		modelMap.put("result", result);
 		return "/usr/master/personal_home_page";
@@ -245,8 +258,13 @@ public class UsrMasterController {
 	 * Master get bank card info
 	 */
 	@RequestMapping(value="/usr/master/my_bankcard")
-	public String save_bankcard(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response){
+	public String my_bankcard(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response){
 		Long loginUsrId = WebUtil.getUserId(request);
+
+		if (isMasterFired(loginUsrId)) {
+			modelMap.put("error_msg", "您已与雷门易平台解约，您无法编辑银行卡");
+			return "redirect:/common/error";
+		}
 		JSONObject result = masterQueryServiceImpl.masterCard(loginUsrId);
 		modelMap.put("result", result);
 		return "/usr/master/my_bankcard";
@@ -257,7 +275,7 @@ public class UsrMasterController {
 	 */
 	@RequestMapping(value="/usr/master/save_bankcard",method={RequestMethod.POST})
 	@ResponseBody
-	public String my_bankcard(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response,
+	public String save_bankcard(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response,
 			@RequestParam(value = "holderName" , required = true) String holderName,
 			@RequestParam(value = "bankName" , required = true) String bankName,
 			@RequestParam(value = "bankNo" , required = true) String bankNo,
@@ -275,5 +293,10 @@ public class UsrMasterController {
 		result = masterQueryServiceImpl.saveMasterCard(masterCard);
 		modelMap.put("result", result);
 		return result.toJSONString();
+	}
+	
+	private Boolean isMasterFired(Long loginUsrId) {
+		FsMasterInfo master = masterQueryServiceImpl.findByUsrId(loginUsrId);
+		return master.getServiceStatus().equals("FIRED");
 	}
 }

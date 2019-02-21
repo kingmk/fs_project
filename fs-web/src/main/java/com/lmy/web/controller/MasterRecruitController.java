@@ -196,6 +196,11 @@ public class MasterRecruitController {
 			,@RequestParam(value = "masterInfoId" , required = true) long masterInfoId
 			){
 		LoginCookieDto loginDto = WebUtil.getLoginDto(request);
+		Long loginUsrId = WebUtil.getUserId(request);
+		if (isMasterFired(loginUsrId)) {
+			modelMap.put("error_msg", "您已与雷门易平台解约，您无法编辑个人资料");
+			return "redirect:/common/error";
+		}
 		List<FsMasterInfo> list = masterQueryServiceImpl.findBtCondition1(masterInfoId,loginDto.getUserId(), loginDto.getOpenId(), null, null);
 		if(CollectionUtils.isEmpty(list)){
 			return WebUtil.failedResponse(response,"");
@@ -234,7 +239,7 @@ public class MasterRecruitController {
 		}
 		Date now = new Date();
 		FsMasterInfo masterInfoForUpdate = new FsMasterInfo();
-		masterInfoForUpdate.setUpdateTime(now).setWorkDate(workDate)		.setId(masterInfoId);
+		masterInfoForUpdate.setUpdateTime(now).setWorkDate(workDate).setId(masterInfoId);
 		masterInfoForUpdate.setName(realName).setNickName(nickName).
 		setExperience(experience).setGoodAt(goodAt).setIsFullTime(isFullTime).setIsSignOther(isSignOther).setProfession(profession).setSchool(school).setAchievement(achievement);
 		if(headImg!=null && headImg.getSize()>0){
@@ -253,6 +258,11 @@ public class MasterRecruitController {
 	public String service_config_nav(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response){
 		//拉取所有可以配置的服务
 		LoginCookieDto loginDto = WebUtil.getLoginDto(request);
+		Long loginUsrId = WebUtil.getUserId(request);
+		if (isMasterFired(loginUsrId)) {
+			modelMap.put("error_msg", "您已与雷门易平台解约，您无法编辑服务项目");
+			return "redirect:/common/error";
+		}
 		modelMap.put("serviceCateList",  this.masterQueryServiceImpl.findForConfigServerStep1(loginDto.getUserId())  );
 		return "/usr/master/recruit/service_cate_config_nav";
 	}
@@ -283,5 +293,10 @@ public class MasterRecruitController {
 			){
 		LoginCookieDto loginDto = WebUtil.getLoginDto(request);
 		return this.masterRecruitServiceImpl.configOderTaking(masterInfoId, loginDto.getUserId(), serviceStatus).toJSONString();
+	}
+	
+	private Boolean isMasterFired(Long loginUsrId) {
+		FsMasterInfo master = masterQueryServiceImpl.findByUsrId(loginUsrId);
+		return master.getServiceStatus().equals("FIRED");
 	}
 }

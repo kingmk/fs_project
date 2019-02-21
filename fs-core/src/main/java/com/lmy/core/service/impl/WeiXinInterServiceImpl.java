@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import javax.net.ssl.SSLContext;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -184,7 +185,7 @@ public class WeiXinInterServiceImpl {
 		requestJson.put("template_id", templateId);
 		requestJson.put("url", clickUrl);
 		requestJson.put("data", data);
-		return  httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+getAccessToken(), requestJson.toJSONString(), false,"utf-8");
+		return  httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+getAccessToken(), requestJson.toJSONString(), false,"UTF-8");
 	}
 	
 	/**
@@ -203,19 +204,21 @@ public class WeiXinInterServiceImpl {
 			parameters.put("mch_id", payRecord.getMchId()); 
 			//parameters.put("device_info",  null); // 设备号
 			parameters.put("nonce_str", uuid);  //随机字符串
+//			parameters.put("body","testproduct");
+//			parameters.put("detail", "testproductdetails");
 			parameters.put("body", payRecord.getBody());  //商品描述	
 			parameters.put("detail", payRecord.getDetail());  //商品描述	N
-			parameters.put("attach", payRecord.getAttach() !=null ?  payRecord.getAttach() : "");  //附加数据	N
+			//parameters.put("attach", payRecord.getAttach() !=null ?  payRecord.getAttach() : "");  //附加数据	N
 			parameters.put("out_trade_no", payRecord.getOutTradeNo());  //商户订单号
 			parameters.put("fee_type", "CNY");  //货币类型 N
 			parameters.put("total_fee", payRecord.getTotalFee()+""); // 总金额 单位分
 			parameters.put("spbill_create_ip",  payRecord.getSpbillCreateIp());  // 终端IP
 			parameters.put("time_start", CommonUtils.dateToString(now, CommonUtils.dateFormat3, null));	  //交易起始时间 N
 			parameters.put("time_expire", CommonUtils.dateToString(DateUtils.addMinutes(now, 5) , CommonUtils.dateFormat3, null));	 // 交易结束时间 N // 注意：订单生成后不能马上调用关单接口，最短调用时间间隔为5分钟。 
-			parameters.put("goods_tag", payRecord.getGoodsTag()!=null ?payRecord.getGoodsTag():"");  // 商品标记 N
+			//parameters.put("goods_tag", payRecord.getGoodsTag()!=null ?payRecord.getGoodsTag():"");  // 商品标记 N
 			parameters.put("notify_url", payRecord.getNotifyUrl() ); //通知地址
 			parameters.put("trade_type", "JSAPI"); //交易类型 
-			parameters.put("product_id",  ""); // 商品ID N
+			//parameters.put("product_id",  ""); // 商品ID N
 			//parameters.put("limit_pay", "");  // 指定支付方式 N
 			parameters.put("openid",  payRecord.getOpenId());  //用户标识 N
 
@@ -233,25 +236,27 @@ public class WeiXinInterServiceImpl {
 			String requestXml = getWeixinRequestXml(sortMap);
 
 			logger.info("微信  orderId:"+payRecord.getOrderId()+" unifiedOrder requestXML="+requestXml);
-			String respXml = httpService.doPostRequestEntity("https://api.mch.weixin.qq.com/pay/unifiedorder", requestXml,false,"utf-8"); 
+			String respXml = httpService.doPostRequestEntity("https://api.mch.weixin.qq.com/pay/unifiedorder", requestXml,false,"UTF-8"); 
 			logger.info("微信  orderId:"+payRecord.getOrderId()+" unifiedOrder resp="+respXml);
 			
 			if(StringUtils.isEmpty(respXml)){
-				logger.error("微信统一下单失败 下单响应为空,payRecord="+payRecord);
-				return  JsonUtils.commonJsonReturn("0001","微信统一支付失败");
+				logger.error("fail to call weixin order, no response, payRecord="+payRecord);
+				return  JsonUtils.commonJsonReturn("0001","微信统一支付失败，微信无响应");
 			}
 			Element root = XmlHelper.getField(respXml);
 			Element returnCodeEle = XmlHelper.child(root, "return_code");
 			String return_code =  returnCodeEle!=null ? returnCodeEle.getText():null;
 			Element resultCodeEle = XmlHelper.child(root, "result_code");
 			String result_code =  resultCodeEle!=null ? resultCodeEle.getText():null;
+			Element returnMsgEle = XmlHelper.child(root, "return_msg");
+			String return_msg =  returnMsgEle!=null ? returnMsgEle.getText():null;
 			if(!"SUCCESS".equals(return_code) || !"SUCCESS".equals(result_code)){
-				logger.error("微信统一下单失败 下单响应为空,payRecord="+payRecord);
-				return  JsonUtils.commonJsonReturn("0001","微信统一支付失败");
+				logger.error("fail to call weixin order, error response, payRecord="+payRecord);
+				return  JsonUtils.commonJsonReturn("0001","微信统一支付失败，失败原因："+return_msg);
 			}
 			Element prepayIdEle = XmlHelper.child(root, "prepay_id");
 			String prepay_id =  prepayIdEle!=null ? prepayIdEle.getText():null;
-			String appId = ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.appId");  
+//			String appId = ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.appId");
 			String payKey = ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.wechat.mer.appkey"); 
 			String uuid2 = UUID.randomUUID().toString().replaceAll("-", "");
 			String timeStamp = new Date().getTime()/1000+"";
@@ -259,13 +264,13 @@ public class WeiXinInterServiceImpl {
 				uuid2 = uuid.substring(0, 32);
 			}
 			JSONObject result = JsonUtils.commonJsonReturn();
-			result.getJSONObject("body").put("appId", appId);
+			result.getJSONObject("body").put("appId", payRecord.getAppId());
 			result.getJSONObject("body").put("package", "prepay_id="+prepay_id);
 			result.getJSONObject("body").put("timeStamp", timeStamp);
 			result.getJSONObject("body").put("nonceStr", uuid2);
 			result.getJSONObject("body").put("signType", "MD5");
 			result.getJSONObject("body").put("tradeNum", payRecord.getOutTradeNo());
-			String paySignStr = "appId="+appId+"&nonceStr="+uuid2+"&package=prepay_id="+prepay_id+"&signType=MD5&timeStamp="+timeStamp+"&key="+payKey;
+			String paySignStr = "appId="+payRecord.getAppId()+"&nonceStr="+uuid2+"&package=prepay_id="+prepay_id+"&signType=MD5&timeStamp="+timeStamp+"&key="+payKey;
 			String paySign = MD5Util.MD5Encode(paySignStr, "UTF-8").toUpperCase();
 			result.getJSONObject("body").put("paySign", paySign);
 			logger.info("微信orderId:"+payRecord.getOrderId()+" 统一下单返回页面参数result="+result);
@@ -275,12 +280,11 @@ public class WeiXinInterServiceImpl {
 			return JsonUtils.commonJsonReturn("9999","系统错误");
 		}
 	}
-
 	
 	/**
 	 * 微信退款申请
 	 */
-	public  static JSONObject refund1( FsPayRecord orgPaySuccBean , FsPayRecord refundBean) throws Exception{
+	public static JSONObject refund1( FsPayRecord orgPaySuccBean , FsPayRecord refundBean) throws Exception{
 		String requestXml = null;
 		String respXml = null;
 		String out_refund_no = refundBean.getOutTradeNo();
@@ -352,7 +356,7 @@ public class WeiXinInterServiceImpl {
 			String return_msg =  resultMsgEle!=null ? resultMsgEle.getText():null;
 			if(!"SUCCESS".equals(return_code) ){
 				logger.error("微信 refund 下单失败 return_code:"+return_code+";return_msg:"+return_msg);
-				JSONObject result = JsonUtils.commonJsonReturn("0001","退款申请失败");
+				JSONObject result = JsonUtils.commonJsonReturn("0001","退款申请失败："+return_msg);
 				JsonUtils.setBody(result, "respMsg", respXml);
 				return  result;
 			}else{
@@ -427,7 +431,7 @@ public class WeiXinInterServiceImpl {
 			}
 			sortMap.put("sign", sign);
 			requestXml = getWeixinRequestXml(sortMap);
-			respXml = httpService.doPostRequestEntity("https://api.mch.weixin.qq.com/pay/refundquery", requestXml,false,"utf-8");
+			respXml = httpService.doPostRequestEntity("https://api.mch.weixin.qq.com/pay/refundquery", requestXml,false,"UTF-8");
 			Element root = XmlHelper.getField(respXml);
 			Element returnCodeEle = XmlHelper.child(root, "return_code");
 			String return_code =  returnCodeEle!=null ? returnCodeEle.getText():null;
@@ -561,7 +565,7 @@ public class WeiXinInterServiceImpl {
 		sortMap.put("sign", sign);
 		String requestXml = getWeixinRequestXml(sortMap);
 		logger.info("微信 orderquery requestXML="+requestXml);
-		String respXml = httpService.doPostRequestEntity("https://api.mch.weixin.qq.com/pay/orderquery", requestXml,false,"utf-8"); 
+		String respXml = httpService.doPostRequestEntity("https://api.mch.weixin.qq.com/pay/orderquery", requestXml,false,"UTF-8"); 
 		logger.info("微信 orderquery resp="+respXml);
 		return respXml;
 	}
@@ -817,6 +821,7 @@ public class WeiXinInterServiceImpl {
 					sb.append(k + "=" + v + "&");
 				}
 			}
+//			logger.info("####sign parameters: "+sb.toString()+"  ####");
 			sb.append("key="+ ResourceUtils.getValue(ResourceUtils.LMYCORE,"fs.wechat.mer.appkey"));
 			logger.debug("微信参与验签value:" + sb.toString());
 			return MD5Util.MD5Encode(sb.toString(), "utf-8").toUpperCase();
@@ -965,7 +970,7 @@ public class WeiXinInterServiceImpl {
 			requestJson.put("data", data);
 			logger.debug(requestJson);
 			HttpService httpService = new HttpService();
-			String resp = httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ getAccessToken(), requestJson.toJSONString(),	false, "utf-8");
+			String resp = httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ getAccessToken(), requestJson.toJSONString(), false, "UTF-8");
 			if (StringUtils.isEmpty(resp)) {
 				return JsonUtils.commonJsonReturn("0001", "微信信息推送失败");
 			}
@@ -976,7 +981,7 @@ public class WeiXinInterServiceImpl {
 				// the access token is expired, need to get access token again
 				RedisClient.delete(ACCESS_TOKEN_KEY1);
 				httpService = new HttpService();
-				resp = httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ getAccessToken(), requestJson.toJSONString(),	false, "utf-8");
+				resp = httpService.doPostRequestEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ getAccessToken(), requestJson.toJSONString(),	false, "UTF-8");
 				if (StringUtils.isEmpty(resp)) {
 					return JsonUtils.commonJsonReturn("0001", "微信信息推送失败");
 				}

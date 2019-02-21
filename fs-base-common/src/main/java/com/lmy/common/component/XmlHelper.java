@@ -11,6 +11,9 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.SAXException;
+
+import com.sun.tools.apt.Main;
 
 public final class XmlHelper {
 
@@ -18,7 +21,7 @@ public final class XmlHelper {
 	}
 
 	public static Map<String, String> convertPrototype(String messagePrototype)
-			throws DocumentException {
+			throws DocumentException, SAXException {
 		List<Element> fields = getFields(messagePrototype, "map");
 
 		Map<String, String> paramMap = new LinkedHashMap<String, String>();
@@ -44,24 +47,32 @@ public final class XmlHelper {
 	}
 
 	public static List<Element> getFields(String xml, String node)
-			throws DocumentException {
+			throws DocumentException, SAXException {
 		Element root = getField(xml);
 		return children(root, node);
 	}
 
 	public static List<Element> getFields(String xml, String node,
-			String subNode) throws DocumentException {
+			String subNode) throws DocumentException, SAXException {
 		Element root = getField(xml);
 		Element nodeElement = child(root, node);
 		return children(nodeElement, subNode);
 	}
 
-	public static Element getField(String xml) throws DocumentException {
+	public static Element getField(String xml) throws DocumentException, SAXException {
 		StringReader stringReader = null;
 
 		try {
 			stringReader = new StringReader(xml);
 			SAXReader reader = new SAXReader();
+			String FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+			reader.setFeature(FEATURE, true);
+	        FEATURE = "http://xml.org/sax/features/external-general-entities";
+	        reader.setFeature(FEATURE, false);
+	        FEATURE = "http://xml.org/sax/features/external-parameter-entities";
+	        reader.setFeature(FEATURE, false);
+	        FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+	        reader.setFeature(FEATURE, false);
 
 			Document doc = reader.read(stringReader);
 			return doc.getRootElement();
@@ -159,4 +170,17 @@ public final class XmlHelper {
 		return Boolean.valueOf(text);
 	}
 
+	public static void main(String[] args) {
+		String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\"?><!DOCTYPE root [<!ENTITY xxe SYSTEM \"http://192.168.31.113:8080/order/notify_url\">]><foo><value>&xxe;</value></foo>";
+//		String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\"?><foo><value>abc</value></foo>";
+		
+		
+		try {
+			XmlHelper.getField(xmlString);
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
+	}
 }

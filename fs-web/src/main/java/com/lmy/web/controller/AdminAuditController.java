@@ -21,6 +21,7 @@ import com.lmy.common.component.JsonUtils;
 import com.lmy.common.queue.beanstalkd.BeanstalkClient;
 import com.lmy.common.utils.RSAHelper;
 import com.lmy.core.service.impl.AdminAuditServiceImpl;
+import com.lmy.core.service.impl.MasterStatisticsServiceImpl;
 import com.lmy.core.service.impl.WeiXinInterServiceImpl;
 import com.lmy.web.common.WebUtil;
 /**
@@ -36,6 +37,8 @@ public class AdminAuditController {
 			//ResourceUtils.getValue(ResourceUtils.LMYCORE, "fs.admin.api.mer.10000.rsa.private.key");
 	@Autowired
 	private AdminAuditServiceImpl adminAuditServiceImpl;
+	@Autowired
+	private MasterStatisticsServiceImpl masterStatisticsServiceImpl;
 	
 	/**
 	 * 临时api
@@ -114,5 +117,13 @@ public class AdminAuditController {
 		return adminAuditServiceImpl.forbidMasterNotify(dataJson.getLongValue("masterInfoId"), 
 				dataJson.getLongValue("forbidStartTime"), dataJson.getLongValue("forbidEndTime"), 
 				dataJson.getString("reason")).toJSONString();
+	}
+
+	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
+	@RequestMapping(value="/admin/audit/api/clear_search_cache" , method={RequestMethod.POST})
+	@ResponseBody
+	public String clear_search_cache(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response) {
+		
+		return masterStatisticsServiceImpl.clearSearchCache().toJSONString();
 	}
 }

@@ -20,11 +20,11 @@ public class FollowServiceImpl {
 	private FsMasterInfoDao fsMasterInfoDao;
 	public JSONObject findMyFollow(long followUsrId , int currentPage,int perPageNum){
 		try{
-			List<Long> masterUsrIds  = fsMasterFansDao.findCurFocusUsrIdsByFollowUsrId(followUsrId, currentPage, perPageNum);
+			List<Long> masterUsrIds = fsMasterFansDao.findCurFocusUsrIdsByFollowUsrId(followUsrId, currentPage, perPageNum);
 			if(CollectionUtils.isEmpty(masterUsrIds)){
 				return JsonUtils.commonJsonReturn("1000", "查无数据");
 			}
-			List<FsMasterInfo> masterInfoList = 	fsMasterInfoDao.findByUsrIds2(masterUsrIds, "approved", null);
+			List<FsMasterInfo> masterInfoList = fsMasterInfoDao.findByUsrIds2(masterUsrIds, "approved", UsrAidUtil.getMasterNormalServiceStatus());
 			if(CollectionUtils.isEmpty(masterInfoList)){
 				return JsonUtils.commonJsonReturn("1000", "数据错误|查无数据");
 			}
