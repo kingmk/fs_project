@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="${host.css}/css/mobiscroll.custom-3.0.0-beta2.min.css">
 <link rel="stylesheet" href="${host.css}/css/info_supply.css?${host.version}">
 <style>
+body {height: initial; padding-bottom: 5rem;}
 .img-logo-box{width: 5rem; height: 5rem ;border-radius: 50%; border: 0.1rem solid #fff; overflow: hidden ;position: relative; margin: 0 auto;}
 .img-logo-box img{position: absolute; z-index: 9;}
 </style>
@@ -24,10 +25,10 @@ $(function(){
 		$("#saveBtn").html('保存并返回');
 	}
 	$(".list-textarea").on('input propertychange', function(){
-	if ($(this).val().length > 200) {
-		$(this).val( $(this).val().substring(0,200));
-	}
-	$(this).siblings('.list-textarea-tips').html('还可填写' + (200 - $(this).val().length) + '字');
+		if ($(this).val().length > 200) {
+			$(this).val( $(this).val().substring(0,200));
+		}
+		$(this).siblings('.list-textarea-tips').html('还可填写' + (200 - $(this).val().length) + '字');
 	})
 	$("#radio").on('click',radioChange);
 	mobiscroll.select('#isFullTime', {
@@ -126,6 +127,10 @@ function save(){
 		$("#workYearStr").val() !='' ? $("#workDate").val(commonUtils.setTime(-365*$("#workYearStr").val(),'-')):'';
 	}
 
+	if($("#intro").val() == ''){
+		 mAlert.addAlert('请输入个人抬头介绍');
+		return;
+	}
 	if($("#school").val() == ''){
 		 mAlert.addAlert('请输入所学门派');
 		return;
@@ -229,6 +234,15 @@ function save(){
 	<#-- textarea区域 -->
 	<div class="list form" style="margin-top: 1.5rem">
 		<div class="list-body">
+			<div class="list-item">
+				<div class="list-label">个人抬头介绍</div>
+				<div class="list-control">
+					<textarea class="list-textarea" rows="4" id="intro" name='intro' placeholder="必填">${masterInfo.intro}</textarea>
+					<div class="list-textarea-tips">
+						<#if masterInfo.intro??><#else>还可填写200字</#if>
+					</div>
+				</div>
+			</div>
 			<div class="list-item">
 				<div class="list-label">所学门派</div>
 				<div class="list-control">

@@ -1,0 +1,56 @@
+@import "style";
+@import "footer_nav";
+@import "bgmask";
+@import "button";
+
+body {
+	background-color: #fff;
+	height: initial;
+}
+
+.cate-nav-title {
+	padding: px2rem(44) px2rem(57) px2rem(44);
+	font-size: px2rem(28);
+}
+
+.cate-list {
+	padding: 0 px2rem(45) px2rem(14);
+	border-bottom: px2rem(1) solid #dbdbdb;
+	.cate-out {
+		width: 25%;
+		float: left;
+		margin-bottom: px2rem(41);
+		.cate-inner {
+			margin: 0 px2rem(12);
+			height: px2rem(50);
+			line-height: px2rem(50);
+			border: px2rem(1) solid #666;
+			text-align: center;
+			font-size: px2rem(28);
+			&.selected {
+				background-color: #f29600;
+				color: #fff;
+			}
+		}
+	}
+}
+
+.intro-box {
+	margin: 0 px2rem(61);
+	.cate-intro {
+		width: 100%;
+		border: px2rem(1) solid #666;
+		padding: px2rem(22);
+		font-size: px2rem(26);
+		line-height: px2rem(40);
+	}
+}
+
+.info {
+	margin: px2rem(30) px2rem(61);
+	display: flex;
+	flex-direction: row;
+
+}
+
+

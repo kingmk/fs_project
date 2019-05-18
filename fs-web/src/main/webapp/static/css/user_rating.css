@@ -195,8 +195,8 @@ body { height: initial; }
 
 .user-comments-content { background: #fff; text-align: center; padding-bottom: 1.5rem; }
 .user-comments-content .score-title { padding: 2.5rem 0 1.5rem; font-size: 1.3rem; color: #999; }
-.user-comments-content .score-box .score-item { padding-bottom: 1.5rem; font-size: 0; display: flex; display: -webkit-flex; justify-content: center; -webkit-justify-content: center; align-items: center; -webkit-align-items: center; }
-.user-comments-content .score-box .score-item .score-item-tips { font-size: 1.4rem !important; color: #3f3f3f; padding-right: 0.7rem; display: inline-block; }
+.user-comments-content .score-box .score-item { padding-bottom: 0.75rem; font-size: 0; display: flex; display: -webkit-flex; justify-content: center; -webkit-justify-content: center; align-items: center; -webkit-align-items: center; }
+.user-comments-content .score-box .score-item .score-item-tips { font-size: 1rem !important; color: #3f3f3f; padding-right: 0.7rem; display: inline-block; }
 
 .rating-content { background: #fff; border-top: 1px solid rgba(0, 0, 0, 0.1); }
 .rating-content .rating-content-tit { height: 5rem; padding-left: 1.5rem; position: relative; line-height: 5rem; font-size: 1.4rem; color: #3f3f3f; }
@@ -208,8 +208,8 @@ body { height: initial; }
 .rating-content .rating-content-list .list-item .img-box { float: left; width: 5rem; margin-right: 1rem; }
 .rating-content .rating-content-list .list-item .img-box .img { width: 5rem; height: 5rem; border-radius: 50%; display: block; }
 .rating-content .rating-content-list .list-item .list-item-content { margin-left: 6rem; }
-.rating-content .rating-content-list .list-item .list-item-content .name { padding-bottom: 1rem; font-size: 1.4rem; }
-.rating-content .rating-content-list .list-item .list-item-content .rating { line-height: 2rem; font-size: 1.2rem; padding-bottom: 1.5rem; }
-.rating-content .rating-content-list .list-item .list-item-content .time { font-size: 1.2rem; color: #999; }
+.rating-content .rating-content-list .list-item .list-item-content .name { padding-bottom: 1rem; font-size: 1.15rem; }
+.rating-content .rating-content-list .list-item .list-item-content .rating { line-height: 2rem; font-size: 1.1rem; padding-bottom: 1rem; }
+.rating-content .rating-content-list .list-item .list-item-content .time { font-size: 0.9rem; color: #999; }
 .rating-content .rating-content-list .list-item .list-item-content .reply-box .reply-content { position: relative; margin-top: 0.6rem; padding: 0.8rem; background-color: #e2af73; border-radius: 0.3rem; line-height: 1.8rem; color: #fff; }
 .rating-content .rating-content-list .list-item .list-item-content .reply-box .reply-content .reply-arrow { position: absolute; background: url("../images/arrow_up.png"); background-size: 100% auto; width: 0.6rem; height: 0.3rem; top: -0.3rem; left: 1.5rem; }

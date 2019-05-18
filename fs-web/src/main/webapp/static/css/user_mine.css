@@ -580,27 +580,16 @@ a {
       font-size: 1.1rem;
       color: #ccc; }
 
-.icon.account {
-  background: url("../images/footer_icon.png") 0 -200%;
-  background-size: 100% auto; }
-.icon.order {
-  background: url("../images/footer_icon.png") 0 -300%;
-  background-size: 100% auto; }
-.icon.consultation {
-  background: url("../images/footer_icon.png") 0 -700%;
-  background-size: 100% auto; }
-.icon.teacher {
-  background: url("../images/footer_icon.png") 0 -600%;
-  background-size: 100% auto; }
+.icon.account { background: url("../images/icons/icon_foot_account.png"); background-size: 100% auto; }
+.icon.order { background: url("../images/icons/icon_foot_order.png"); background-size: 100% auto; }
+.icon.consultation { background: url("../images/icons/icon_foot_consult.png"); background-size: 100% auto; }
+.icon.teacher { background: url("../images/icons/icon_foot_search.png"); background-size: 100% auto; }
 
-.actived .icon.consultation {
-  background-position: 0 -500%; }
-.actived .icon.teacher {
-  background-position: 0 -400%; }
-.actived .icon.account {
-  background-position: 0 0%; }
-.actived .icon.order {
-  background-position: 0 -100%; }
+.actived .icon.consultation { background: url("../images/icons/icon_foot_consult_s.png"); background-size: 100% auto; }
+.actived .icon.teacher { background: url("../images/icons/icon_foot_search_s.png"); background-size: 100% auto; }
+.actived .icon.account { background: url("../images/icons/icon_foot_account_s.png"); background-size: 100% auto; }
+.actived .icon.order { background: url("../images/icons/icon_foot_order_s.png"); background-size: 100% auto; }
+
 
 .list {
   display: block; 

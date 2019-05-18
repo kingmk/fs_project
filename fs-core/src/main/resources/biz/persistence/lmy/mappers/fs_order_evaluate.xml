@@ -96,11 +96,13 @@
 
 
 <select id="findMasterEvaluateList" parameterType="hashmap" resultType="hashmap">
-    select a.* ,b.goods_name, b.pay_rmb_amt
+    select a.*, b.zx_cate_id, b.goods_name, b.pay_rmb_amt
     from fs_order_evaluate a
     left join fs_order b
     on a.order_id =b.id
-    where a.seller_usr_id = #{sellerUsrId}
+    where 
+    	a.seller_usr_id = #{sellerUsrId}
+    	<if test="zxCateId!=null">and b.zx_cate_id=#{zxCateId}</if>
     order by id desc
     limit #{limitBegin} , #{limitEnd}
 </select>

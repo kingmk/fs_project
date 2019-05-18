@@ -8,7 +8,7 @@
 <script src="${host.js}/js/rem.js?${host.version}"></script>
 <script src="${host.js}/js/jquery-1.11.3.min.js"></script>
 <script src="${host.js}/js/common.js?${host.version}"></script>
-<link rel="stylesheet" href="${host.css}/css/user_mine.css?${host.version}2">
+<link rel="stylesheet" href="${host.css}/css/user_mine.css?${host.version}3">
 <link rel="stylesheet" href="${host.css}/css/bgmask.css?${host.version}2">
 <style>
 .img-logo-box{width: 7.5rem; height: 7.5rem ;border-radius: 50%; border: 0.1rem solid #fff; overflow: hidden ;position: relative; margin: 0 auto 2.5rem;}

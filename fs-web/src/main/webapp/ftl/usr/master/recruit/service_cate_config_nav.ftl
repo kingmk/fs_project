@@ -36,7 +36,6 @@ $(function(){
     <form id="selectForm">
         <div class="select-list">
         <#list serviceCateList as item>
-        	<#--2017/05/24 19:19 确认 堪舆 类不在这里显示-->
         	<#if !(item.fsZxCateParentId==10005)>
             <div class="select-list-item" data-fsxcatecd= '${item.fsZxCateId}' data-fsmasterinfoid='${item.fsMasterInfoId}'' data-id='${item.id}'>
                 <div class="select <#if item.id ??>on</#if>">

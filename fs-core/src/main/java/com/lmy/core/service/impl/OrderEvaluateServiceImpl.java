@@ -306,9 +306,9 @@ public class OrderEvaluateServiceImpl {
 		return buyUsrIds;
 	}
 	
-	public JSONObject masterEvaluateList(long masterUsrId , int currentPage,int perPageNum){
+	public JSONObject masterEvaluateList(long masterUsrId, Long zxCateId, int currentPage,int perPageNum){
 		try{
-			List<Map>  list = this.fsOrderEvaluateDao.findMasterEvaluateList(masterUsrId, currentPage, perPageNum);
+			List<Map> list = this.fsOrderEvaluateDao.findMasterEvaluateList(masterUsrId, zxCateId, currentPage, perPageNum);
 			if(CollectionUtils.isEmpty(list)){
 				return JsonUtils.commonJsonReturn("1000", "查无数据");
 			}

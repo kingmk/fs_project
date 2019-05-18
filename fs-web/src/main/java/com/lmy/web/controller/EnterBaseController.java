@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lmy.common.component.HttpService;
+import com.lmy.common.component.JsonUtils;
 import com.lmy.common.utils.CookieUtil;
 import com.lmy.common.utils.ResourceUtils;
 import com.lmy.core.model.FsPeriodStatistics;
@@ -31,6 +32,7 @@ import com.lmy.core.service.impl.OrderServiceImpl;
 import com.lmy.core.service.impl.OrderSettlementServiceImpl;
 import com.lmy.core.service.impl.StatisticsServiceImpl;
 import com.lmy.core.service.impl.UsrServiceImpl;
+import com.lmy.core.service.impl.ZDataFixImpl;
 import com.lmy.core.utils.FsEnvUtil;
 import com.lmy.web.common.SessionUtil;
 import com.lmy.web.common.WebUtil;
@@ -51,6 +53,8 @@ public class EnterBaseController {
 	private MasterStatisticsServiceImpl masterStatisticsServiceImpl;
 	@Autowired
 	private StatisticsServiceImpl statisticsServiceImpl;
+	@Autowired
+	private ZDataFixImpl zDataFixImpl;
 	
 	/**
 	 * 
@@ -195,5 +199,35 @@ public class EnterBaseController {
 		
 		return "";
 	}
-	
+
+	@RequestMapping(value="/enter/test_update_respseconds")
+	@ResponseBody
+	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
+	public String test_update_respseconds(HttpServletRequest request,HttpServletResponse response) throws Exception{
+		
+		JSONObject jrlt = zDataFixImpl.fixOrderRespSeconds();
+		return jrlt.toJSONString();
+	}
+
+	@RequestMapping(value="/test/sort_statistics")
+	@ResponseBody
+	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
+	public String sort_statistics(HttpServletRequest request,HttpServletResponse response) throws Exception{
+		
+		statisticsServiceImpl.sortStatistics();
+		JSONObject jrlt = JsonUtils.commonJsonReturn();
+		return jrlt.toJSONString();
+	}
+
+	@RequestMapping(value="/test/search_sorted_masters")
+	@ResponseBody
+	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
+	public String search_sorted_masters(HttpServletRequest request,HttpServletResponse response
+			,@RequestParam(value = "cateId" , required = true) Long cateId
+			,@RequestParam(value = "order" , required = true) String order) throws Exception{
+		
+		statisticsServiceImpl.clearSearchCache();
+		JSONObject jrlt = statisticsServiceImpl.searchSortedMasters(cateId, order, false);
+		return jrlt.toJSONString();
+	}
 }

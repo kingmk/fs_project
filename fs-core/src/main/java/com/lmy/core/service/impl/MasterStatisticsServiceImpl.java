@@ -348,30 +348,30 @@ public class MasterStatisticsServiceImpl {
 			
 			jDataArr.add(jData);
 		}
-		if (cateId != 1L){
-			// need to load all master data in cate 1 to get the evaluate scores on all cates
-			List<FsMasterStatistics> masterStatList = this.fsMasterStatisticsDao.findByUsrIds(usrIdList, 1L);
-			Map<Long, FsMasterStatistics> masterStatMap = new HashMap<>();
-			for (int i = 0; i < masterStatList.size(); i++) {
-				FsMasterStatistics masterStatistics = masterStatList.get(i);
-				masterStatMap.put(masterStatistics.getMasterUsrId(), masterStatistics);
-			}
-			
-			for (int i = 0; i < jDataArr.size(); i++) {
-				JSONObject jData = (JSONObject) jDataArr.get(i);
-				Long masterUsrId = (Long)jData.get("masterUsrId");
-				FsMasterStatistics masterStatistics = masterStatMap.get(masterUsrId);
-				Double score = 0.00d;
-				if (masterStatistics.getCountEvaluate() > 0) {
-					score = Double.valueOf(masterStatistics.getSumRespSpeed()+masterStatistics.getSumMajorLevel()+
-							masterStatistics.getSumServiceAttitude())/Double.valueOf(masterStatistics.getCountEvaluate());
-					score = score*2.0d/3.0d;
-				}
-				jData.put("score", score); // 评分 
-				jData.put("scoreDesc", CommonUtils.numberFormat(score, "###,##0.00", "0.00")) ; // 评分
-				
-			}
-		}
+//		if (cateId != 1L){
+//			// need to load all master data in cate 1 to get the evaluate scores on all cates
+//			List<FsMasterStatistics> masterStatList = this.fsMasterStatisticsDao.findByUsrIds(usrIdList, 1L);
+//			Map<Long, FsMasterStatistics> masterStatMap = new HashMap<>();
+//			for (int i = 0; i < masterStatList.size(); i++) {
+//				FsMasterStatistics masterStatistics = masterStatList.get(i);
+//				masterStatMap.put(masterStatistics.getMasterUsrId(), masterStatistics);
+//			}
+//			
+//			for (int i = 0; i < jDataArr.size(); i++) {
+//				JSONObject jData = (JSONObject) jDataArr.get(i);
+//				Long masterUsrId = (Long)jData.get("masterUsrId");
+//				FsMasterStatistics masterStatistics = masterStatMap.get(masterUsrId);
+//				Double score = 0.00d;
+//				if (masterStatistics.getCountEvaluate() > 0) {
+//					score = Double.valueOf(masterStatistics.getSumRespSpeed()+masterStatistics.getSumMajorLevel()+
+//							masterStatistics.getSumServiceAttitude())/Double.valueOf(masterStatistics.getCountEvaluate());
+//					score = score*2.0d/3.0d;
+//				}
+//				jData.put("score", score); // 评分 
+//				jData.put("scoreDesc", CommonUtils.numberFormat(score, "###,##0.00", "0.00")) ; // 评分
+//				
+//			}
+//		}
 		
 		return jDataArr;
 	}

@@ -58,9 +58,10 @@ public class FsOrderEvaluateDao extends GenericDAOImpl<FsOrderEvaluate> {
 		return this.getSqlSession().selectList(this.getNameSpace()+".statMasterAvgScore3", map);
 	}
 	
-	public List<Map> findMasterEvaluateList(long sellerUsrId,int currentPage,int perPageNum){
+	public List<Map> findMasterEvaluateList(long sellerUsrId, Long zxCateId, int currentPage,int perPageNum){
 		JSONObject map = new JSONObject();
 		map.put("sellerUsrId", sellerUsrId);
+		map.put("zxCateId", zxCateId);
 		map.put("limitBegin", perPageNum * currentPage);
 		map.put("limitEnd", perPageNum);
 		return this.getSqlSession().selectList(this.getNameSpace()+".findMasterEvaluateList", map);

@@ -1,7 +1,9 @@
 package com.lmy.core.service.impl;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,13 +25,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lmy.common.component.CommonUtils;
 import com.lmy.core.model.FsOrder;
+import com.lmy.core.model.FsPeriodStatistics;
 import com.lmy.core.model.enums.OrderStatus;
 
 public class OrderAidUtil {
 	private static final Logger logger = Logger.getLogger(OrderAidUtil.class);
 	
 	private static final List<String> forbidWords = Arrays.asList("毒品","冰毒","摇头丸","海洛因","大麻","K粉","枪","中共","共产党","习近平","李克强","栗战书","汪洋","王沪宁","赵乐际","张德江","俞正声","刘云山","王岐山","张高丽","江泽民","朱镕基","邓小平","韩正","陈良宇","李鹏","胡锦涛","温家宝","文革","64","六四","学生运动","暴动","暴乱","法轮功","李洪志","十九大","天安门","台独","港独","土共","共匪","赤匪","文化大革命","政治","民主","三民主义","蛮夷","中纪委","中央","党中央","中央政治局","国家级","日本鬼子","战斗民族","国家领导人","国家主席","习大大","真主","周总理","绿茶婊","周恩来","权势狗","毛泽东","毛主席","国家领导人","国家机关","恐怖事件","屌炸天","屌丝","分裂","撕逼","武装斗争","反腐","性交","银行账号","身份证号码","电话","QQ","四人帮","装逼","草泥马","特么的","撕逼","玛拉戈壁","爆菊","JB","呆逼","本屌","齐B短裙","法克鱿","丢你老母","达菲鸡","装13","逼格","蛋疼","傻逼","你妈的","表砸","屌爆了","买了个婊","已撸","吉跋猫","妈蛋","逗比","我靠","碧莲","碧池","然并卵","日了狗","屁民","吃翔","XX狗","淫家","你妹","浮尸国","滚粗","中华民国","台湾政府","台联","台联党","荷治","大陆","大陆政府","白手套","台语","原住民","TMD");
-	
+
 	/**  所有支付成功过的 **/
 	public  static List<String> getCommAllOrderStatus(){
 		return Arrays.asList(OrderStatus.pay_succ.getStrValue()  ,OrderStatus.completed.getStrValue(), 
@@ -77,12 +80,43 @@ public class OrderAidUtil {
 		return OrderAidUtil.getCanEvaluateStatus().contains(order.getStatus());
 	}
 
-	
+	public static Long calcOrderRespSeconds(Date createTime, Date replyTime) {
+		SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String t1str = df1.format(createTime);
+		String t2str = df1.format(replyTime);
+		
+		try {
+			Date dthresh1 = df2.parse(t1str + " 23:00:00");
+			Date dthresh2 = df2.parse(t2str + " 07:00:00");
+			Long respSeconds = 0l;
+			
+			if (t1str.equals(t2str)) {
+				// in the same day
+				respSeconds = Math.max(0, 
+						Math.min(dthresh1.getTime(), replyTime.getTime()) - 
+						Math.max(dthresh2.getTime(), createTime.getTime()));
+			} else {
+				// in the different days
+				respSeconds = Math.max(0,
+						Math.max(dthresh2.getTime(), replyTime.getTime()) -
+						Math.min(dthresh1.getTime(), createTime.getTime()) -
+						10*3600*1000
+						);
+			}
+			return respSeconds/1000;
+			
+		} catch (ParseException e) {
+			logger.info("fail to parse date str", e);
+		}
+		
+		return null;
+	}
 	
 	public static List<Long> getNeedSupplyOrderInfoZxCateIds(){
 		return Arrays.asList(
 				100000L,100001L,100016L,100002L,100017L,
-				100004L,100006L,100007L,100009L,100003L,
+				100004L,100006L,100007L,100008L,100009L,100003L,
 				100010L,100005L,
 				100018L,100019L,100020L,
 				100021L,100022L,100023L
@@ -428,18 +462,125 @@ public class OrderAidUtil {
         return b1.multiply(b2).doubleValue();
     }
     
-    public static String containForbiddenWord(String s) {
-    	for (String forbidWord : forbidWords) {
+	public static String containForbiddenWord(String s) {
+		for (String forbidWord : forbidWords) {
 			if (s.contains(forbidWord)) {
 				return forbidWord;
 			}
 		}
-    	return null;
-    }
+		return null;
+	}
 	
-   public static void main(String[] args) {
-	   long beforeTaxIncomeRmbAmt = 60000 * 100;
-	   long tax  = calPersonalIncomeTaxRmbAmt(beforeTaxIncomeRmbAmt);
-	   System.out.println( tax);
+	public static Integer calcMasterScore(FsPeriodStatistics stat){
+		Integer score = 0;
+		if (stat.getType().equals("REALMONTH") || stat.getType().equals("MONTH")) {
+			Long respSeconds = stat.getAvgRespTime();
+			if (respSeconds <= 60*15) {
+				score += 30;
+			} else if (respSeconds <= 60*30) {
+				score += 24;
+			} else if (respSeconds <= 60*45) {
+				score += 18;
+			} else {
+				score += 0;
+			}
+			double avgEvaluate = 0.0;
+			if (stat.getCountEvaluate() > 0) {
+				avgEvaluate = (double)stat.getSumEvaluate()/(double)(stat.getCountEvaluate()*3);
+				score += (int)(avgEvaluate*5);
+			}
+			double rateRefund = (double)stat.getCountRefund()/(double)stat.getCountOrder();
+			if (rateRefund <= 0.05) {
+				score += 25;
+			} else if (rateRefund <= 0.08) {
+				score += 20;
+			} else if (rateRefund <= 0.12) {
+				score += 15;
+			} else {
+				score += 0;
+			}
+			
+			score += Math.min(10, (int)(stat.getCountOrder()*10/30));
+			
+			Long countRebuy = stat.getCountOrder()-stat.getCountBuyer();
+			if (countRebuy >= 3) {
+				score += 10;
+			} else if (countRebuy >= 2) {
+				score += 8;
+			} else if (countRebuy >= 1) {
+				score += 6;
+			} else {
+				score += 0;
+			}
+			logger.info("respSeconds: "+respSeconds +", avgEvaluate: "+avgEvaluate +", rateRefund: "+rateRefund);
+		} else if (stat.getType().equals("REALYEAR") || stat.getType().equals("YEAR")) {
+			Long respSeconds = stat.getAvgRespTime();
+			if (respSeconds <= 60*15) {
+				score += 30;
+			} else if (respSeconds <= 60*30) {
+				score += 24;
+			} else if (respSeconds <= 60*45) {
+				score += 18;
+			} else {
+				score += 0;
+			}
+			double avgEvaluate = 0.0;
+			if (stat.getCountEvaluate() > 0) {
+				avgEvaluate = (double)stat.getSumEvaluate()/(double)(stat.getCountEvaluate()*3);
+				score += (int)(avgEvaluate*5);
+			}
+			double rateRefund = (double)stat.getCountRefund()/(double)stat.getCountOrder();
+			if (rateRefund <= 0.05) {
+				score += 25;
+			} else if (rateRefund <= 0.08) {
+				score += 20;
+			} else if (rateRefund <= 0.12) {
+				score += 15;
+			} else {
+				score += 0;
+			}
+			
+			score += Math.min(10, (int)(stat.getCountOrder()*10/365));
+			
+			Long countRebuy = stat.getCountOrder()-stat.getCountBuyer();
+			if (countRebuy >= 36) {
+				score += 10;
+			} else if (countRebuy >= 24) {
+				score += 8;
+			} else if (countRebuy >= 12) {
+				score += 6;
+			} else {
+				score += 0;
+			}
+			logger.info("respSeconds: "+respSeconds +", avgEvaluate: "+avgEvaluate +", rateRefund: "+rateRefund);
+		}
+		
+		return score;
+	}
+
+   public static void main(String[] args) throws ParseException {
+//	   long beforeTaxIncomeRmbAmt = 60000 * 100;
+//	   long tax  = calPersonalIncomeTaxRmbAmt(beforeTaxIncomeRmbAmt);
+	   
+//	   SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+//	   SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//	   
+//	   Date d1 = df2.parse("2019-04-20 14:54:48");
+//	   Date d2 = df2.parse("2019-04-20 16:14:42");
+//	   
+//	   Long r = null;
+//	   r = calcOrderRespSeconds(d1, d2);
+//	   System.out.println((double)r/3600.00);
+	   
+	   List<Long> testList = new ArrayList<>();
+	   testList.add(80l);
+	   testList.add(7l);
+	   testList.add(98l);
+	   testList.add(107l);
+	   testList.add(45l);
+	   testList.add(20l);
+	   testList.add(290l);
+	   System.out.println(testList.contains(98l));
+	   System.out.println(testList.contains(988l));
    }
 }

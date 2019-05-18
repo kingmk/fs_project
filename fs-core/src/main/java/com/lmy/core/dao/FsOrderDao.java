@@ -160,7 +160,7 @@ public class FsOrderDao extends GenericDAOImpl<FsOrder> {
 			map.put("isUserDelete", isUserDelete);
 		}
 		
-		if(CollectionUtils.isNotEmpty(statusList  )){
+		if(CollectionUtils.isNotEmpty(statusList)){
 			map.put("statusList", statusList);
 		}
 		map.put("orderBy", orderBy);

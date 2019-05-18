@@ -25,7 +25,7 @@ public class TestOrderEvaluateServiceImpl extends BaseTestCase {
 	
 	public void test_masterEvaluateList(){
 
-		JSONObject result = orderEvaluateServiceImpl.masterEvaluateList(10005l, 0 , 10);
+		JSONObject result = orderEvaluateServiceImpl.masterEvaluateList(10005l, null, 0 , 10);
 		System.out.println( result  );
 	}
 	

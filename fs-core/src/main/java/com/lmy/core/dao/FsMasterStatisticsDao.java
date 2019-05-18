@@ -66,4 +66,11 @@ public class FsMasterStatisticsDao extends GenericDAOImpl<FsMasterStatistics> {
 		map.put("cateId" , cateId);
 		return this.getSqlSession().selectList(this.getNameSpace()+".findByUsrIds", map);
 	}
+	
+
+	public List<FsMasterStatistics> findMasterCates(Long masterUsrId) {
+		JSONObject map = new JSONObject();
+		map.put("masterUsrId", masterUsrId);
+		return this.getSqlSession().selectList(this.getNameSpace()+".findMasterCates", map);
+	}
 }

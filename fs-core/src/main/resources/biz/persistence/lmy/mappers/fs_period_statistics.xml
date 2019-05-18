@@ -5,42 +5,134 @@
 	<result column="id" property="id"/>
 	<result column="period_name" property="periodName"/>
 	<result column="seller_usr_id" property="sellerUsrId"/>
+	<result column="cate_id" property="cateId"/>
 	<result column="count_order" property="countOrder"/>
 	<result column="count_buyer" property="countBuyer"/>
+	<result column="count_refund" property="countRefund"/>
+	<result column="count_evaluate" property="countEvaluate"/>
+	<result column="sum_evaluate" property="sumEvaluate"/>
 	<result column="avg_resp_time" property="avgRespTime"/>
+	<result column="sort_score" property="sortScore"/>
 	<result column="type" property="type"/>
 	<result column="start_time" property="startTime"/>
 	<result column="end_time" property="endTime"/>
 	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+	<result column="status" property="status"/>
 </resultMap>
 
 <insert id="insert" parameterType="com.lmy.core.model.FsPeriodStatistics" useGeneratedKeys="true" keyProperty="id">
-	insert into fs_period_statistics(id, period_name, seller_usr_id, count_order, count_buyer, avg_resp_time, type, start_time, end_time, create_time)
-	values(#{id,jdbcType=INTEGER}, #{periodName,jdbcType=VARCHAR}, #{sellerUsrId,jdbcType=INTEGER}, #{countOrder,jdbcType=INTEGER}, #{countBuyer,jdbcType=INTEGER}, #{avgRespTime,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}) 
+	insert into fs_period_statistics(id, period_name, seller_usr_id, cate_id, 
+	count_order, count_buyer, count_refund, count_evaluate, sum_evaluate, avg_resp_time, 
+	sort_score, type, start_time, end_time, create_time, update_time, status)
+	values(#{id,jdbcType=INTEGER}, #{periodName,jdbcType=VARCHAR}, #{sellerUsrId,jdbcType=INTEGER}, #{cateId,jdbcType=INTEGER}, #{countOrder,jdbcType=INTEGER}, #{countBuyer,jdbcType=INTEGER},
+	 #{countRefund,jdbcType=INTEGER}, #{countEvaluate,jdbcType=INTEGER}, #{sumEvaluate,jdbcType=INTEGER}, #{avgRespTime,jdbcType=INTEGER}, #{sortScore,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR},
+	 #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}) 
 </insert>
 <insert id="batchInsert" parameterType="list">
-	insert into fs_period_statistics(id, period_name, seller_usr_id, count_order, count_buyer, avg_resp_time, type, start_time, end_time, create_time)
+	insert into fs_period_statistics(id, period_name, seller_usr_id, cate_id, count_order, count_buyer, count_refund, 
+	count_evaluate, sum_evaluate, avg_resp_time, sort_score, type, start_time, end_time, create_time, update_time, status)
 	values
 	<foreach collection="list" item="item" index="index" separator=","> 
-    (#{item.id,jdbcType=INTEGER}, #{item.periodName,jdbcType=VARCHAR}, #{item.sellerUsrId,jdbcType=INTEGER}, #{item.countOrder,jdbcType=INTEGER}, #{item.countBuyer,jdbcType=INTEGER}, #{item.avgRespTime,jdbcType=INTEGER}, #{item.type,jdbcType=VARCHAR}, #{item.startTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+    (#{item.id,jdbcType=INTEGER}, #{item.periodName,jdbcType=VARCHAR}, #{item.sellerUsrId,jdbcType=INTEGER}, #{item.cateId,jdbcType=INTEGER},
+     #{item.countOrder,jdbcType=INTEGER}, #{item.countBuyer,jdbcType=INTEGER}, #{item.countRefund,jdbcType=INTEGER},
+     #{item.countEvaluate,jdbcType=INTEGER}, #{item.sumEvaluate,jdbcType=INTEGER}, #{item.avgRespTime,jdbcType=INTEGER}, #{item.sortScore,jdbcType=INTEGER}, #{item.type,jdbcType=VARCHAR},
+     #{item.startTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.status,jdbcType=VARCHAR})
 	</foreach>
 </insert>
 
+<update id="update"	parameterType="com.lmy.core.model.FsPeriodStatistics">
+	update fs_period_statistics
+<set>
+	<if test="periodName != null">period_name=#{periodName},</if>
+	<if test="sellerUsrId != null">seller_usr_id=#{sellerUsrId},</if>
+	<if test="cateId != null">cate_id=#{cateId},</if>
+	<if test="countOrder != null">count_order=#{countOrder},</if>
+	<if test="countBuyer != null">count_buyer=#{countBuyer},</if>
+	<if test="countRefund != null">count_refund=#{countRefund},</if>
+	<if test="countEvaluate != null">count_evaluate=#{countEvaluate},</if>
+	<if test="sumEvaluate != null">sum_evaluate=#{sumEvaluate},</if>
+	<if test="avgRespTime != null">avg_resp_time=#{avgRespTime},</if>
+	<if test="sortScore != null">sort_score=#{sortScore},</if>
+	<if test="type != null">type=#{type},</if>
+	<if test="startTime != null">start_time=#{startTime},</if>
+	<if test="endTime != null">end_time=#{endTime},</if>
+	<if test="updateTime != null">update_time=#{updateTime},</if>
+	<if test="status != null">status=#{status},</if>
+</set>
+	where id=#{id}
+</update>
+
 <select id="statisticPeriodOrder" parameterType="hashmap" resultMap="fs_period_statistics">
     select seller_usr_id, count(*) count_order, count(distinct buy_usr_id) count_buyer,
-    avg(UNIX_TIMESTAMP(begin_chat_time)-UNIX_TIMESTAMP(create_time)) avg_resp_time
-    from fs_order
-    <where>
-        <if test="startTime !=null">create_time &gt;= #{startTime}</if>
-        <if test="endTime !=null">and create_time &lt;#{endTime}</if>
-        <if test="statusList !=null" >
-			and status in 
-			<foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
-			#{item}
-			</foreach>
-		</if>
-    </where>
+	count(case when status='refunded' then id end) count_refund,
+	avg(resp_seconds) avg_resp_time, count(eid) count_evaluate, sum(evaluate) sum_evaluate
+    from (
+	    select a.id, a.seller_usr_id, a.buy_usr_id, a.status, a.resp_seconds, a.create_time, a.zx_cate_id, 
+		b.id eid, (b.resp_speed + b.major_level+b.service_attitude) evaluate
+		from fs_order a left join fs_order_evaluate b on a.id = b.order_id
+	    <where>
+	        <if test="startTime !=null">a.create_time &gt;= #{startTime}</if>
+	        <if test="endTime !=null">and a.create_time &lt;#{endTime}</if>
+	        <if test="cateId != null"> and a.zx_cate_id = #{cateId}</if>
+	        <if test="statusList !=null" >
+				and a.status in 
+				<foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+				#{item}
+				</foreach>
+			</if>
+	    </where>
+    ) tmp
     group by seller_usr_id
+</select>
+
+<select id="findByCond" parameterType="hashmap" resultMap="fs_period_statistics">
+    select * from fs_period_statistics
+    <where>
+        <if test="periodName !=null">and period_name=#{periodName}</if>
+        <if test="sellerUsrId !=null">and seller_usr_id=#{sellerUsrId}</if>
+        <if test="cateId !=null">and cate_id = #{cateId}</if>
+        <if test="type !=null">and type = #{type}</if>
+    </where>
+    order by id desc
+</select>
+
+
+<select id="searchSortedMasters" parameterType="hashmap" resultType="hashmap">
+select c.*, d.min_price, d.count_order as count_order2 from
+(
+	select 
+		a.id as master_info_id, a.usr_id, a.name, a.nick_name, a.head_img_url,
+		a.is_sign_other, a.is_full_time, a.work_date, a.service_status,
+		a.achievement, a.good_at, a.experience,
+		b.cate_id, b.count_order, b.count_evaluate, b.sum_evaluate, b.sort_score
+	from fs_master_info a left join 
+	( select * from fs_period_statistics 
+		<where>
+		    status = 'valid'
+	        <if test="cateId !=null and cateId != 1">and cate_id = #{cateId} and type='REALMONTH'</if>
+	        <if test="cateId ==null or cateId == 1">and cate_id = 1 and type='REALYEAR'</if>
+		</where>
+	) b
+	on a.usr_id=b.seller_usr_id
+	where
+		a.service_status != 'FORBID' and a.service_status != 'FIRED' and a.audit_status = 'approved'
+) c join fs_master_statistics d
+<!-- (
+	select master_info_id, min(amt) as min_price from fs_master_service_cate
+	<where>
+	    status='ON'
+        <if test="cateId !=null and cateId != 1">and fs_zx_cate_id = #{cateId}</if>
+	</where>
+	group by fs_master_info_id
+) d -->
+on c.master_info_id = d.master_info_id
+<if test="cateId !=null and cateId != 1">and d.cate_id = #{cateId}</if>
+<if test="cateId ==null or cateId == 1">and d.cate_id = 1</if>
+order by c.is_sign_other,
+<if test="order == 'desc'">c.sort_score desc, d.count_order desc, c.master_info_id desc</if>
+<if test="order == 'asc'">c.sort_score asc, d.count_order asc, c.master_info_id asc</if>
+;
 </select>
 
 </mapper>

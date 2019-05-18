@@ -52,13 +52,13 @@
 	SELECT id, name, description, level, parent_id, parent_name, suggest_amt, usr_defined, create_usr_id, status
 	FROM fs_zx_cate
 	<where>
-	    	<if test=" id!=null"> id = #{id}</if>
-	    	<if test=" parentId!=null  ">and parent_id=#{parentId} </if>
-	    	<if test="  level!=null ">and level =#{level}</if>
-	    	<if test="  usrDefined!=null "> and usr_defined = #{usrDefined}</if>
-	    	<if test="  status!=null ">and status =#{status}</if>
+	    	<if test="id!=null"> id = #{id}</if>
+	    	<if test="parentId!=null">and parent_id=#{parentId} </if>
+	    	<if test="level!=null">and level =#{level}</if>
+	    	<if test="usrDefined!=null"> and usr_defined = #{usrDefined}</if>
+	    	<if test="status!=null">and status =#{status}</if>
 	</where>
-	ORDER BY sort DESC
+	ORDER BY parent_id, sort DESC
 </select>
 
 <select id="findZxCate2" parameterType="hashmap" resultMap="fs_zx_cate">

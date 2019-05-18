@@ -169,6 +169,8 @@ public class MasterRecruitServiceImpl {
 				Assert.isTrue( effectNum ==1 );
 				this.updateMasterStatistics(usrId, masterInfoId, zxCateId, status, price);
 			}else{
+				List<FsMasterServiceCate> cates = this.fsMasterServiceCateDao.findByMasterInfoIdAndCateId(masterInfoId, zxCateId, null);
+				
 				this.fsMasterServiceCateDao.offlineMasterCateService(masterInfoId, zxCateId);
 				FsMasterServiceCate beanForInsert = new FsMasterServiceCate();
 				beanForInsert.setAmt( price );
@@ -180,6 +182,9 @@ public class MasterRecruitServiceImpl {
 				beanForInsert.setStatus("ON");
 				beanForInsert.setUpdateTime(now);
 				beanForInsert.setUsrId(usrId);
+				if (cates.size() > 0) {
+					beanForInsert.setCateIntro(cates.get(0).getCateIntro());
+				}
 				if (price != null && price < minPrice) {
 					minPrice = price;
 				}
@@ -238,7 +243,7 @@ public class MasterRecruitServiceImpl {
 	
 	
 	/** 设置接单状态 **/
-	public JSONObject configOderTaking(final Long fsMasterInfoId ,final  Long usrId , final String serviceStatus){
+	public JSONObject changeServiceStatus(final Long fsMasterInfoId, final  Long usrId, final String serviceStatus, final String reserveWord){
 		//当前服务状态 ING 服务中;NOTING 非服务状态
 		if( !StringUtils.equals("ING", serviceStatus) && !StringUtils.equals("NOTING", serviceStatus)	) {
 			logger.warn("serviceStatus 参数错误 serviceStatus:"+serviceStatus+", fsMasterInfoId:"+fsMasterInfoId+", usrId="+usrId);
@@ -259,18 +264,18 @@ public class MasterRecruitServiceImpl {
 			this.fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
 				@Override
 				public Boolean doInTransaction(TransactionStatus status) {
-					int effectNum = fsMasterInfoDao.updateServiceStatus(fsMasterInfoId, usrId, serviceStatus);
-					String allStatus = "OFF";
+					int effectNum = fsMasterInfoDao.updateServiceStatus(fsMasterInfoId, usrId, serviceStatus, reserveWord);
+//					String allStatus = "OFF";
 					if(serviceStatus.equals("ING")) {
 						Date now = new Date();
 						List<FsReserve> reserveList = fsReserveDao.findByMasterUsrId(masterUsrId);
 						fsReserveDao.noticeReserveUsrByMaster(masterUsrId, now);
 						asynReserveNote(masterUsrId, masterNickName, reserveList);
-						allStatus = "ON";
+//						allStatus = "ON";
 					}
 					
 					Assert.isTrue( effectNum>0 );
-					updateMasterStatistics(masterUsrId, fsMasterInfoId, 1L, allStatus, null);
+//					updateMasterStatistics(masterUsrId, fsMasterInfoId, 1L, allStatus, null);
 					
 					return true;
 				}
@@ -281,6 +286,42 @@ public class MasterRecruitServiceImpl {
 		}
 		return JsonUtils.commonJsonReturn();
 	}
+	
+
+	
+	/** 变更暂停通告 **/
+	public JSONObject updateReserveWord(final Long fsMasterInfoId, final  Long usrId, final String reserveWord){
+		if( fsMasterInfoId == null || usrId == null ){
+			logger.warn("参数错误 fsMasterInfoId:"+fsMasterInfoId);
+			return JsonUtils.commonJsonReturn("0001","参数错误");
+		}
+		FsMasterInfo masterInfo = fsMasterInfoDao.findById(fsMasterInfoId);
+		if( !masterInfo.getUsrId().equals(usrId) ){
+			logger.warn("参数错误 fsMasterInfoId:"+fsMasterInfoId+", usrId:"+usrId);
+			return JsonUtils.commonJsonReturn("0002","参数错误");
+		}
+		if (masterInfo.getServiceStatus().equals("FORBID")) {
+			logger.warn("current status is forbid, for "+fsMasterInfoId);
+			return JsonUtils.commonJsonReturn("0001","您已经被强制下线，请联系客服");
+		}
+		try{
+			this.fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
+				@Override
+				public Boolean doInTransaction(TransactionStatus status) {
+					FsMasterInfo updateBean = new FsMasterInfo();
+					updateBean.setId(fsMasterInfoId);
+					updateBean.setReserveWord(reserveWord);
+					fsMasterInfoDao.update(updateBean);	
+					return true;
+				}
+			});
+		}catch(Exception e){
+			logger.error("系统错误 fsMasterInfoId:"+fsMasterInfoId,e);
+			return JsonUtils.commonJsonReturn("9999","系统错误");
+		}
+		return JsonUtils.commonJsonReturn();
+	}
+	
 
 	private void asynReserveNote(final Long masterUsrId, final String masterNickName, final List<FsReserve> reserveList){
 		Runnable r = new Runnable() {

@@ -198,15 +198,15 @@ a { color: #c09318 !important; font-weight: normal; text-decoration: none; }
 .footer .footer-nav .bubble { position: absolute; background: #f42d47; padding: 0.15rem; border-radius: 1.5rem; font-size: 1rem; color: #fff; top: 0.5rem; left: 50%; margin-left: 0.9rem; line-height: 1; box-sizing: border-box; min-width: 4.75rem; text-align: center; }
 .footer .footer-nav .title { margin-top: 0.4rem; font-size: 1.1rem; color: #ccc; }
 
-.icon.account { background: url("../images/footer_icon.png") 0 -200%; background-size: 100% auto; }
-.icon.order { background: url("../images/footer_icon.png") 0 -300%; background-size: 100% auto; }
-.icon.consultation { background: url("../images/footer_icon.png") 0 -700%; background-size: 100% auto; }
-.icon.teacher { background: url("../images/footer_icon.png") 0 -600%; background-size: 100% auto; }
+.icon.account { background: url("../images/icons/icon_foot_account.png"); background-size: 100% auto; }
+.icon.order { background: url("../images/icons/icon_foot_order.png"); background-size: 100% auto; }
+.icon.consultation { background: url("../images/icons/icon_foot_consult.png"); background-size: 100% auto; }
+.icon.teacher { background: url("../images/icons/icon_foot_search.png"); background-size: 100% auto; }
 
-.actived .icon.consultation { background-position: 0 -500%; }
-.actived .icon.teacher { background-position: 0 -400%; }
-.actived .icon.account { background-position: 0 0%; }
-.actived .icon.order { background-position: 0 -100%; }
+.actived .icon.consultation { background: url("../images/icons/icon_foot_consult_s.png"); background-size: 100% auto; }
+.actived .icon.teacher { background: url("../images/icons/icon_foot_search_s.png"); background-size: 100% auto; }
+.actived .icon.account { background: url("../images/icons/icon_foot_account_s.png"); background-size: 100% auto; }
+.actived .icon.order { background: url("../images/icons/icon_foot_order_s.png"); background-size: 100% auto; }
 
 .master-contact { position: fixed; top: 0; width: 100%; height: 5rem; background-color: #20b075; padding: 0 1.5rem; color: #fff; line-height: 5rem; }
 .master-contact .icon-contact { width: 1.5rem; height: 1.5rem; background: url("../images/icon_contact.png"); background-size: 100% 100%; vertical-align: middle; display: inline-block; }

@@ -494,7 +494,7 @@ function preEnd(orderId, chatSessionNo) {
       </#if>
     </div>
 	</div>
-  <#if body.goodsName != "吉凶占卜">
+  <#if body.goodsName != "吉凶占卜" && body.goodsName != "吉凶占卜">
 	<div class="speak-header-btn" id='userInfo'>我的信息</div>
   </#if>
   <#if body.isWaitMasterService != "Y" && body.isServiceEnd != "Y">  

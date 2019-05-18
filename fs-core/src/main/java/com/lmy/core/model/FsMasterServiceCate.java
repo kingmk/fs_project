@@ -17,6 +17,8 @@ public class FsMasterServiceCate  extends BaseObject {
   private  String  isPlatRecomm;
   /** 平台推荐时间 */
   private  String  platRecommTime;
+  /** 类目的个人观点 */
+  private  String  cateIntro;
   /** 当前服务状态 ON 服务中;OFF 非服务状态 */
   private  String  status;
   /** 人民币价格 单位分 */
@@ -77,7 +79,15 @@ public class FsMasterServiceCate  extends BaseObject {
 		 this.platRecommTime=platRecommTime;
 		 return this;
 	}
-  /** 当前服务状态 ON 服务中;OFF 非服务状态 */
+
+	public String getCateIntro() {
+		return cateIntro;
+	}
+	public FsMasterServiceCate setCateIntro(String cateIntro) {
+		this.cateIntro = cateIntro;
+		return this;
+	}
+/** 当前服务状态 ON 服务中;OFF 非服务状态 */
 	public String getStatus(){
 		return this.status;
 	}

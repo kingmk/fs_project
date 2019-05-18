@@ -1,0 +1,230 @@
+@charset "UTF-8";
+@import "style";
+@import "button";
+@import "bgmask";
+
+body{
+	background-color: #fff;
+	padding-bottom: px2rem(80);
+	height: initial;
+}
+.header {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 90;
+	background-color: #fff;
+}
+.header-top {
+	padding: px2rem(38) px2rem(48) 0;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	height: px2rem(228);
+	margin-bottom: px2rem(35);
+	.logo-box {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		align-items: center;
+		width: px2rem(120);
+		height: 100%;
+		text-align: center;
+		.header-top-img {
+			width: px2rem(120);
+			height: px2rem(120);
+			border-radius: px2rem(60);
+		}
+		.btn-follow {
+			width: px2rem(100);
+			height: px2rem(39);
+			line-height: px2rem(39);
+			background-color: #f29600;
+			text-align: center;
+			font-size: px2rem(22);
+			color: #fff;
+			&.followed {
+				background-color: #ccc;
+			}
+		}
+	}
+	.intro-box {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		align-items: flex-end;
+		height: 100%;
+		.nickname {
+			font-size: px2rem(30);
+			font-weight: bold;
+		}
+		.numbers {
+			display: flex;
+			flex-direction: row;
+			.number-item {
+				margin-left: px2rem(40);
+				text-align: center;
+				.number-title {
+					font-size: px2rem(25);
+					color: #5e5e5e;
+					line-height: px2rem(25);
+					margin-bottom: px2rem(10);
+				}
+				.number-count {
+					font-size: px2rem(35);
+					color: #f29600;
+				}
+			}
+		}
+		.intro {
+			font-size: px2rem(26);
+			line-height: px2rem(38);
+			height: px2rem(76);
+			overflow: hidden;
+			word-break: break-all;
+			text-overflow:ellipsis;
+			max-width: 70%;
+		}
+		.linkhome {
+			font-size: px2rem(24);
+			color: #cc0505;
+			line-height: px2rem(39);
+			height: px2rem(39);
+		}
+	}
+}
+.header-cate {
+	margin-bottom: px2rem(35);
+	margin-left: px2rem(58);
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: flex-end;
+	.curcate-name {
+		font-size: px2rem(28);
+		color: #f29600;
+		margin-right: px2rem(45);
+	}
+	.curcate-order {
+		font-size: px2rem(24);
+		color: #000;
+		margin-right: px2rem(45);
+		.count-order {
+			font-size: px2rem(35);
+		}
+	}
+	.curcate-evaluate {
+		font-size: px2rem(24);
+		color: #cc0505;
+		.count-evaluate {
+			font-size: px2rem(35);
+		}
+	}
+}
+
+.center-nav {
+	height: px2rem(66);
+	line-height: px2rem(66);
+	border-top: 1px solid #dbdbdb;
+	border-bottom: 1px solid #dbdbdb;
+	padding: 0 px2rem(70);
+	background-color: #fff;
+	z-index: 100;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	.nav-item {
+		font-size: px2rem(20);
+		color: #5e5e5e;
+		&.selected {
+			color: #000;
+			font-weight: bold;
+			border-bottom: px2rem(2) solid #f29600;
+		}
+	}
+}
+
+.content {
+	padding-bottom: px2rem(50);
+}
+.cate-intro {
+	padding: px2rem(80) px2rem(80);
+	font-size: px2rem(25);
+	line-height: px2rem(38);
+}
+.teacher-briefs {
+	padding: px2rem(47) px2rem(50);
+	.briefs-item {
+		margin-bottom: px2rem(47);
+		.briefs-item-tit {
+			font-size: px2rem(24);
+			font-weight: bold;
+			color: #5e5e5e;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			margin-bottom: px2rem(18);
+			.icon-squre {
+				width: px2rem(31);
+				height: px2rem(31);
+				background: url(../images/icons/icon_squre.png) no-repeat;
+				background-size: 100%;
+				margin-right: px2rem(12);
+			}
+		}
+		.briefs-item-text {
+			color: #5e5e5e;
+			font-size: px2rem(20);
+			line-height: px2rem(26);
+		}
+	}
+}
+
+.user-comments {
+	padding-left: px2rem(30);
+	.user-comments-tit {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		font-size: px2rem(22);
+		line-height: px2rem(80);
+		.tit-arr {
+			background : url("../images/icon.png") no-repeat 0 0;
+			background-size: 100% auto;
+			width: px2rem(24);
+			height: px2rem(24);
+			margin-right: px2rem(30);
+		}
+	}
+}
+
+.service-intros {
+	padding-top: px2rem(41);
+	.service-intro-item {
+		float: left;
+		width: 28%;
+		margin-left: 4%;
+		border: px2rem(1) solid #f29600;
+		border-radius: px2rem(16);
+		padding: px2rem(15);
+		line-height: px2rem(25);
+		font-size: px2rem(23);
+		color: #5e5e5e;
+		text-align: center;
+		margin-bottom: px2rem(35);
+	}
+}
+.button.service {
+	background-color: #f29600;
+	color: #fff;
+	&.disabled {
+		background-color: #ccc;
+	}
+}
+
+
+.bgmask .bgmask-wrap .bgmask-body .text {
+	font-size: px2rem(30);
+	font-weight: bold;
+}

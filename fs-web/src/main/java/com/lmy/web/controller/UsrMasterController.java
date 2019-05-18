@@ -41,7 +41,7 @@ public class UsrMasterController {
 	@RequestMapping(value="/usr/master/account")
 	public String usr_master_account(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response){
 		Long loginUsrId = WebUtil.getUserId(request);
-		JSONObject result = 	masterQueryServiceImpl.masterAct(loginUsrId);
+		JSONObject result = masterQueryServiceImpl.masterAct(loginUsrId);
 		if(JsonUtils.codeEqual(result, "0001") ){
 			return "/usr/common/my";
 		}
@@ -111,7 +111,7 @@ public class UsrMasterController {
 	/**
 	 * 
 	 */
-	@RequestMapping(value="/usr/master/my_bill_detail_query_ajax" , method = {RequestMethod.POST})
+	@RequestMapping(value="/usr/master/my_bill_detail_query_ajax", method = {RequestMethod.POST})
 	@ResponseBody
 	public String my_bill_detail_query_ajax(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
 			,@RequestParam(value = "currentPage" , required = true) int currentPage   //当前页 从 0 开始
@@ -120,6 +120,34 @@ public class UsrMasterController {
 			){
 		Long loginUsrId = WebUtil.getUserId(request);
 		JSONObject result = orderQueryServiceImpl.findMasterUsrBillDetailList(loginUsrId, orderSettlementId, currentPage, perPageNum);
+		return result.toJSONString();
+	}
+
+	/**
+	 * 
+	 */
+	@RequestMapping(value="/usr/master/cate_intro_nav")
+	public String cate_intro_nav(ModelMap modelMap, HttpServletRequest request, HttpServletResponse response  
+			){
+		Long loginUsrId = WebUtil.getUserId(request);
+		
+		JSONObject result = masterQueryServiceImpl.findMasterServiceCateInfo(loginUsrId);
+		modelMap.put("result", result);
+		return "/usr/master/cate_intro_nav";
+	}
+	
+	/**
+	 * 
+	 */
+	@RequestMapping(value="/usr/master/cate_intro_save_ajax", method = {RequestMethod.POST})
+	@ResponseBody
+	public String cate_intro_save_ajax(ModelMap modelMap, HttpServletRequest request, HttpServletResponse response
+			,@RequestParam(value = "cateId", required = true) Long cateId
+			,@RequestParam(value = "cateIntro", required = true) String cateIntro
+			){
+		Long loginUsrId = WebUtil.getUserId(request);
+		
+		JSONObject result = masterQueryServiceImpl.updateMasterCateIntro(loginUsrId, cateId, cateIntro);
 		return result.toJSONString();
 	}
 	
@@ -194,7 +222,7 @@ public class UsrMasterController {
 		if(masterUsrId == null ){
 			masterUsrId = loginUsrId;
 		}
-		return orderEvaluateServiceImpl.masterEvaluateList(masterUsrId, currentPage, perPageNum).toJSONString();
+		return orderEvaluateServiceImpl.masterEvaluateList(masterUsrId, null, currentPage, perPageNum).toJSONString();
 	}
 	/** master 用户前往点评页|查看点评 **/
 	@RequestMapping(value="/usr/master/evaluate_single_detail")
@@ -251,7 +279,9 @@ public class UsrMasterController {
 		}
 		JSONObject result = this.masterQueryServiceImpl.masterPersonalHomePage(WebUtil.getUserId(request));
 		modelMap.put("result", result);
-		return "/usr/master/personal_home_page";
+		modelMap.put("isMaster", true);
+//		return "/usr/master/personal_home_page";
+		return "/usr/search/master_detail";
 	}
 	
 	/**

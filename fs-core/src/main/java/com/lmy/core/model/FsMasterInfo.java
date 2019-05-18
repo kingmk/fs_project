@@ -47,6 +47,8 @@ public class FsMasterInfo  extends BaseObject {
   private  String  contactQq;
   /** 联系微信账号 */
   private  String  contactWeixin;
+  /** 抬头介绍 */
+  private  String  intro;
   /** 所学门派 */
   private  String  school;
   /** 相关经历 */
@@ -69,6 +71,9 @@ public class FsMasterInfo  extends BaseObject {
   private Date forbidTime;
   
   private String forbidReason;
+  
+  private String reserveWord;
+  
   /**  */
 	public Long getUsrId(){
 		return this.usrId;
@@ -248,7 +253,17 @@ public FsMasterInfo setNickName(String nickName) {
 		 this.contactQq=contactQq;
 		 return this;
 	}
-  /** 联系微信账号 */
+	
+	
+	public String getIntro() {
+		return intro;
+	}
+	
+	public FsMasterInfo setIntro(String intro) {
+		this.intro = intro;
+		return this;
+	}
+/** 联系微信账号 */
 	public String getContactWeixin(){
 		return this.contactWeixin;
 	}
@@ -354,6 +369,15 @@ public FsMasterInfo setNickName(String nickName) {
 		this.forbidReason = forbidReason;
 		return this;
 	}
+	
+	public String getReserveWord() {
+		return reserveWord;
+	}
+	public FsMasterInfo setReserveWord(String reserveWord) {
+		this.reserveWord = reserveWord;
+		return this;
+	}
+	
 	public String toString(){
 	    return JSON.toJSONString(this,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue);
 	}

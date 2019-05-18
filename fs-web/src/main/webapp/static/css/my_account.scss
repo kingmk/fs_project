@@ -34,16 +34,23 @@
   height: px2rem(440);
   background: url("../images/account_bg.png") no-repeat;
   background-size: 100% 100%;
+  display: flex;
+  display: -webkit-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+
   .header-top {
-    padding-top: px2rem(50);
+    /*padding-top: px2rem(50);*/
     display: flex;
     display: -webkit-flex;
     align-items: center;
     -webkit-align-items: center;
     justify-content: space-between;
     -webkit-justify-content: space-between;
-    padding-bottom: px2rem(100);
+    /*padding-bottom: px2rem(50);*/
     .header-top-left {
+      padding-top: px2rem(50);
       display: flex;
       display: -webkit-flex;
       align-items: center;
@@ -64,15 +71,19 @@
         margin-right: px2rem(30);
       }
     }
-    .header-button {
-      width: px2rem(210);
-      height: px2rem(80);
-      font-size: px2rem(32);
-      text-align: center;
-      line-height: px2rem(80);
-      span{
-        display: inline-block;
-        padding-left: px2rem(40);
+    .header-top-right {
+      padding-top: px2rem(85);
+      .header-button, .update-button {
+        width: px2rem(210);
+        height: px2rem(80);
+        font-size: px2rem(32);
+        text-align: center;
+        line-height: px2rem(80);
+        margin-bottom: px2rem(13);
+        span{
+          display: inline-block;
+          padding-left: px2rem(40);
+        }
       }
     }
   }
@@ -87,22 +98,23 @@
 
   }
   .header-top.start{
-	.img-logo img{
-	  background: rgba(0,0,0,0.7);
-	}
-	.header-button{
-	  background: #fff;
-	  color: $link-color;
-	  span{
-		background: url('../images/icon_account_start.png') no-repeat left center;
-	  }
-	}
+    .img-logo img{
+      background: rgba(0,0,0,0.7);
+    }
+    .header-button, .update-button{
+      background: #fff;
+      color: $link-color;
+      span{
+        background: url('../images/icon_account_start.png') no-repeat left center;
+      }
+    }
   }
   .header-bottom{
     display: flex;
     display: -webkit-flex;
     justify-content: space-between;
     -webkit-justify-content: space-between;
+    margin-bottom: px2rem(44);
     .income{
       line-height: 1;
       text-align: center;
@@ -143,6 +155,9 @@
   .icon-data{
 	background-position: 0 -300%;
   }
+  .icon-service-intro{
+  background-position: 0 -600%;
+  }
   .icon-bank{
   background-position: 0 -500%;
   }
@@ -151,5 +166,16 @@
   }
   .icon-home{
 	background-position: 0 -200%;
+  }
+}
+
+.reserveout {
+  margin: 0 px2rem(20);
+  .reserveword {
+    width: 100%;
+    border: px2rem(1) solid #5c5c5c;
+    padding: px2rem(15);
+    font-size: px2rem(24);
+
   }
 }

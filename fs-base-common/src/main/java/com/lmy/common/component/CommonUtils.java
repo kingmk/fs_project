@@ -39,7 +39,7 @@ public class CommonUtils {
 		if(StringUtils.isEmpty(mobile)){
 			return false;
 		}
-		Pattern pMobile = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0-9])|(17[0-9])|(14[0-9]))\\d{8}$");  
+		Pattern pMobile = Pattern.compile("^1\\d{10}$");  
 		Matcher matMobile = pMobile.matcher(mobile);
 		if(!matMobile.matches()){
 			boolean isValidHkMobile = isValidHKMobile(mobile);
@@ -326,17 +326,31 @@ public class CommonUtils {
 	public static BigDecimal fenToYuan(Long fen, int scale) {
 		return new BigDecimal(fen).divide(new BigDecimal(100), scale, BigDecimal.ROUND_HALF_UP);
 	}
-	   /**
-	    * 6位随机验证码
-	    * @return
-	    */
-	   public static String getRandom6Code(){
-		   DecimalFormat df = new DecimalFormat("000000");
-		   Random rm= new Random();
-		return df.format(rm.nextInt(1000000));
-	   }
-	   public static int getListSize(List list){
-		   return CollectionUtils.isNotEmpty(list)?list.size():0;
-	   }
+	
+   /**
+    * 6位随机验证码
+    * @return
+    */
+   public static String getRandom6Code(){
+	   DecimalFormat df = new DecimalFormat("000000");
+	   Random rm= new Random();
+	return df.format(rm.nextInt(1000000));
+   }
+   public static int getListSize(List list){
+	   return CollectionUtils.isNotEmpty(list)?list.size():0;
+   }
+   
+   public static void main(String[] args){
+	   Pattern pMobile = Pattern.compile("^1\\d{10}$");
+	   Matcher matMobile = pMobile.matcher("21234567890");
+	   System.out.println(matMobile.matches());
+	   matMobile = pMobile.matcher("19912345678");
+	   System.out.println(matMobile.matches());
+	   matMobile = pMobile.matcher("199123456789");
+	   System.out.println(matMobile.matches());
+	   matMobile = pMobile.matcher("13912345678");
+	   System.out.println(matMobile.matches());
+	   
+   }
 }
 

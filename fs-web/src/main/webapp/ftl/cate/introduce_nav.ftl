@@ -37,6 +37,8 @@ function initBanners(banners){
 
 </#if>
 
+
+
 $(function(){
     $.initUserFooter({activedIndex:0,bubbleNum:0 });
     chatUnreadNum('${host.base}');

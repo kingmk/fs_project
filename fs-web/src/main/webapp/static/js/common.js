@@ -138,7 +138,7 @@ var InitUserFooter = function(opts) {
 	this.defaults = {
 		itemList: [{
 			className: 'consultation',
-			title: '运势咨询',
+			title: '咨询分类',
 			link: "/cate/introduce_nav"
 		}, {
 			className: 'teacher',

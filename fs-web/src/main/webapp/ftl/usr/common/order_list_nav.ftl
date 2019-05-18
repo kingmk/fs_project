@@ -10,7 +10,7 @@
 <script src="${host.js}/js/dropload.min.js"></script>
 <script src="${host.js}/js/common.js?${host.version}"></script>
 <link rel="stylesheet" type="text/css" href="${host.css}/css/dropload.css">
-<link rel="stylesheet" href="${host.css}/css/my_order.css?${host.version}">
+<link rel="stylesheet" href="${host.css}/css/my_order.css?${host.version}1">
 <link rel="stylesheet" href="${host.css}/css/bgmask.css?${host.version}">
 
 

@@ -91,6 +91,13 @@
 </select>
 
 
+<select id="findMasterCates" parameterType="hashmap"  resultMap="fs_master_statistics">
+	select * from fs_master_statistics 
+	where master_usr_id = #{masterUsrId} and status='ON'
+    order by count_order desc, cate_id
+</select>
+
+
 <select id="searchMastersByUser" parameterType="hashmap" resultType="hashmap">
 	select 
 		a.id as master_info_id, a.usr_id, a.name, a.nick_name, a.head_img_url,
@@ -107,12 +114,14 @@
         <if test="cateId == null">and b.cate_id=1</if>
     </where>
     order by
-    	a.service_status, a.is_sign_other
+    	<!-- a.service_status,  -->
+    	a.is_sign_other
     	<if test="orderType == 'default'.toString()">, b.is_plat_recomm desc, b.count_order</if>
     	<if test="orderType == 'price'.toString()">, b.min_price</if>
     	<if test="orderType == 'evaluate'.toString()">, (b.sum_resp_speed+b.sum_major_level+b.sum_service_attitude)/b.count_evaluate</if>
-        <if test="ascType == 'asc'.toString()"> asc</if>
-        <if test="ascType == 'desc'.toString()"> desc</if>
+        <if test="ascType == 'asc'.toString()"> asc, a.id asc</if>
+        <if test="ascType == 'desc'.toString()"> desc, a.id desc</if>
+        
 </select>
 
 

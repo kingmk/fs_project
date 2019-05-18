@@ -15,7 +15,7 @@ body {
   }
   .score-box {
     .score-item {
-      padding-bottom: px2rem(30);
+      padding-bottom: px2rem(15);
       font-size: 0;
       display: flex;
       display: -webkit-flex;
@@ -24,7 +24,7 @@ body {
       align-items: center;
       -webkit-align-items: center;
       .score-item-tips {
-        font-size: px2rem(28) !important;
+        font-size: px2rem(20) !important;
         color: $text-color;
         padding-right: px2rem(14);
         display: inline-block;
@@ -86,15 +86,15 @@ body {
         margin-left: px2rem(120);
         .name{
           padding-bottom: px2rem(20);
-          font-size: px2rem(28);
+          font-size: px2rem(23);
         }
         .rating{
           line-height: px2rem(40);
-          font-size: px2rem(24);
-          padding-bottom: px2rem(30);
+          font-size: px2rem(22);
+          padding-bottom: px2rem(20);
         }
         .time{
-          font-size: px2rem(24);
+          font-size: px2rem(18);
           color: $text-color-secondary;
         }
         .reply-box {

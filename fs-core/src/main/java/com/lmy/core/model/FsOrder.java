@@ -43,6 +43,8 @@ public class FsOrder  extends BaseObject {
   private  String  status;
   /** 订单单信息 */
   private  String  orderExtraInfo;
+  /** 响应时长（秒） */
+  private Long respSeconds;
   /** 聊天开始时间 */
   private  Date  beginChatTime;
   /** 聊天结束时间 */
@@ -248,7 +250,17 @@ public class FsOrder  extends BaseObject {
 		 this.orderExtraInfo=orderExtraInfo;
 		 return this;
 	}
-  /** 聊天开始时间 */
+	
+	
+	public Long getRespSeconds() {
+		return respSeconds;
+	}
+	public FsOrder setRespSeconds(Long respSeconds) {
+		this.respSeconds = respSeconds;
+		return this;
+	}
+	
+/** 聊天开始时间 */
 	public Date getBeginChatTime(){
 		return this.beginChatTime;
 	}

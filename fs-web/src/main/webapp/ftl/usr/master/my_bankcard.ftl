@@ -26,6 +26,8 @@ function save() {
 		return;
 	};
 
+	domBtn.addClass("disabled");
+
 	var fields = ["holderName", "bankNo", "bankName", "province", "city"];
 	var params = {};
 	for (var i = 0; i < fields.length; i++) {
@@ -61,7 +63,7 @@ function save() {
 			} else {
 				mAlert.addAlert(rlt.head.msg);
 			}
-			domBtn.remove("disabled");
+			domBtn.removeClass("disabled");
 		}
 	});
 }

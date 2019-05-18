@@ -142,7 +142,7 @@ function loadData(isPlatRecomm, zxCateId, orderBy, currentPage, perPageNum , cal
         method : 'POST',
         data: {
         	isPlatRecomm:  isPlatRecomm,
-        	zxCateId : zxCateId,
+        	cateId : zxCateId,
         	orderBy : orderBy,
         	currentPage: currentPage,
         	perPageNum:perPageNum

@@ -48,13 +48,14 @@ public class FsMasterInfoDao extends GenericDAOImpl<FsMasterInfo> {
 		return this.getSqlSession().selectOne(this.getNameSpace()+".statRecordNum1", map);
 	}
 	
-	public int updateServiceStatus(Long fsMasterInfoId ,  Long usrId , String serviceStatus){
+	public int updateServiceStatus(Long fsMasterInfoId,  Long usrId, String serviceStatus, String reserveWord){
 		Assert.isTrue( StringUtils.isNotEmpty(serviceStatus) );
 		Assert.isTrue( !( fsMasterInfoId == null && usrId == null )   );
 		JSONObject map = new JSONObject();
 		map.put("id" , fsMasterInfoId);
 		map.put("usrId" , usrId);
 		map.put("serviceStatus" , serviceStatus);
+		map.put("reserveWord" , reserveWord);
 		return this.getSqlSession().update(this.getNameSpace()+".updateServiceStatus", map);
 	}
 	public List<FsMasterInfo> findByUsrIds2(List<Long> usrIdList,String auditStatus, List<String> serviceStatusList){

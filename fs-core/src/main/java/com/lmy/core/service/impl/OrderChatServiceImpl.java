@@ -190,9 +190,11 @@ public class OrderChatServiceImpl {
 				settlementTime = DateUtils.setMilliseconds(settlementTime, 0);
 				final FsOrder orderForUpdate = new FsOrder();
 				orderForUpdate.setId(orderId);
+				Long respSeconds = OrderAidUtil.calcOrderRespSeconds(order.getCreateTime(), now);
 				orderForUpdate.setUpdateTime(now).setBeginChatTime(now).setEndChatTime(completedTime)
 					.setLastChatTime(now).setSellerFirstReplyTime(now)
-					.setSettlementTime(settlementTime).setCompletedTime(completedTime);
+					.setSettlementTime(settlementTime).setCompletedTime(completedTime)
+					.setRespSeconds(respSeconds);
 				this.fsTransactionTemplate.execute(new TransactionCallback<Boolean>() {
 					@Override
 					public Boolean doInTransaction(TransactionStatus status) {

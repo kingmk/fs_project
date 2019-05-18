@@ -1,5 +1,7 @@
 package com.lmy.web.controller;
 import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,13 +54,32 @@ public class ZxCateIntroController {
 	 * @return
 	 */
 	@RequestMapping(value="/cate/introduce_nav")
-	public String category_nav(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response){
+	public String category_nav_deprecated(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response){
 
 		JSONArray banners = advertisementServiceImpl.getIndexBanner();
 		modelMap.put("banners", banners);
 		modelMap.put("bannerStr", JSON.toJSONString(banners,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue));
 		modelMap.put("zxCateList", fsZxCateQueryServiceImpl.findZxCate1(null, null, 2l, "N", "EFFECT"));
 		return "/cate/introduce_nav";
+	}
+	
+	/**
+	 * 普通用户首页
+	 * @param modelMap
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/cate/introduce_nav_new")
+	public String category_nav(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response){
+
+		JSONArray banners = advertisementServiceImpl.getIndexBanner();
+		modelMap.put("banners", banners);
+		modelMap.put("bannerStr", JSON.toJSONString(banners,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue));
+		Map<String, List<FsZxCate>> cateMap = fsZxCateQueryServiceImpl.getSortedCates();
+		modelMap.put("cateMap", cateMap);
+		modelMap.put("cateMapStr", JSON.toJSONString(cateMap,SerializerFeature.WriteDateUseDateFormat,SerializerFeature.WriteMapNullValue));
+		return "/cate/introduce_nav_new";
 	}
 	
 }

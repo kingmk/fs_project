@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="${host.css}/css/teacher_home.css?${host.version}4">
 <script src="${host.js}/js/components.js?${host.version}"></script>
 <style>
+body{height: 100%;}
 .fixed{position:fixed;top:0;left:0;right:0}
 .center-fixed{padding-top:4.5rem}
 .img-logo-box{width:9rem;height:9rem;border-radius:50%;overflow:hidden;position:relative;margin:0 auto}
@@ -129,19 +130,20 @@ window.onscroll = function(e){
 	var briefsTop = $('.teacher-briefs').offset().top;
 	var introsTop = $('.service-intros').offset().top;
 	var commentsTop =  $('.user-comments').offset().top;
+	var scrollTop = $(window).scrollTop();
 	isClick = false;
-	if($('body').scrollTop() > briefsTop-navHeight-10){
+	if(scrollTop > briefsTop-navHeight-10){
 		$('.center-nav').addClass('fixed')
 		$('.center').addClass('center-fixed');
 	}else{
 		$('.center-nav').removeClass('fixed')
 		$('.center').removeClass('center-fixed');
 	}
-	if($('body').scrollTop() <= (introsTop-navHeight-2) && $('body').scrollTop() >= (briefsTop-navHeight-10) ){
+	if(scrollTop <= (introsTop-navHeight-2) && scrollTop >= (briefsTop-navHeight-10) ){
 		$("#teacher-briefs").addClass('actived').siblings().removeClass('actived');
-	}else if($('body').scrollTop() <= (commentsTop-navHeight-2) && $('body').scrollTop() >= (introsTop-navHeight-10)){
+	}else if(scrollTop <= (commentsTop-navHeight-2) && scrollTop >= (introsTop-navHeight-10)){
 		$("#service-intros").addClass('actived').siblings().removeClass('actived');
-	}else if($('body').scrollTop() >= (commentsTop-navHeight-10)){
+	}else if(scrollTop >= (commentsTop-navHeight-10)){
 		$("#user-comments").addClass('actived').siblings().removeClass('actived');
 	}
 }

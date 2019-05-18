@@ -29,6 +29,7 @@ public class LmySpringWebJob {
 	private AdminAuditServiceImpl adminAuditServiceImpl;
 	@Autowired
 	private StatisticsServiceImpl statisticsServiceImpl;
+	
 	//就每月7日晚上22点结算上个月的全部订单
 	@Scheduled(cron="0 0 22 */7 * ?")
 	public void lmyAutoSettle(){
@@ -77,6 +78,26 @@ public class LmySpringWebJob {
 			masterStatisticsServiceImpl.calculateStatistics();
 		} else {
 			logger.info("=====other server is calculating statistics, skip on current server=====");
+		}
+	}
+
+	// work on 03:00 and 17:00 every day
+	@Scheduled(cron="0 0 3,17 * * ?")
+	public void autoCalculatePeriodStatistics() {
+		logger.info("==== auto calculate period statistics ====");
+		long secsRand = (long)(Math.random()*10000);
+		try {
+			Thread.sleep(secsRand);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		String cacheKey = CacheConstant.AUTO_JOB+"_calculate_period_statistics";
+		if (!RedisClient.exists(cacheKey) ) {
+			RedisClient.set(cacheKey, Boolean.TRUE, 3600);
+			logger.info("=====start calcuate period statistics=====");
+			statisticsServiceImpl.sortStatistics();
+		} else {
+			logger.info("=====other server is calculating period statistics, skip on current server=====");
 		}
 	}
 

@@ -65,7 +65,7 @@ $(function() {
 })
 
 function initHead() {
-	if (<#if body.goodsName != "吉凶占卜">orderExtraInfo && </#if>"${body.isServiceEnd}" != "Y" && "${body.isWaitMasterService}" != "Y") {
+	if (<#if body.goodsName != "吉凶占卜" && body.goodsName != "时辰验证">orderExtraInfo && </#if>"${body.isServiceEnd}" != "Y" && "${body.isWaitMasterService}" != "Y") {
 		$("#lastTime").html(lastTime && lastTime!='0'?commonUtils.getTimeFix(lastTime):'0');
 		var time = setInterval(function() {
 		  $("#lastTime").html(lastTime  && lastTime!='0'?commonUtils.getTimeFix(lastTime--):'0');
@@ -550,7 +550,7 @@ function showImg(url){
 		<div class="time">
 		<#if body.isServiceEnd == "Y">
 			<b id='lastTime'>本次服务已结束</b>
-		<#elseif !(body.orderExtraInfo??) && body.goodsName != "吉凶占卜">
+		<#elseif !(body.orderExtraInfo??) && body.goodsName != "吉凶占卜" && body.goodsName != "时辰验证">
 			<b id='lastTime'>用户信息未提供，可提醒用户</b>
 		<#elseif body.isWaitMasterService == "Y" && body.isMaster>
 			<b id='lastTime'>请尽快回复用户</b>
@@ -562,7 +562,7 @@ function showImg(url){
 		</div>
 	</div>
 
-<#if (body.orderExtraInfo??)&& body.goodsName != "吉凶占卜">
+<#if (body.orderExtraInfo??)&& body.goodsName != "吉凶占卜" && body.goodsName != "时辰验证">
 	<div class="speak-header-btn" id='userInfo'><#if body.isMaster>用户信息<#else>我的信息</#if></div>
 </#if>
 

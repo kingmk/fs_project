@@ -221,14 +221,15 @@ public class MasterRecruitController {
 			@RequestParam(value = "nickName" , required = true) String nickName,    						
 			@RequestParam(value = "englishName" , required = false) String englishName,    				
 			@RequestParam(value = "headImg" , required = false) CommonsMultipartFile headImg,    						
-			@RequestParam(value = "workDate" , required = false) Date workDate,      							//从业开始时间 eg:2015/01/01		
-			@RequestParam(value = "school" , required = false) String school	,									//所学门派
-			@RequestParam(value = "experience" , required = false) String experience	,						//相关经历
-			@RequestParam(value = "achievement" , required = false) String achievement	,				//取得主要成就
-			@RequestParam(value = "goodAt" , required = false) String goodAt	,								//擅长领域
-			@RequestParam(value = "profession" , required = false) String profession	,						//现职业
-			@RequestParam(value = "isSignOther" , required = false) String isSignOther,						//是否已签约其他风水平台 , Y 有签约其他风水平台;N 未签约其他风水平台(雷门易专属)
-			@RequestParam(value = "isFullTime" , required = false) String isFullTime								//是否专职 , Y;N
+			@RequestParam(value = "workDate" , required = false) Date workDate, //从业开始时间 eg:2015/01/01
+			@RequestParam(value = "intro" , required = false) String intro, //所学门派
+			@RequestParam(value = "school" , required = false) String school, //所学门派
+			@RequestParam(value = "experience" , required = false) String experience, //相关经历
+			@RequestParam(value = "achievement" , required = false) String achievement, //取得主要成就
+			@RequestParam(value = "goodAt" , required = false) String goodAt, //擅长领域
+			@RequestParam(value = "profession" , required = false) String profession, //现职业
+			@RequestParam(value = "isSignOther" , required = false) String isSignOther, //是否已签约其他风水平台 , Y 有签约其他风水平台;N 未签约其他风水平台(雷门易专属)
+			@RequestParam(value = "isFullTime" , required = false) String isFullTime //是否专职 , Y;N
 			){
 		LoginCookieDto loginDto = WebUtil.getLoginDto(request);
 		//统计 申请中 与 申请通过的记录数 （不统计审批拒接掉的）
@@ -240,8 +241,9 @@ public class MasterRecruitController {
 		Date now = new Date();
 		FsMasterInfo masterInfoForUpdate = new FsMasterInfo();
 		masterInfoForUpdate.setUpdateTime(now).setWorkDate(workDate).setId(masterInfoId);
-		masterInfoForUpdate.setName(realName).setNickName(nickName).
-		setExperience(experience).setGoodAt(goodAt).setIsFullTime(isFullTime).setIsSignOther(isSignOther).setProfession(profession).setSchool(school).setAchievement(achievement);
+		masterInfoForUpdate.setName(realName).setNickName(nickName)
+			.setExperience(experience).setGoodAt(goodAt).setIsFullTime(isFullTime).setIsSignOther(isSignOther)
+			.setProfession(profession).setIntro(intro).setSchool(school).setAchievement(achievement);
 		if(headImg!=null && headImg.getSize()>0){
 			FsFileStore files1 =  fileStoreServiceImpl.fileStore(headImg, FileStoreServiceImpl.FileType.HEADIMG , loginDto.getUserId());
 			masterInfoForUpdate.setHeadImgUrl( files1!=null ? files1.getHttpUrl():null);
@@ -288,12 +290,31 @@ public class MasterRecruitController {
 	@RequestMapping(value="/usr/master/recruit/update_service_status",method={RequestMethod.POST})
 	@ResponseBody
 	public String update_service_status(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
-												,@RequestParam(value="masterInfoId" , required = false) Long masterInfoId
-												,@RequestParam(value="serviceStatus" , required = true) String serviceStatus  //当前服务状态 ING 服务中;NOTING 非服务状态
+		,@RequestParam(value="masterInfoId" , required = false) Long masterInfoId
+		,@RequestParam(value="serviceStatus" , required = true) String serviceStatus  //当前服务状态 ING 服务中;NOTING 非服务状态
+		,@RequestParam(value="reserveWord" , required = false) String reserveWord  //当前服务状态 ING 服务中;NOTING 非服务状态
 			){
 		LoginCookieDto loginDto = WebUtil.getLoginDto(request);
-		return this.masterRecruitServiceImpl.configOderTaking(masterInfoId, loginDto.getUserId(), serviceStatus).toJSONString();
+		if (reserveWord == null) {
+			reserveWord = "";
+		}
+		return this.masterRecruitServiceImpl.changeServiceStatus(masterInfoId, loginDto.getUserId(), serviceStatus, reserveWord).toJSONString();
 	}
+	
+
+	@RequestMapping(value="/usr/master/recruit/update_reserve_word",method={RequestMethod.POST})
+	@ResponseBody
+	public String update_reserve_word(ModelMap modelMap , HttpServletRequest request,HttpServletResponse response
+		,@RequestParam(value="masterInfoId" , required = false) Long masterInfoId
+		,@RequestParam(value="reserveWord" , required = false) String reserveWord  //当前服务状态 ING 服务中;NOTING 非服务状态
+			){
+		LoginCookieDto loginDto = WebUtil.getLoginDto(request);
+		if (reserveWord == null) {
+			reserveWord = "";
+		}
+		return this.masterRecruitServiceImpl.updateReserveWord(masterInfoId, loginDto.getUserId(), reserveWord).toJSONString();
+	}
+
 	
 	private Boolean isMasterFired(Long loginUsrId) {
 		FsMasterInfo master = masterQueryServiceImpl.findByUsrId(loginUsrId);

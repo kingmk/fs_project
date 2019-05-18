@@ -1,0 +1,50 @@
+@import "style";
+@import "footer_nav";
+@import "bgmask";
+
+.tab-cates {
+	height: px2rem(80); 
+	line-height: px2rem(80); 
+	margin: 0 px2rem(21); 
+	display: flex; 
+	flex-direction: row; 
+	justify-content: space-around; 
+	border-bottom: px2rem(2) solid #efefef;
+	.tabitem-cate {
+		box-sizing: border-box; 
+		padding: 0 px2rem(22); 
+		color: #5e5e5e;  
+		margin-bottom: px2rem(-4); 
+		font-size: px2rem(28);
+		&.selected {
+			border-bottom: px2rem(4) solid #cc0505; 
+			color: #cc0505;
+		}
+	}
+}
+
+.content-outer {
+	padding: px2rem(51) px2rem(21) 0;
+}
+.content-cates {
+	display: none;
+	&.selected {
+		display: block;
+	}
+	.item-cate {
+		float: left;
+		width: 25%;
+		text-align: center;
+		margin-bottom: px2rem(51);
+		cursor: pointer;
+		.cate-icon {
+			width: px2rem(119);
+			height: px2rem(122);
+		}
+		.cate-name {
+			margin-top: px2rem(19);
+			font-size: px2rem(20);
+			color: #5e5e5e;
+		}
+	}
+}

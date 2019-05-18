@@ -9,23 +9,28 @@
 	<result column="name" property="name"/>
 	<result column="is_plat_recomm" property="isPlatRecomm"/>
 	<result column="plat_recomm_time" property="platRecommTime"/>
+	<result column="cate_intro" property="cateIntro"/>
 	<result column="status" property="status"/>
 	<result column="amt" property="amt"/>
 	<result column="create_time" property="createTime"/>
 	<result column="update_time" property="updateTime"/>
 </resultMap>
 <select id="findById" parameterType="long"  resultMap="fs_master_service_cate">
-	select * 	from fs_master_service_cate where id=#{id}  
+	select * from fs_master_service_cate where id=#{id}  
 </select>  
 <insert id="insert"  parameterType="com.lmy.core.model.FsMasterServiceCate"  useGeneratedKeys="true" keyProperty="id">
-	insert into fs_master_service_cate(id ,usr_id ,fs_master_info_id ,fs_zx_cate_id ,name ,is_plat_recomm ,plat_recomm_time ,status ,amt ,create_time ,update_time)
-   values(#{id,jdbcType=INTEGER} ,#{usrId,jdbcType=INTEGER} ,#{fsMasterInfoId,jdbcType=INTEGER} ,#{fsZxCateId,jdbcType=INTEGER} ,#{name,jdbcType=VARCHAR} ,#{isPlatRecomm,jdbcType=VARCHAR} ,#{platRecommTime,jdbcType=VARCHAR} ,#{status,jdbcType=VARCHAR} ,#{amt,jdbcType=INTEGER} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP}) 
+	insert into fs_master_service_cate(id ,usr_id ,fs_master_info_id ,fs_zx_cate_id ,name ,
+	is_plat_recomm ,plat_recomm_time , cate_intro, status ,amt ,create_time ,update_time)
+	values(#{id,jdbcType=INTEGER} ,#{usrId,jdbcType=INTEGER} ,#{fsMasterInfoId,jdbcType=INTEGER} ,#{fsZxCateId,jdbcType=INTEGER} ,#{name,jdbcType=VARCHAR} ,
+	#{isPlatRecomm,jdbcType=VARCHAR} ,#{platRecommTime,jdbcType=VARCHAR} ,#{cateIntro,jdbcType=VARCHAR} ,#{status,jdbcType=VARCHAR} ,#{amt,jdbcType=INTEGER} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP}) 
 </insert>
 <insert id="batchInsert"  parameterType="list">
-	insert into fs_master_service_cate(id ,usr_id ,fs_master_info_id ,fs_zx_cate_id ,name ,is_plat_recomm ,plat_recomm_time ,status ,amt ,create_time ,update_time)
+	insert into fs_master_service_cate(id ,usr_id ,fs_master_info_id ,fs_zx_cate_id ,name ,
+	is_plat_recomm ,plat_recomm_time ,cate_intro, status ,amt ,create_time ,update_time)
    values
 	<foreach collection="list" item="item" index="index"   separator=","> 
-    (#{item.id,jdbcType=INTEGER} ,#{item.usrId,jdbcType=INTEGER} ,#{item.fsMasterInfoId,jdbcType=INTEGER} ,#{item.fsZxCateId,jdbcType=INTEGER} ,#{item.name,jdbcType=VARCHAR} ,#{item.isPlatRecomm,jdbcType=VARCHAR} ,#{item.platRecommTime,jdbcType=VARCHAR} ,#{item.status,jdbcType=VARCHAR} ,#{item.amt,jdbcType=INTEGER} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP})
+    (#{item.id,jdbcType=INTEGER} ,#{item.usrId,jdbcType=INTEGER} ,#{item.fsMasterInfoId,jdbcType=INTEGER} ,#{item.fsZxCateId,jdbcType=INTEGER} ,#{item.name,jdbcType=VARCHAR} ,
+    #{item.isPlatRecomm,jdbcType=VARCHAR} ,#{item.platRecommTime,jdbcType=VARCHAR} ,#{item.cateIntro,jdbcType=VARCHAR} ,#{item.status,jdbcType=VARCHAR} ,#{item.amt,jdbcType=INTEGER} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP})
 	</foreach> 
 </insert>
 <update id="update"	parameterType="com.lmy.core.model.FsMasterServiceCate">
@@ -34,6 +39,7 @@
 	<if test="name != null">name=#{name},</if>
 	<if test="isPlatRecomm != null">is_plat_recomm=#{isPlatRecomm},</if>
 	<if test="platRecommTime != null">plat_recomm_time=#{platRecommTime},</if>
+	<if test="cateIntro != null">cate_intro=#{cateIntro},</if>
 	<if test="status != null">status=#{status},</if>
 	<if test="amt != null">amt=#{amt},</if>
 	<if test="updateTime != null">update_time=#{updateTime}</if>
@@ -49,6 +55,16 @@
 	where fs_master_info_id=#{masterInfoId} and fs_zx_cate_id=#{cateId}
 </update>
 
+
+<update id="updateMasterCateIntro" parameterType="hashmap">
+	update fs_master_service_cate
+<set>
+    cate_intro=#{cateIntro}, update_time=#{updateTime}
+</set>
+	where fs_master_info_id=#{masterInfoId} and fs_zx_cate_id=#{cateId}
+</update>
+
+
 <select id="findByUsrIdAndStatus" parameterType="hashmap"  resultMap="fs_master_service_cate">
     select a.*, b.sort from fs_master_service_cate  a
     inner join fs_zx_cate b
@@ -59,11 +75,11 @@
             and a.status in 
            	<foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
 			#{item}
-			</foreach>     
+			</foreach>
         </if>
         and b.status='EFFECT'
     </where>
-    order by b.sort desc
+    order by b.parent_id, b.sort desc
 </select>
 
 <select id="statServiceRecordNum" parameterType="hashmap"  resultType="long">
@@ -82,15 +98,16 @@
  <select id="findByMasterInfoIdAndCateId" parameterType="hashmap" resultMap="fs_master_service_cate">
      select * from fs_master_service_cate
      <where>
-         <if test="	masterInfoId!=null ">fs_master_info_id =#{masterInfoId}</if>
-         <if test="	cateId!=null ">and fs_zx_cate_id = #{cateId}</if>
-         <if test="	statusList!=null">
+         <if test="masterInfoId!=null">fs_master_info_id =#{masterInfoId}</if>
+         <if test="cateId!=null">and fs_zx_cate_id = #{cateId}</if>
+         <if test="statusList!=null">
              and status in 
             <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
 				#{item}
 			</foreach>    
          </if>
      </where>
+     order by create_time desc
  </select>
  
  <select id="findOneOrderByPriceGroupByUsrId"  parameterType="hashmap" resultMap="fs_master_service_cate">

@@ -22,6 +22,7 @@
 	<result column="coupon_id" property="couponId"/>
 	<result column="status" property="status"/>
 	<result column="order_extra_info" property="orderExtraInfo"/>
+	<result column="resp_seconds" property="respSeconds"/>
 	<result column="begin_chat_time" property="beginChatTime"/>
 	<result column="end_chat_time" property="endChatTime"/>
 	<result column="last_chat_time" property="lastChatTime"/>
@@ -44,17 +45,17 @@
 	<result column="is_user_delete" property="isUserDelete"/>
 </resultMap>
 <select id="findById" parameterType="long"  resultMap="fs_order">
-	select * 	from fs_order where id=#{id}  
+	select * from fs_order where id=#{id}  
 </select>  
-<insert id="insert"  parameterType="com.lmy.core.model.FsOrder"  useGeneratedKeys="true" keyProperty="id">
-	insert into fs_order(id ,buy_usr_id ,order_type ,chat_session_no ,goods_id ,goods_name ,trans_desc ,seller_usr_id ,zx_cate_id ,pay_type ,order_num ,buy_num ,pay_rmb_amt ,discount_rmb_amt, discount_amt_plat, discount_amt_master, refund_rmb_amt, coupon_id, status ,order_extra_info ,begin_chat_time ,end_chat_time ,last_chat_time ,seller_first_reply_time ,settlement_time ,settlement_plat_service_fee ,settlement_master_service_fee ,completed_time ,evaluate_time ,pay_confirm_time ,is_auto_refund ,refund_apply_time ,refund_reason ,refund_confirm_time ,refund_audit_word ,refund_audit_time ,create_time ,update_time ,remark)
-   values(#{id,jdbcType=INTEGER} ,#{buyUsrId,jdbcType=INTEGER} ,#{orderType,jdbcType=VARCHAR} ,#{chatSessionNo,jdbcType=VARCHAR} ,#{goodsId,jdbcType=INTEGER} ,#{goodsName,jdbcType=VARCHAR} ,#{transDesc,jdbcType=VARCHAR} ,#{sellerUsrId,jdbcType=INTEGER} ,#{zxCateId,jdbcType=INTEGER} ,#{payType,jdbcType=VARCHAR} ,#{orderNum,jdbcType=VARCHAR} ,#{buyNum,jdbcType=INTEGER} ,#{payRmbAmt,jdbcType=INTEGER}, #{discountRmbAmt,jdbcType=INTEGER}, #{discountAmtPlat,jdbcType=INTEGER}, #{discountAmtMaster,jdbcType=INTEGER}, #{refundRmbAmt,jdbcType=INTEGER}, #{couponId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR} ,#{orderExtraInfo,jdbcType=VARCHAR} ,#{beginChatTime,jdbcType=TIMESTAMP} ,#{endChatTime,jdbcType=TIMESTAMP} ,#{lastChatTime,jdbcType=TIMESTAMP} ,#{sellerFirstReplyTime,jdbcType=TIMESTAMP} ,#{settlementTime,jdbcType=TIMESTAMP} ,#{settlementPlatServiceFee,jdbcType=INTEGER} ,#{settlementMasterServiceFee,jdbcType=INTEGER} ,#{completedTime,jdbcType=TIMESTAMP} ,#{evaluateTime,jdbcType=TIMESTAMP} ,#{payConfirmTime,jdbcType=TIMESTAMP} ,#{isAutoRefund,jdbcType=VARCHAR} ,#{refundApplyTime,jdbcType=TIMESTAMP} ,#{refundReason,jdbcType=VARCHAR} ,#{refundConfirmTime,jdbcType=TIMESTAMP} ,#{refundAuditWord,jdbcType=VARCHAR} ,#{refundAuditTime,jdbcType=TIMESTAMP} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP} ,#{remark,jdbcType=VARCHAR}) 
+<insert id="insert" parameterType="com.lmy.core.model.FsOrder" useGeneratedKeys="true" keyProperty="id">
+	insert into fs_order(id ,buy_usr_id ,order_type ,chat_session_no ,goods_id ,goods_name ,trans_desc ,seller_usr_id ,zx_cate_id ,pay_type ,order_num ,buy_num ,pay_rmb_amt ,discount_rmb_amt, discount_amt_plat, discount_amt_master, refund_rmb_amt, coupon_id, status ,order_extra_info, resp_seconds ,begin_chat_time ,end_chat_time ,last_chat_time ,seller_first_reply_time ,settlement_time ,settlement_plat_service_fee ,settlement_master_service_fee ,completed_time ,evaluate_time ,pay_confirm_time ,is_auto_refund ,refund_apply_time ,refund_reason ,refund_confirm_time ,refund_audit_word ,refund_audit_time ,create_time ,update_time ,remark)
+   values(#{id,jdbcType=INTEGER} ,#{buyUsrId,jdbcType=INTEGER} ,#{orderType,jdbcType=VARCHAR} ,#{chatSessionNo,jdbcType=VARCHAR} ,#{goodsId,jdbcType=INTEGER} ,#{goodsName,jdbcType=VARCHAR} ,#{transDesc,jdbcType=VARCHAR} ,#{sellerUsrId,jdbcType=INTEGER} ,#{zxCateId,jdbcType=INTEGER} ,#{payType,jdbcType=VARCHAR} ,#{orderNum,jdbcType=VARCHAR} ,#{buyNum,jdbcType=INTEGER} ,#{payRmbAmt,jdbcType=INTEGER}, #{discountRmbAmt,jdbcType=INTEGER}, #{discountAmtPlat,jdbcType=INTEGER}, #{discountAmtMaster,jdbcType=INTEGER}, #{refundRmbAmt,jdbcType=INTEGER}, #{couponId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR} ,#{orderExtraInfo,jdbcType=VARCHAR},#{respSeconds,jdbcType=INTEGER} ,#{beginChatTime,jdbcType=TIMESTAMP} ,#{endChatTime,jdbcType=TIMESTAMP} ,#{lastChatTime,jdbcType=TIMESTAMP} ,#{sellerFirstReplyTime,jdbcType=TIMESTAMP} ,#{settlementTime,jdbcType=TIMESTAMP} ,#{settlementPlatServiceFee,jdbcType=INTEGER} ,#{settlementMasterServiceFee,jdbcType=INTEGER} ,#{completedTime,jdbcType=TIMESTAMP} ,#{evaluateTime,jdbcType=TIMESTAMP} ,#{payConfirmTime,jdbcType=TIMESTAMP} ,#{isAutoRefund,jdbcType=VARCHAR} ,#{refundApplyTime,jdbcType=TIMESTAMP} ,#{refundReason,jdbcType=VARCHAR} ,#{refundConfirmTime,jdbcType=TIMESTAMP} ,#{refundAuditWord,jdbcType=VARCHAR} ,#{refundAuditTime,jdbcType=TIMESTAMP} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP} ,#{remark,jdbcType=VARCHAR}) 
 </insert>
 <insert id="batchInsert"  parameterType="list">
-	insert into fs_order(id ,buy_usr_id ,order_type ,chat_session_no ,goods_id ,goods_name ,trans_desc ,seller_usr_id ,zx_cate_id ,pay_type ,order_num ,buy_num ,pay_rmb_amt ,discount_rmb_amt, discount_amt_plat, discount_amt_master, refund_rmb_amt, coupon_id, status ,order_extra_info ,begin_chat_time ,end_chat_time ,last_chat_time ,seller_first_reply_time ,settlement_time ,settlement_plat_service_fee ,settlement_master_service_fee ,completed_time ,evaluate_time ,pay_confirm_time ,is_auto_refund ,refund_apply_time ,refund_reason ,refund_confirm_time ,refund_audit_word ,refund_audit_time ,create_time ,update_time ,remark)
+	insert into fs_order(id ,buy_usr_id ,order_type ,chat_session_no ,goods_id ,goods_name ,trans_desc ,seller_usr_id ,zx_cate_id ,pay_type ,order_num ,buy_num ,pay_rmb_amt ,discount_rmb_amt, discount_amt_plat, discount_amt_master, refund_rmb_amt, coupon_id, status ,order_extra_info ,resp_seconds ,begin_chat_time ,end_chat_time ,last_chat_time ,seller_first_reply_time ,settlement_time ,settlement_plat_service_fee ,settlement_master_service_fee ,completed_time ,evaluate_time ,pay_confirm_time ,is_auto_refund ,refund_apply_time ,refund_reason ,refund_confirm_time ,refund_audit_word ,refund_audit_time ,create_time ,update_time ,remark)
    values
 	<foreach collection="list" item="item" index="index"   separator=","> 
-    (#{item.id,jdbcType=INTEGER} ,#{item.buyUsrId,jdbcType=INTEGER} ,#{item.orderType,jdbcType=VARCHAR} ,#{item.chatSessionNo,jdbcType=VARCHAR} ,#{item.goodsId,jdbcType=INTEGER} ,#{item.goodsName,jdbcType=VARCHAR} ,#{item.transDesc,jdbcType=VARCHAR} ,#{item.sellerUsrId,jdbcType=INTEGER} ,#{item.zxCateId,jdbcType=INTEGER} ,#{item.payType,jdbcType=VARCHAR} ,#{item.orderNum,jdbcType=VARCHAR} ,#{item.buyNum,jdbcType=INTEGER} ,#{item.payRmbAmt,jdbcType=INTEGER}, #{item.discountRmbAmt,jdbcType=INTEGER}, #{item.discountAmtPlat,jdbcType=INTEGER}, #{item.discountAmtMaster,jdbcType=INTEGER}, #{item.refundRmbAmt,jdbcType=INTEGER}, #{item.couponId,jdbcType=INTEGER}, #{item.status,jdbcType=VARCHAR} ,#{item.orderExtraInfo,jdbcType=VARCHAR} ,#{item.beginChatTime,jdbcType=TIMESTAMP} ,#{item.endChatTime,jdbcType=TIMESTAMP} ,#{item.lastChatTime,jdbcType=TIMESTAMP} ,#{item.sellerFirstReplyTime,jdbcType=TIMESTAMP} ,#{item.settlementTime,jdbcType=TIMESTAMP} ,#{item.settlementPlatServiceFee,jdbcType=INTEGER} ,#{item.settlementMasterServiceFee,jdbcType=INTEGER} ,#{item.completedTime,jdbcType=TIMESTAMP} ,#{item.evaluateTime,jdbcType=TIMESTAMP} ,#{item.payConfirmTime,jdbcType=TIMESTAMP} ,#{item.isAutoRefund,jdbcType=VARCHAR} ,#{item.refundApplyTime,jdbcType=TIMESTAMP} ,#{item.refundReason,jdbcType=VARCHAR} ,#{item.refundConfirmTime,jdbcType=TIMESTAMP} ,#{item.refundAuditWord,jdbcType=VARCHAR} ,#{item.refundAuditTime,jdbcType=TIMESTAMP} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP} ,#{item.remark,jdbcType=VARCHAR})
+    (#{item.id,jdbcType=INTEGER} ,#{item.buyUsrId,jdbcType=INTEGER} ,#{item.orderType,jdbcType=VARCHAR} ,#{item.chatSessionNo,jdbcType=VARCHAR} ,#{item.goodsId,jdbcType=INTEGER} ,#{item.goodsName,jdbcType=VARCHAR} ,#{item.transDesc,jdbcType=VARCHAR} ,#{item.sellerUsrId,jdbcType=INTEGER} ,#{item.zxCateId,jdbcType=INTEGER} ,#{item.payType,jdbcType=VARCHAR} ,#{item.orderNum,jdbcType=VARCHAR} ,#{item.buyNum,jdbcType=INTEGER} ,#{item.payRmbAmt,jdbcType=INTEGER}, #{item.discountRmbAmt,jdbcType=INTEGER}, #{item.discountAmtPlat,jdbcType=INTEGER}, #{item.discountAmtMaster,jdbcType=INTEGER}, #{item.refundRmbAmt,jdbcType=INTEGER}, #{item.couponId,jdbcType=INTEGER}, #{item.status,jdbcType=VARCHAR} ,#{item.orderExtraInfo,jdbcType=VARCHAR},#{item.respSeconds,jdbcType=INTEGER} ,#{item.beginChatTime,jdbcType=TIMESTAMP} ,#{item.endChatTime,jdbcType=TIMESTAMP} ,#{item.lastChatTime,jdbcType=TIMESTAMP} ,#{item.sellerFirstReplyTime,jdbcType=TIMESTAMP} ,#{item.settlementTime,jdbcType=TIMESTAMP} ,#{item.settlementPlatServiceFee,jdbcType=INTEGER} ,#{item.settlementMasterServiceFee,jdbcType=INTEGER} ,#{item.completedTime,jdbcType=TIMESTAMP} ,#{item.evaluateTime,jdbcType=TIMESTAMP} ,#{item.payConfirmTime,jdbcType=TIMESTAMP} ,#{item.isAutoRefund,jdbcType=VARCHAR} ,#{item.refundApplyTime,jdbcType=TIMESTAMP} ,#{item.refundReason,jdbcType=VARCHAR} ,#{item.refundConfirmTime,jdbcType=TIMESTAMP} ,#{item.refundAuditWord,jdbcType=VARCHAR} ,#{item.refundAuditTime,jdbcType=TIMESTAMP} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP} ,#{item.remark,jdbcType=VARCHAR})
 	</foreach> 
 </insert>
 <update id="update"	parameterType="com.lmy.core.model.FsOrder">
@@ -76,6 +77,7 @@
 	<if test="couponId != null">coupon_id=#{couponId},</if>
 	<if test="status != null">status=#{status},</if>
 	<if test="orderExtraInfo != null">order_extra_info=#{orderExtraInfo},</if>
+	<if test="respSeconds != null">resp_seconds=#{respSeconds},</if>
 	<if test="beginChatTime != null">begin_chat_time=#{beginChatTime},</if>
 	<if test="endChatTime != null">end_chat_time=#{endChatTime},</if>
 	<if test="lastChatTime != null">last_chat_time=#{lastChatTime},</if>
@@ -104,12 +106,13 @@
     update fs_order set last_chat_time = now() where id =#{id}
 </update>
 
-<update id="updateByIdWithStatus"	parameterType="hashmap">
+<update id="updateByIdWithStatus" parameterType="hashmap">
 	update fs_order
 <set>
 	<if test="refundRmbAmt != null">refund_rmb_amt=#{refundRmbAmt},</if>
 	<if test="status != null">status=#{status},</if>
 	<if test="orderExtraInfo != null">order_extra_info=#{orderExtraInfo},</if>
+	<if test="respSeconds != null">resp_seconds=#{respSeconds},</if>
 	<if test="beginChatTime != null">begin_chat_time=#{beginChatTime},</if>
 	<if test="endChatTime != null">end_chat_time=#{endChatTime},</if>
 	<if test="lastChatTime != null">last_chat_time=#{lastChatTime},</if>
@@ -221,13 +224,13 @@
 <select id="statOrderNum" parameterType="hashmap"  resultType="long">
     select count(*) from fs_order 
     <where>
-          <if test="   buyUsrId !=null  ">buy_usr_id  =#{buyUsrId}</if>
-         <if test="   sellerUsrId !=null  ">and seller_usr_id  =#{sellerUsrId}</if>
-         <if test="  statusList !=null " >
+         <if test="buyUsrId !=null">buy_usr_id  =#{buyUsrId}</if>
+         <if test="sellerUsrId !=null">and seller_usr_id  =#{sellerUsrId}</if>
+         <if test="statusList !=null">
              and status in 
-               <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
+             <foreach collection="statusList"  item="item"  open="(" separator="," close=")" >
 				#{item}
-			</foreach>     
+			 </foreach>     
          </if>
     </where>
 </select>

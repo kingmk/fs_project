@@ -19,5 +19,6 @@ public class CacheConstant {
 	public static final String WEBCONTROLLER_PREVENT_DOUBLECLICK= "webcontroller_prevent_doubleclick";
 	
 	public static final String FS_SEARCH_MASTER = "FS_SEARCH_MASTER";
+	public static final String FS_SEARCH_SORTED_MASTER = "FS_SEARCH_SORTED_MASTER";
 	
 }

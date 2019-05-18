@@ -1,4 +1,4 @@
-  <#import "/common/host.ftl" as host>
+ <#import "/common/host.ftl" as host>
  <#import "/common/funUtils.ftl" as funUtils>
 <div class="service-intros-tit">服务项目 (${result.body.serviceCateSize})</div>
 <ul class="service-intros-list">
