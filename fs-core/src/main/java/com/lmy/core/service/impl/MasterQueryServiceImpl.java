@@ -392,7 +392,7 @@ public class MasterQueryServiceImpl {
 			jService.put("price", ms.getMinPrice());
 			jArrServices.add(jService);
 		}
-		logger.info("=======body in json: "+body.toJSONString());
+//		logger.info("=======body in json: "+body.toJSONString());
 		body.put("services", jArrServices);
 //		body.put("servicesStr", jArrServices.toJSONString());
 		if (jCurCate != null) {

@@ -205,8 +205,9 @@ public class EnterBaseController {
 	@com.lmy.common.annotation.ExcludeSpringInterceptor(excludeClass={com.lmy.web.common.OpenIdInterceptor.class})
 	public String test_update_respseconds(HttpServletRequest request,HttpServletResponse response) throws Exception{
 		
-		JSONObject jrlt = zDataFixImpl.fixOrderRespSeconds();
-		return jrlt.toJSONString();
+//		JSONObject jrlt = zDataFixImpl.fixOrderRespSeconds();
+//		return jrlt.toJSONString();
+		return "not supported";
 	}
 
 	@RequestMapping(value="/test/sort_statistics")

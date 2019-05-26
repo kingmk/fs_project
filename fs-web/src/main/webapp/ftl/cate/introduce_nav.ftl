@@ -73,6 +73,8 @@ function showOfflineNote() {
             <img src="${host.img}/images/indexImg/${item.id}.jpg?${host.version}">
             <span class="separator"></span>
         </a>
+        <#elseif item.id == 100024>
+        <#elseif item.id == 100008>
         <#else>
         <a class='card' href='${host.base}/usr/search/master_nav?zxCateId=${item.id}'>
             <img src="${host.img}/images/indexImg/${item.id}.jpg?${host.version}">

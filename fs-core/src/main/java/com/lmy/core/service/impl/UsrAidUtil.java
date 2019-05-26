@@ -38,7 +38,7 @@ public class UsrAidUtil {
 		return getNickName(usr, defValue);
 	}
 	public static String getMasterHeadImg(FsMasterInfo masterInfo , FsUsr usr , String defValue){
-		logger.info("=====masterInfo:"+masterInfo);
+//		logger.info("=====masterInfo:"+masterInfo);
 		return (masterInfo!=null && StringUtils.isNotEmpty(masterInfo.getHeadImgUrl())) ? masterInfo.getHeadImgUrl() : getUsrHeadImgUrl(usr, "");
 	}
 	/** 用户自定义昵称>用户英文名>用户真实名>用户注册手机号  **/
